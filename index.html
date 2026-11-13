@@ -369,7 +369,7 @@ async function cProfile(){
   if(m&&m.name){CL.role=m.role==='admin'?'admin':(m.role==='dir'?'dir':'prof');CL.name=m.name;CL.k=m.k||fk(m.name);return}
   const inv=await cDb('GET','invites/'+ek(CL.email)).catch(()=>null);
   if(inv&&inv.name){
-    const p={name:inv.name,email:CL.email,role:inv.role==='admin'?'admin':(inv.role==='dir'?'dir':'prof'),k:inv.k||fk(inv.name)};
+    const rl=inv.perm||inv.role,p={name:inv.name,email:CL.email,role:rl==='admin'?'admin':(rl==='dir'?'dir':'prof'),k:inv.k||fk(inv.name)};
     if(p.role==='admin')await cDb('PUT','admins/'+CL.uid,true);
     await cDb('PUT','members/'+CL.uid,p);CL.role=p.role;CL.name=p.name;CL.k=p.k;return;
   }
@@ -617,8 +617,41 @@ async function presTick(){
     if(isMgr()){const p=await cDb('GET','pres');PRES=p||{};const b=document.getElementById('presbox');if(b&&CURV==='gestion')b.innerHTML=presHtml()}
   }catch(e){}
   presBusy=false}
-async function cStart(){if(!cTimer)cTimer=setInterval(cTick,4000);if(!presT){presT=setInterval(presTick,20000);presTick()}await cTick()}
+async function cStart(){if(!roleT){roleT=setInterval(cRoleSync,30000);cRoleSync()}if(!cTimer)cTimer=setInterval(cTick,4000);if(!presT){presT=setInterval(presTick,20000);presTick()}await cTick()}
 function cKick(){if(!CL.uid)return;clearTimeout(cKT);cKT=setTimeout(cTick,700)}
+
+function aviso(msg){let d=document.getElementById('avisorol');if(d)d.remove();d=document.createElement('div');d.id='avisorol';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:120;max-width:min(520px,calc(100vw - 32px));background:var(--card);color:var(--ink);border:2px solid var(--blue);border-radius:12px;padding:12px 14px;box-shadow:0 6px 24px rgba(0,0,0,.25);display:flex;gap:12px;align-items:center';d.innerHTML='<span></span><button class="btn sec" type="button">Entendido</button>';d.firstChild.textContent=msg;d.lastChild.onclick=()=>d.remove();document.body.appendChild(d)}
+const PERMN={prof:'Examinador',dir:'Dirección',admin:'Administrador'};
+async function setPerm(k,np,sel){
+  const v=(INV||{})[k];if(!v)return;
+  const prev=permOf(v),back=()=>{if(sel)sel.value=prev};
+  if(!DB.adm||(!LOCAL&&CL.role!=='admin')){back();return}
+  if(np===prev)return;
+  const em=k.replace(/,/g,'.');
+  if(!LOCAL&&ek(CL.email)===k){usrMsg='No podés cambiar tus propios permisos.';back();renderGestion();return}
+  const ex=Object.values(DB.exams).find(c=>!c.ex.fin&&c.ex.exam.some(n=>nz(n)===nz(v.name||'')));
+  if(ex){usrMsg=`No se pueden cambiar los permisos de ${v.name}: participa en un examen sin finalizar (${exLabel(ex.ex)}). Sacalo del examen primero.`;back();renderGestion();return}
+  let extra='';
+  try{
+    if(!LOCAL){
+      if(np==='prof')await cDb('DELETE','invites/'+k+'/perm');else await cDb('PUT','invites/'+k+'/perm',np);
+      let ms=null;try{ms=await cDb('GET','members')}catch(e){if(!(e&&e.denied))throw e}
+      const ent=ms?Object.entries(ms).find(([u,m])=>m&&String(m.email||'').toLowerCase()===em.toLowerCase()):null;
+      if(ent){const [uid]=ent;await cDb('PUT','members/'+uid+'/role',np);if(np==='admin')await cDb('PUT','admins/'+uid,true);else await cDb('DELETE','admins/'+uid);extra=' El cambio se aplica en su próximo ingreso o en unos segundos si tiene la app abierta.'}
+      else extra=ms?' Todavía no creó su acceso: los permisos se aplican cuando lo cree.':' No pude verificar si ya tiene cuenta (sin permiso de lectura). Si ya ingresó, revisá las reglas de Firebase.'
+    }
+    if(np==='prof')delete v.perm;else v.perm=np;
+    usrMsg=`${v.name} ahora tiene permisos de ${PERMN[np]}.`+(np!=='prof'?' Entra con ese rol y deja de ver la vista de examinador.':'')+extra;
+  }catch(er){back();usrMsg=er&&er.denied?'Sin permiso: solo el administrador principal puede dar o quitar permisos de Dirección y Administrador.':'Sin conexión: no se guardó el cambio.'}
+  renderGestion();
+}
+let roleT=0;
+async function cRoleSync(){
+  if(LOCAL||!CL.uid||!CL.tok&&!CL.rt)return;
+  try{const m=await cDb('GET','members/'+CL.uid);if(!m||!m.role)return;const r=m.role==='admin'?'admin':(m.role==='dir'?'dir':'prof');if(r===CL.role)return;
+    CL.role=r;cSave();cEnter();all();showView('gestion');try{updTabs();renderGestion()}catch(e){}
+    aviso('Tus permisos cambiaron: ahora ingresás como '+PERMN[r]+'.')}catch(e){}
+}
 async function cInvite(name,email,role,niv){if(LOCAL)return;const o={name,role:role||'prof',k:fk(name)};if(niv>=1&&niv<=5)o.niv=niv;await cDb('PUT','invites/'+ek(email),o)}
 function accBlock(){
   if(LOCAL){const ops=['<option value="">Administrador</option>'].concat(Object.keys(DB.exams).filter(id=>!DB.exams[id].ex.fin).map(id=>{const e=DB.exams[id].ex;return e.exam.map(n=>`<option value="${esc(n)}"${DB.me===n?' selected':''}>Examinador: ${esc(n)}${e.exam[e.jefe]===n?' (jefe de mesa)':''} — ${esc(exLabel(e))}</option>`).join('')})).concat(`<option value="__dir"${DB.dir?' selected':''}>Dirección</option>`).concat(`<option value="${SINASIG}"${DB.me===SINASIG?' selected':''}>Examinador sin asignar (sin credenciales)</option>`).join('');return `<div class="gx"><h3>Modo local</h3><p class="dvm">Esta versión guarda todo solo en este navegador y no se sincroniza. Sirve para probar y ver cómo trabaja cada rol.</p><div class="id"><label>Ver como<select data-vc>${ops}</select></label></div></div>`}
@@ -1274,6 +1307,7 @@ document.addEventListener('change',e=>{
   const d=e.target.dataset;
   if(d.uxniv!==undefined){if(!isMgr())return;const k=d.uxniv,v=Number(e.target.value)||0;const prev=nivOf((INV||{})[k]);
     (async()=>{try{if(!LOCAL){if(v)await cDb('PUT','invites/'+k+'/niv',v);else await cDb('DELETE','invites/'+k+'/niv')}if(INV&&INV[k]){if(v)INV[k].niv=v;else delete INV[k].niv}usrMsg=''}catch(er){e.target.value=prev||'';usrMsg=er&&er.denied?'Sin permiso para guardar la validación. Revisá las reglas de Firebase.':'Sin conexión: no se guardó la validación.';renderGestion()}})();return}
+  if(d.uxperm!==undefined){const sel=e.target;setPerm(d.uxperm,sel.value,sel);return}
   if(d.pdfup!==undefined){const f=e.target.files;pdfLoad(Number(d.pdfup),f);e.target.value='';return}
   if(d.exk!==undefined){exKind=e.target.value==='prueba'?'prueba':'nuevo';exMsg='';renderGestion();return}
   if(d.uxl!==undefined){const f=e.target.files&&e.target.files[0];e.target.value='';importUsrEx(f);return}
@@ -1488,11 +1522,13 @@ function regExit(){
 let INV=null,invLoad=false,usrMsg='';
 const NIVS=[1,2,3,4,5];
 const nivOf=v=>{const n=Number(v&&v.niv);return n>=1&&n<=5?n:0};
+const permOf=v=>v&&(v.perm==='admin'||v.perm==='dir')?v.perm:'prof';
+const permSel=(k,v)=>`<select data-uxperm="${esc(k)}" aria-label="Permisos"><option value="prof"${permOf(v)==='prof'?' selected':''}>Examinador</option><option value="dir"${permOf(v)==='dir'?' selected':''}>Dirección</option><option value="admin"${permOf(v)==='admin'?' selected':''}>Administrador</option></select>`;
 const nivSel=(k,v)=>isMgr()?`<select data-uxniv="${esc(k)}" aria-label="Validación"><option value="">—</option>${NIVS.map(n=>`<option value="${n}"${nivOf(v)===n?' selected':''}>Nivel ${n}</option>`).join('')}</select>`:(nivOf(v)?'Nivel '+nivOf(v):'<span class="dvs">Sin validar</span>');
 const dOpen={usr:false,reg:true};
 const xlsDet=(k,n,body)=>`<details class="xdet" data-dtg="${k}"${dOpen[k]?' open':''}><summary>Ver lista de examinadores (${n})</summary>${body}</details>`;
-const xlsTab=(rows,hdr)=>`<div class="id" style="margin:6px 0"><label style="max-width:340px">Buscar examinador<input type="search" data-xsrch placeholder="Nombre o correo" autocomplete="off"></label></div><p class="dvs" data-xcnt hidden></p><div class="xlsw"><table class="xls"><thead><tr><th class="rn"></th><th>A</th><th>B</th><th>C</th><th>D</th></tr><tr class="xh"><th class="rn">1</th>${hdr.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map((r,i)=>`<tr data-xr><td class="rn">${i+2}</td>${r.map((c,j)=>`<td${j===3?' class="ac"':j===1?' class="vl"':''}>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
-const exListUsr=()=>{const l=Object.entries(INV||{}).filter(([k,v])=>v&&v.role==='prof').map(([k,v])=>({k,n:v.name||'',e:k.replace(/,/g,'.')})).sort((a,b)=>a.n.localeCompare(b.n,'es'));return l.length?xlsDet('usr',l.length,xlsTab(l.map(x=>[esc(x.n),nivSel(x.k,INV[x.k]),esc(x.e),`<button class="lnk" data-usrexdel="${esc(x.k)}">Quitar</button>`]),['Nombre','Validación','Correo',''])):'<p class="dvs">Todavía no hay examinadores registrados.</p>'};
+const xlsTab=(rows,hdr)=>`<div class="id" style="margin:6px 0"><label style="max-width:340px">Buscar examinador<input type="search" data-xsrch placeholder="Nombre o correo" autocomplete="off"></label></div><p class="dvs" data-xcnt hidden></p><div class="xlsw"><table class="xls"><thead><tr><th class="rn"></th>${hdr.map((h,i)=>`<th>${String.fromCharCode(65+i)}</th>`).join('')}</tr><tr class="xh"><th class="rn">1</th>${hdr.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map((r,i)=>`<tr data-xr><td class="rn">${i+2}</td>${r.map((c,j)=>`<td${hdr[j]===''?' class="ac"':(j===1||hdr[j]==='Permisos')?' class="vl"':''}>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const exListUsr=()=>{const l=Object.entries(INV||{}).filter(([k,v])=>v&&v.role==='prof').map(([k,v])=>({k,n:v.name||'',e:k.replace(/,/g,'.')})).sort((a,b)=>a.n.localeCompare(b.n,'es'));return l.length?xlsDet('usr',l.length,xlsTab(l.map(x=>DB.adm?[esc(x.n),nivSel(x.k,INV[x.k]),permSel(x.k,INV[x.k]),esc(x.e),`<button class="lnk" data-usrexdel="${esc(x.k)}">Quitar</button>`]:[esc(x.n),nivSel(x.k,INV[x.k]),esc(x.e),`<button class="lnk" data-usrexdel="${esc(x.k)}">Quitar</button>`]),DB.adm?['Nombre','Validación','Permisos','Correo','']:['Nombre','Validación','Correo',''])):'<p class="dvs">Todavía no hay examinadores registrados.</p>'};
 async function loadInv(){if(LOCAL||invLoad)return;invLoad=true;try{INV=(await cDb('GET','invites'))||{}}catch(e){INV=INV||{}}invLoad=false;const b=document.getElementById('exlist');if(b)b.innerHTML=exListUsr();const r=document.getElementById('exreg');if(r)r.innerHTML=regExList()}
 function usrExBlock(){if(INV===null){if(LOCAL)INV={};else loadInv()}return `<div class="gx"><h3>Examinadores</h3><p class="dvs">Agregá examinadores con su nombre y correo. Deben crear su acceso con ese correo (Primer ingreso). Después se los asigna a un examen desde Crear examen. <b>Validación</b> es el nivel de examen hasta el que Dirección validó a cada examinador (del 1 al 5); se completa desde la lista. Al quitar a alguien, ya no puede crear su acceso; si ya lo había creado, el acceso no se elimina desde acá.</p><div class="bar"><label>Nombre<input id="uen"></label><label>Correo<input id="uee" type="email" autocapitalize="none"></label><label>Validación<select id="uev"><option value="">Sin validar</option>${NIVS.map(n=>`<option value="${n}">Nivel ${n}</option>`).join('')}</select></label><button class="btn" data-usrexadd>Agregar examinador</button></div><div class="bar"><label>O cargá una lista (Excel o CSV)<input type="file" data-uxl accept=".xlsx,.xls,.csv,.txt"></label></div><p class="dvs">Columnas: Nombre, Correo y, si querés, Validación (nivel del 1 al 5), con o sin fila de títulos (también sirven Apellido y Nombre por separado). Los repetidos se omiten.</p>${usrMsg?`<p class="dvm" role="status">${esc(usrMsg)}</p>`:''}<div id="exlist">${exListUsr()}</div></div>`}
 async function delUsrEx(k){
