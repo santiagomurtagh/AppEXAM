@@ -583,7 +583,7 @@ async function cMergePl(){
 const typing=()=>{const a=document.activeElement;return !!a&&['INPUT','TEXTAREA','SELECT'].includes(a.tagName)&&a.type!=='file'};
 function cUi(){
   const el=document.getElementById('csync');
-  if(el)el.textContent=!CL.uid?'':(CL.on?'☁ Sincronizado':'⚠ Sin conexión: tus cambios se enviarán al reconectar');
+  if(el)el.textContent=!CL.uid?'':(CL.on?'☁ Sincronizado':CL.err==='denied'?'⚠ Firebase rechazó el acceso (permisos o reglas): tus cambios no se están guardando':'⚠ Sin conexión: tus cambios se enviarán al reconectar');
   if(CL.ui&&!typing()){
     const u=CL.ui;CL.ui=null;
     if(u.ex){updTabs();showView(CURV)}
@@ -598,7 +598,7 @@ async function cTick(){
     await cPush();await cPull();if(autoClose()){await cPush()}CL.on=true;CL.err='';
   }catch(e){
     if(e&&e.auth){cBusy=false;cLogout();return}
-    CL.on=false;CL.err='net';
+    CL.on=false;CL.err=(e&&e.denied)?'denied':'net';
   }
   cBusy=false;cUi();
 }
