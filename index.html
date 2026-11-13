@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AppEXAM</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@600;700&family=Montserrat:wght@600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#eef3fa;--card:#fff;--ink:#14233b;--mute:#5d6b82;--line:#d3dcea;--blue:#3b6bc8;--sky:#4fc3ee;--chip:#f3f6fb;
 --ok:#1f9d55;--mb:#5fb36a;--b:#d9b429;--r:#e48a1c;--no:#d64545;--on:#fff}
@@ -16,6 +16,8 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 Barlow,system-ui,sans-serif}
 .wrap{max-width:1100px;margin:0 auto;padding:16px}
 h1,h2{font-family:"Barlow Semi Condensed",Barlow,sans-serif;margin:0}
+header .brand{position:relative;display:inline-block;line-height:0}header{justify-content:center!important;position:relative}header .btns{position:absolute;right:0;top:0}@media (max-width:700px){header .btns{position:static}}
+header .logo{mix-blend-mode:multiply;height:110px;width:auto;max-width:70vw;display:block}header .brand h1{position:absolute;left:46.6%;top:32%;margin:0;color:#60cff0;font-family:Montserrat,'Segoe UI',Arial,sans-serif;font-weight:600;font-size:17px;line-height:1;letter-spacing:.14em;white-space:nowrap}
 header{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px}
 h1{font-size:26px;line-height:1.1}
 h1 small{display:block;font:500 15px Barlow,sans-serif;color:var(--mute);margin-top:4px}
@@ -110,6 +112,13 @@ td.l{text-align:left}.pend{color:var(--mute)}.nim{color:var(--no)}
 .lnk{background:none;border:0;color:var(--blue);font:600 15px Barlow,sans-serif;cursor:pointer;text-decoration:underline;padding:0}
 .nt{font-size:20px;margin:0 0 6px}
 .gh{font:700 17px "Barlow Semi Condensed",sans-serif;margin:4px 0 8px;color:var(--ink)}.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:14px}.dgrid .gx{margin-bottom:0}
+details[data-dtg=usr] .xls th:nth-child(3),details[data-dtg=usr] .xls td:nth-child(3){width:1%;text-align:center}
+.xls select{width:auto;font:14px Calibri,Carlito,"Segoe UI",Arial,sans-serif;padding:2px 4px;margin:0;border-radius:4px}
+.xls{border-collapse:collapse;width:100%;font:14px Calibri,Carlito,"Segoe UI",Arial,sans-serif;background:var(--card);border:1px solid var(--line)}.xls th,.xls td{border:1px solid var(--line);padding:4px 10px;text-align:left;white-space:nowrap}.xls thead th{background:var(--chip);color:var(--mute);font-weight:600;text-align:center;font-size:12px;position:sticky;top:0}.xls thead tr.xh th{background:var(--chip);color:var(--ink);font-weight:700;text-align:left;font-size:14px}.xls td.rn,.xls th.rn{background:var(--chip);color:var(--mute);text-align:center;width:44px;font-size:12px;font-weight:600}.xls tbody tr:hover td:not(.rn){background:rgba(59,107,200,.10)}.xls td.ac{text-align:center;width:1%}.xlsw{overflow:auto;max-height:460px;border-radius:4px}
+.xdet{margin:6px 0}.xdet>summary{cursor:pointer;font-weight:700;color:var(--blue);padding:6px 0}
+.ncom td{background:var(--chip);padding:10px 14px}.ncm{margin:0 0 10px;padding:8px 12px;background:var(--card);border:1px solid var(--line);border-radius:8px;text-align:left}.ncm h4{margin:0 0 4px;font:700 15px "Barlow Semi Condensed",sans-serif;color:var(--blue)}.ncm p{margin:4px 0;font-size:14px}
+.dgrid details{min-width:0}.dgrid .nvd{margin:8px 0}.dgrid .nvm{font:700 11px Barlow,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);border-top:1px solid var(--line);padding-top:8px;margin-top:6px}.dgrid .nvm:first-child{border-top:0;margin-top:0;padding-top:0}.dgrid .nvd>summary{list-style:none;display:block;text-align:center;background:var(--blue);color:#fff;font:700 15px Barlow,sans-serif;padding:9px 14px;border-radius:8px;cursor:pointer;margin-bottom:8px}.dgrid .nvd>summary::-webkit-details-marker{display:none}.dgrid .nvd>summary::after{content:' ▾';font-size:12px}.dgrid .nvd[open]>summary::after{content:' ▴'}.dgrid .nvd>summary:hover{filter:brightness(1.1)}.dgrid .gtab{box-sizing:border-box;min-width:0}.dgrid .gtabs{display:grid;grid-template-columns:minmax(0,1fr);overflow:visible;white-space:normal;gap:6px;border-bottom:0;margin-bottom:10px}.dgrid .gtab{width:100%;text-align:center}.dgrid .gtab{margin-bottom:0;border:1px solid var(--line);border-radius:9px;padding:6px 12px;font-size:14px}.tutb{display:flex;gap:8px;flex-wrap:wrap}.tutb .btn:disabled{opacity:.5;cursor:not-allowed}.tutb .btn{flex:1 1 200px;text-align:center;text-decoration:none;box-sizing:border-box}
+.gxs>.btn{display:block;width:100%;margin:0 0 6px;text-align:center}.dgrid .gtab.on{border:1px solid var(--blue)}.dgrid .gtabs.nvg{margin-bottom:8px}.dgrid .gtabs.nvg .gtab{background:#c9d8f3;border-color:#aebfe6}.dgrid .gtabs.nvg .gtab:hover:not(:disabled){background:#b9cdef;border-color:var(--blue)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dgrid .gtabs.nvg .gtab{background:#24406e;border-color:#35558c}:root:not([data-theme="light"]) .dgrid .gtabs.nvg .gtab:hover:not(:disabled){background:#2d4d82}}:root[data-theme="dark"] .dgrid .gtabs.nvg .gtab{background:#24406e;border-color:#35558c}:root[data-theme="dark"] .dgrid .gtabs.nvg .gtab:hover:not(:disabled){background:#2d4d82}.dgrid .gtab:disabled{opacity:.5;cursor:default}.gtab .nvl{display:block;font-weight:700}.gtab .nvt{display:block;font-weight:400;color:var(--mut);font-size:12px}.gtab .cs{display:block;margin-top:2px}.dgrid .gtabs.hs .gtab:not(.on){opacity:.45}.dgrid .gtabs.hs .gtab:not(.on):hover{opacity:.85}
 .gtabs{display:flex;gap:3px;border-bottom:2px solid var(--line);margin:0 0 14px;overflow-x:auto;white-space:nowrap}.gtab{font:600 15px Barlow,sans-serif;background:var(--chip);color:var(--ink);border:1px solid var(--line);border-bottom:0;border-radius:9px 9px 0 0;padding:9px 18px;cursor:pointer;margin-bottom:-2px;flex:0 0 auto}.gtab:hover{background:var(--line)}.gtab.on{background:var(--card);color:var(--blue);border-bottom:2px solid var(--card);font-weight:700}
 .gx{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
 .gx h3{font:700 16px "Barlow Semi Condensed",sans-serif;margin:0 0 8px;color:var(--blue)}
@@ -126,17 +135,18 @@ td.l{text-align:left}.pend{color:var(--mute)}.nim{color:var(--no)}
 .com{padding:0 14px 14px}
 @media print{body{background:#fff}.btns,.tabs,.microw,.dv,.vtabs,.bar{display:none}.pane{display:block!important;break-inside:avoid}.sec-card{break-inside:avoid}.wrap{padding:0}}
 </style>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA8AXHiAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAACm9JREFUeNrsnc9x2zgYxWGN7+udFBClgpVnCzBVQZQKRFdg+5Kr7eteJFdgqYLIFVguYCfaCqIUsDPaCrKA/clBYPwlQREk3pvhOHYEUAQefvgAgiBjEARBEARBEAR1QkcoAsb++vvfE/5jxo8hP5af/3y3CEwv0o74seFpr1CijA1QBM+65EfJj4If99wowwBTlZRepL2k32Es0OqZVhfKn68DsriukRbG6jmtTpS/lT7UIjqpnxuCWpkby0CrEPJc10gLY2VGKy9qGWgFauVuLAetfMhzXSMtjJUprazUctAK1MrVWJ60spHnukZaGCtzWmmpxf898qBV9tTKzliBtHpDns9/vtvwH9sqaWEs0MoVa90GpM2SWlkZqyKtdNRagFowVl1agVowVm1abWpQaw1q5UksF61uuVlOHV2cSq39Epk5TzvmPxeg1ouOQatn7YQ5pC7u3kGec6LWiv26pk2kLR1pFyBWPrS64ybZeQbmxnuIPO0W1MrEWIG08g3MbfFSnbQwVh9pFTCdAGrlbKyKtAK1YKz4tAK1YKwmaQVqwVjxaQVqwVhN0grUgrHi0wrUgrGi0oqn/8qPH/woQC0YKwqtiB4jtcJBrcyNFSG2kulRgFowVixaDU0VDmplaqzItAK1YKzGaAVq5W6shmj1Sq2I5MmGWn0hVlO0YiplQK1MjNUwrUyUAbUyIFajtCLKMFArI2O1RCtQKwNiHZxWoFbPjdUyrUCtHhOrNVqBWj01ViK0ArV6SKzWaQVq9cxYidEK1OoRsZKhFajVE2MlSitQqwfESo5WoFbHjZU4rUCtDhMrWVqBWh01VkdoBWp1kFjJ0wrU6pixOkYrUKtDxOoMrUCtjhiro7QCtTpArM7RCtRK3Fgdp9Verjfan/SVWikTq7O0ksgjtusWe8ePNccpvfCJ9ZFaSe7z3hNa7Q2yqZG8s/vGp0qsztMqkik7S63kiOX5zpv3Yk8FXvDrurRS9mZIUUOPWCs5ah0laKybgMB0xc31SaHVvYNW59LnvzH/t6WmrHMahaIrrEGrOiOl24Aus0tKboSYWowV+j7BuxqxVZ+2DUou1krGWBVotVZirFxplWRDSYlYobQKMUqfaZUktZIwFmjVP2qlQqxD0mrK+qtkqNX6PJYnrWQ6barSSg34OypRXiMHtVqfejhKwFg3DnOIdzXfGNKK1uk9b9UX8esW12wjU+vzWoOWC6g39wQPrORXPrQdY+GeYAV14R5iazEWaPVaDoXlWh64iWxvgC1TjbXaJBZo9SLRuArDMevqKtNBS60UtJKoVCNeSjbWaotYoNVP8gjq2L5vJ9fGH9xYoFV08iRJrTaIBVplQK2DGgu0yodahyYWaJUJtQ5mLNAqL2odkligVUbUOoixQKv8qHUoYoFWmVGrcWOBVnlS6xDEAq0ypFajxgKt8qVW08QCrTKlVmPGAq3yplaTxAKtMqZWI8YCrUCtpogFWmVOrejGAq1AraaIBVqBWnGNBVqBWk0RC7QCteIaC7QCtZoiFmgFar0qypPQITsdg1ZRqGXbCEU85GraUWfkQa1FjC95FMlYN6y5ybZe7hhTs7yb3O05yk41gwgXWXen47pxBWKtuIoCiBgxVuhufKG02sJHwbFWHUWJtWoZC7QCtZoiFmgFajVirDPQqrfUmrZprF1DFzUHrbyptW4o+1rlX3ce65zMFWvoK/J6SO2FQ4lLvKRKdFsfI+a5QY8BQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQcFyPv5F69rFc2zyEuRl3TVT9MLsofSnJ9NLxTVpC+Zely3WFH3nx8pn0SDPc8Z+PnenfbMpPebmWjX7xF4Wya1MD+hK+Q2Z/RlBncSDvytHnhd0LYX0X2sqE1F3G89yFnVespe1XiPJA1vK78H0XXyMJda1z5Q/iwL74Co4S54T/uOL5r8+eJrghoUt+BeN4Mr2fXmeP+RK4J8dOz7jkjjXreXVu1Wfx9R+t8D8hBnOHeUx0QDF1IDPVbP6LE3WrX0WJ5vUAJZpPXXZEJlFvo/UAg8lca4ZkblxEXF9TSrq7tHRI3xhfg/KjKhsh97G4h8eMfNj2dOKBTC0mLLqAv4NoXl/mApgFrk+5XOaupeSWr+PtkqeuuPBUKaXGmKKz98SoVQ6jYhwOt0brnVO9N9qGtEvaVxr3m3PDBbigio89GArZPHYUcHzXAfmeaWmocKeKecTlXwb60ENQ3c5ofPKLXhGlevS0jfOdJBemHwsd3VE65ny2TMDrYaKQcdqV6cJkYQfTvbnHASaYB5gPF+zziNRS630LT8+aQjWVHe7P68w0FghxJDofyi9iSfF77QHxsqDsupgYaO5zjnRUNtTHFu6rFLpY8UXulOQK4x3FdANqq1h/zSIfC5BlauqAwNdwSijo7Oma1WYml/DQimrkWdFxtBHU0hAjS0oL34tc1192Oh6HBBgL6nA1lJFiZY4sQ1/HXk+75nF81gpJCmZfZO2IILw/NuYyvlH7eY90ti2enqOwQzduPq3S8pnSaPIEENvNbHpV6qjB98w5dgSYBfKBe3Ns1T+b+oTP1AfP9EMe/dUKZU856zbqhLHlR5d9ZFh+uBaMe/rwIsa1prm2FY2o0m0LZVGcUmGlQdLTyaoDDzjoJV04oUSP0xMu8hp4jW5a13s8UoXulVGLCMG+VJZlOMnh5kLMp+gz6ODjFcOWIzIaF/EXl26fR4GnkG7ukPcImCkZzLr0nGOC1gmyFwbfnxgL0+nu7q+guaeSpNRKRYbe/RGAir36nzdwDBclgm01vTryxATaObDtpq++o1ZDzyhmYIWVJm2w2Uw0ROc8n/+ThS7Zea5vZmtjEUdCYPx44jObZoT2w+6CluMNdXMV7luZbjmn6aaz7vy3Mdkizo15dlNN6GiQprvFebwbN3jak8cKcadSSHJCTX4tUd+v0wpEICuFWC8jkaPNZVQ9VbN1PIFyxp5LmqWsXruQw351ca0bupEvN7k2y/aBQJktAXV8bXSAGTD3EhTMqJ7vbKMtkWej0rspe0K69z/K3VY1cyHBbX6OsShc6v3z56adpRm5cYuFoksMXFBx71j4POHo6GdSXld0gy7LYjXjoSPHbGSGPL/Z8n4TEG+ruuaauKI7wF5XjD3JOxUM8r5qLvwgDk3HwPdKH/6jcpg6BiYGK/dcv+OSRRZaSpUPqcY+Ym6e1BMcKH5bhvN74USh51RXL2TAvapprt/emMs3ay4CYNKGtUEC8t82M61tTal+aaY1WUs36429rbePqsJNsx/Tq7wiM3WmpGaKB91GdIle3tjWpVugzv1Tsi+DiYehl/ousKpY+RnCuhs80+lY+SnnaBT4pFhwOoAk57neRrujkymGke8PWUqsxX7uQme9whUBw76rmMWNsG7UUesA2UUJleEb9C81Izm9nqv5OnbJdxp5kpUo/hesGiBHzy6wK1H/r6FvV9Id+ow1bZiI9FOM/Afp1RvO8d3G9t6DpqwPiUSbh3lq73OIwb1UtRznGh6mKpTNkNN17dDSUMQBEEQBEFQx/W/AAMATvPawHJLOCgAAAAASUVORK5CYII=">
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>AppEXAM</h1>
+  <div class="brand"><img class="logo" src="data:image/png;base64,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" alt="AADIDESS" width="134" height="60"><h1>AppEXAM</h1></div>
   <div class="btns">
     <button class="btn sec" id="print">Imprimir / PDF</button>
   </div>
 </header>
 <div id="csync" class="dvs" role="status" style="text-align:right;margin:2px 0 6px"></div>
-<nav class="vtabs"><button class="vt" id="vt-plan" data-view="plan" aria-selected="true">Planilla</button><button class="vt" id="vt-notas" data-view="notas" aria-selected="false">Notas finales</button><button class="vt" id="vt-gestion" data-view="gestion" aria-selected="false">Gestión de Exámenes</button></nav>
+<nav class="vtabs"><button class="vt" id="vt-plan" data-view="plan" aria-selected="true">Planilla</button><button class="vt" id="vt-notas" data-view="notas" aria-selected="false">Notas finales</button><button class="vt" id="vt-gestion" data-view="gestion" aria-selected="false">Principal</button></nav>
 <div id="v-plan">
   <div class="bar"><label>Alumno que se evalúa (por dorsal)<select id="sel"></select></label><button class="btn" id="add" hidden>+ Nueva planilla</button><button class="btn sec" id="del" hidden>Eliminar</button></div>
   <div class="id" id="id"></div>
@@ -269,7 +279,7 @@ function useEx(id){
   st=DB.list.find(x=>x.id===DB.cur).st;
 })();
 const saveLocal=()=>{try{syncCtx();localStorage.setItem(KEY2,JSON.stringify({exams:DB.exams,xid:DB.xid,me:DB.me}))}catch(e){}};
-const save=()=>{saveLocal();cKick()};
+const save=()=>{saveLocal();cKick();try{updPrint()}catch(e){}};
 let REG=null;
 const locked=()=>!DB.me&&!DB.adm;
 const miEx=()=>!!DB.me&&Object.values(DB.exams).some(o=>o.ex.creado&&!o.ex.fin&&o.ex.exam.includes(DB.me));
@@ -282,6 +292,8 @@ function lmsg(t){const m=document.getElementById('lmsg');if(m)m.textContent=t}
 const SINASIG='Examinador sin asignar';
 const noAccess=()=>!!DB.me&&!DB.adm&&!REG&&(!DB.xid||DB.ex.fin||!DB.ex.exam.includes(DB.me));
 /* ===== Nube: Firebase (Auth + Realtime Database, por REST) ===== */
+// Enlaces de los tutoriales (pegá acá la dirección de cada uno entre las comillas)
+const TUT_GENERAL='https://claude.ai/artifact/RHk4SSdF1LGoZjf9nHN17G',TUT_MANIOBRAS='https://claude.ai/artifact/8SHQdb9p4Pgwi2Dgthzvzt',TUT_DIRECCION='https://claude.ai/artifact/4xRMFVGSHSCfd2m4kVbu7F';
 const FB={key:'AIzaSyAkLoPruGPwA4_1fXn2kHrgulm1LsCRhww',db:'https://appexam-14708-default-rtdb.firebaseio.com'};
 const CKEY='planillas_n3_cloud';
 const LOCAL=false; /* true = modo local sin nube (versión solo para el artefacto) */
@@ -562,7 +574,7 @@ async function presTick(){
   presBusy=false}
 async function cStart(){if(!cTimer)cTimer=setInterval(cTick,4000);if(!presT){presT=setInterval(presTick,20000);presTick()}await cTick()}
 function cKick(){if(!CL.uid)return;clearTimeout(cKT);cKT=setTimeout(cTick,700)}
-async function cInvite(name,email,role){if(LOCAL)return;await cDb('PUT','invites/'+ek(email),{name,role:role||'prof',k:fk(name)})}
+async function cInvite(name,email,role,niv){if(LOCAL)return;const o={name,role:role||'prof',k:fk(name)};if(niv>=1&&niv<=5)o.niv=niv;await cDb('PUT','invites/'+ek(email),o)}
 function accBlock(){
   if(LOCAL){const ops=['<option value="">Administrador</option>'].concat(Object.keys(DB.exams).filter(id=>!DB.exams[id].ex.fin).map(id=>{const e=DB.exams[id].ex;return e.exam.map(n=>`<option value="${esc(n)}"${DB.me===n?' selected':''}>Examinador: ${esc(n)}${e.exam[e.jefe]===n?' (jefe de mesa)':''} — ${esc(exLabel(e))}</option>`).join('')})).concat(`<option value="__dir"${DB.dir?' selected':''}>Dirección</option>`).concat(`<option value="${SINASIG}"${DB.me===SINASIG?' selected':''}>Examinador sin asignar (sin credenciales)</option>`).join('');return `<div class="gx"><h3>Modo local</h3><p class="dvm">Esta versión guarda todo solo en este navegador y no se sincroniza. Sirve para probar y ver cómo trabaja cada rol.</p><div class="id"><label>Ver como<select data-vc>${ops}</select></label></div></div>`}
   if(DB.adm||DB.me||DB.dir)return `<div class="gx"><h3>Sesión</h3><p class="dvm">Sesión iniciada como <b>${DB.adm?'Administrador'+(DB.admName?' ('+esc(DB.admName)+')':''):DB.dir?'Dirección'+(DB.admName&&CL.uid?' ('+esc(DB.admName)+')':''):esc(DB.me)}</b>${CL.email?' · '+esc(CL.email):''}.${noAccess()?' <b>No tenés un examen asignado:</b> el acceso a las planillas se habilita cuando el administrador te incluye en un examen.':''}</p><button class="btn sec" data-logout>Cerrar sesión</button></div>`;
@@ -1099,7 +1111,7 @@ document.addEventListener('click',e=>{
   const xo=e.target.closest('[data-xof]');if(xo){if(DB.adm||DB.dir)openEx(xo.dataset.xof).then(()=>showView('oficial'));return}
   const xs=e.target.closest('[data-xsel]');if(xs){if(isMgr())openEx(xs.dataset.xsel).then(()=>showView('gestion'));return}
   if(e.target.closest('[data-xfin]')){if(!isMgr()||!DB.xid)return;if(dirLocked()){if(propOf()){xMsg='Ya hay una solicitud pendiente.';renderGestion()}else sendProp('fin');return}const b=e.target.closest('[data-xfin]');if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='¿Seguro? Tocá de nuevo para finalizar';clearTimeout(b._t);b._t=setTimeout(()=>{b.dataset.armed='';b.textContent='Finalizar examen'},5000);return}DB.ex.fin=true;xMsg='Examen finalizado. Sus examinadores y alumnos quedan libres para otros exámenes.';save();updTabs();renderGestion();return}
-  {const gt=e.target.closest('[data-gtab]');if(gt){gTab=gt.dataset.gtab;renderGestion();return}}
+  {const gt=e.target.closest('[data-gtab]');if(gt){if(REG)regExit();gTab=gt.dataset.gtab;showView('gestion');return}}
   if(e.target.closest('[data-xreopen]')){if(!isMgr()||!DB.xid)return;if(jefeFirmo()){xMsg='La firma del jefe de mesa cerró el examen: no puede reabrirse.';renderGestion();return}const c=conflictos();if(c.length){xMsg='No se puede reabrir: '+c.slice(0,4).join('; ')+(c.length>4?'…':'')+'. Finalizá o modificá el otro examen primero.';renderGestion();return}DB.ex.fin=false;xMsg='';save();updTabs();renderGestion();return}
   if(e.target.closest('[data-exclear]')){if(!canAlu())return;{const b=e.target.closest('[data-exclear]');if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='¿Seguro? Tocá de nuevo para vaciar la lista';clearTimeout(b._t);b._t=setTimeout(()=>{b.dataset.armed='';b.textContent=b.dataset.lbl||'Vaciar lista'},5000);return}DB.ex.alu=[];xlMsg='';save();renderGestion();refreshPl()}return}
   if(e.target.closest('[data-excrear]')){if(!isMgr()||!editOk()||exFalta().length||conflictos().length)return;DB.ex.creado=true;syncPl();save();renderGestion();all();showView('gestion');return}
@@ -1121,10 +1133,13 @@ document.addEventListener('click',e=>{
   const jf=e.target.closest('[data-jefe]');if(jf&&!(isMgr()&&editOk()))return;
   if(jf){const i=+jf.dataset.jefe;DB.ex.jefe=DB.ex.jefe===i?-1:i;save();renderGestion();return}
   const ed=e.target.closest('[data-exdel]');if(ed&&!((isMgr()&&editOk())||(isJefe()&&ed.dataset.exdel.startsWith('alu:'))))return;
-  if(ed){const [k,i]=ed.dataset.exdel.split(':');if(k==='exam'){const nm=DB.ex.exam[+i],em=(DB.ex.em||{})[nm];if(em&&CL.uid)cDb('DELETE','invites/'+ek(em)).catch(()=>{});if(DB.ex.em)delete DB.ex.em[nm]}DB.ex[k].splice(+i,1);if(k==='exam'){if(DB.ex.jefe===+i)DB.ex.jefe=-1;else if(DB.ex.jefe>+i)DB.ex.jefe--}save();renderGestion();if(k==='alu')refreshPl();return}
+  if(ed){const [k,i]=ed.dataset.exdel.split(':');if(k==='exam'){const nm=DB.ex.exam[+i],em=(DB.ex.em||{})[nm];if(DB.ex.em)delete DB.ex.em[nm]}DB.ex[k].splice(+i,1);if(k==='exam'){if(DB.ex.jefe===+i)DB.ex.jefe=-1;else if(DB.ex.jefe>+i)DB.ex.jefe--}save();renderGestion();if(k==='alu')refreshPl();return}
   if(e.target.closest('[data-logout]')){cLogout();return}
   if(e.target.closest('[data-reset]')){doReset();return}
   if(e.target.closest('[data-claim]')){doClaim();return}
+  if(e.target.closest('[data-usrexadd]')){if(isMgr())addUsrEx();return}
+  {const ub=e.target.closest('[data-usrexdel]');if(ub){if(!isMgr())return;if(ub.dataset.armed!=='1'){ub.dataset.armed='1';ub.textContent='¿Seguro? Tocá de nuevo';clearTimeout(ub._t);ub._t=setTimeout(()=>{ub.dataset.armed='';ub.textContent='Quitar'},5000);return}delUsrEx(ub.dataset.usrexdel);return}}
+  {const rb=e.target.closest('[data-exreg]');if(rb){if(isMgr()&&!dirLocked())addRegEx(rb.dataset.exreg);return}}
   if(e.target.closest('[data-admadd]')){if(DB.adm)addAdmin();return}
   if(e.target.closest('[data-diradd]')){if(DB.adm)addDir();return}
   if(e.target.closest('[data-xedit]')){if(!isMgr()||!dirLocked()||!DB.xid)return;if(propOf()){xMsg='Ya hay una solicitud pendiente.';renderGestion();return}DB.liveEx=DB.ex;DB.ex=JSON.parse(JSON.stringify(DB.ex));xMsg='';showView('crear');return}
@@ -1146,6 +1161,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-ofunsign]')){if(DB.me&&!DB.adm&&!DB.ex.fin&&!REG&&!jefeFirmo()){delete DB.of.fir[DB.me];save();renderOficial()}return}
   if(e.target.closest('[data-create]')){doCreate();return}
   const vt=e.target.closest('[data-view]');if(vt){if(REG)regExit();showView(vt.dataset.view);return}
+  {const nb=e.target.closest('[data-ncom]');if(nb){const id=nb.dataset.ncom;if(ncOpen.has(id))ncOpen.delete(id);else ncOpen.add(id);renderNotas();return}}
   const op=e.target.closest('[data-open]');if(op){switchTo(op.dataset.open);return}
   {const fb=e.target.closest('[data-fpm]');if(fb){const [bb,v]=fb.dataset.fpm.split('.');st.c=st.c||{};const fs=fb.dataset.fps,key=fs+'~m'+bb;if(st.c[key]===v)delete st.c[key];else st.c[key]=v;save();sec(SECS.findIndex(x=>x[0]===fs));return}}
   const sr=e.target.closest('[data-secrst]');
@@ -1201,10 +1217,21 @@ document.addEventListener('input',e=>{
   else return;
   save();
 });
+document.addEventListener('toggle',e=>{const k=e.target&&e.target.dataset&&e.target.dataset.dtg;if(k)dOpen[k]=e.target.open},true);
+document.addEventListener('input',e=>{
+  if(e.target.dataset&&e.target.dataset.xsrch!==undefined){
+    const w=e.target.closest('.gx,#exreg,#exlist')||document,q=nz(e.target.value.trim());let n=0,tot=0;
+    w.querySelectorAll('tr[data-xr]').forEach(r=>{tot++;const tx=[...r.cells].map(c=>{const s=c.querySelector('select');return s?s.options[s.selectedIndex].text:c.innerText}).join(' ');const ok=!q||nz(tx).includes(q);r.hidden=!ok;if(ok)n++});
+    const c=w.querySelector('[data-xcnt]');if(c){c.hidden=!q;c.textContent=n?`${n} de ${tot} examinadores.`:'Ningún examinador coincide con la búsqueda.'}
+  }
+});
 document.addEventListener('change',e=>{
   const d=e.target.dataset;
+  if(d.uxniv!==undefined){if(!isMgr())return;const k=d.uxniv,v=Number(e.target.value)||0;const prev=nivOf((INV||{})[k]);
+    (async()=>{try{if(!LOCAL){if(v)await cDb('PUT','invites/'+k+'/niv',v);else await cDb('DELETE','invites/'+k+'/niv')}if(INV&&INV[k]){if(v)INV[k].niv=v;else delete INV[k].niv}usrMsg=''}catch(er){e.target.value=prev||'';usrMsg=er&&er.denied?'Sin permiso para guardar la validación. Revisá las reglas de Firebase.':'Sin conexión: no se guardó la validación.';renderGestion()}})();return}
   if(d.pdfup!==undefined){const f=e.target.files;pdfLoad(Number(d.pdfup),f);e.target.value='';return}
   if(d.exk!==undefined){exKind=e.target.value==='prueba'?'prueba':'nuevo';exMsg='';renderGestion();return}
+  if(d.uxl!==undefined){const f=e.target.files&&e.target.files[0];e.target.value='';importUsrEx(f);return}
   if(d.xl!==undefined){if(!canAlu()){e.target.value='';return}const f=e.target.files&&e.target.files[0];e.target.value='';importAlu(f);return}
   if(d.of!==undefined&&e.target.value!==''){if(!canEditOf())return;const v=Math.min(100,Math.max(0,Math.round(parseFloat(e.target.value)/5)*5));e.target.value=v;DB.of.man[d.of]=String(v);save();updOficial();return}
   if(d.n&&e.target.type==='number'&&e.target.value!==''){
@@ -1214,6 +1241,30 @@ document.addEventListener('change',e=>{
   }
 });
 document.getElementById('print').onclick=()=>window.print();
+const isExr=()=>!!DB.me&&!DB.adm&&!DB.dir;
+function notasCompletas(){
+  if(!isExr()||!DB.xid||!hasEx()||noAccess()||PV)return false;
+  const rows=DB.list.filter(x=>vis(x)&&x.st.h.alumno);if(!rows.length)return false;
+  const B=OFB();return B.length>0&&rows.every(x=>B.every(([sc])=>best(x.st,sc)!==null));
+}
+function avisoImprimir(show){
+  let d=document.getElementById('printaviso');
+  if(!show){if(d)d.remove();return}
+  if(d)return;
+  d=document.createElement('div');d.id='printaviso';d.setAttribute('role','status');d.setAttribute('aria-live','polite');
+  d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;max-width:min(520px,calc(100vw - 32px));background:var(--card);border:2px solid var(--ok,#2e9b5f);border-radius:12px;padding:12px 14px;box-shadow:0 6px 24px rgba(0,0,0,.2);display:flex;gap:12px;align-items:center';
+  d.innerHTML='<span><b>✔ Tus notas finales están completas.</b> Ya podés imprimir la planilla con el botón «Imprimir / PDF», arriba a la derecha.</span><button class="btn sec" type="button" data-printok>Entendido</button>';
+  document.body.appendChild(d);
+}
+function updPrint(){
+  const b=document.getElementById('print');if(!b)return;
+  if(!isExr()){b.hidden=false;avisoImprimir(false);return}
+  const ok=notasCompletas(),k='pn_'+DB.xid+'|'+DB.me;b.hidden=!ok;
+  let seen=false;try{seen=localStorage.getItem(k)==='1'}catch(e){}
+  if(ok&&!seen){avisoImprimir(true)}
+  else if(!ok){avisoImprimir(false);try{localStorage.removeItem(k)}catch(e){}}
+}
+document.addEventListener('pointerup',e=>{if(e.target.closest('[data-printok]')){const d=document.getElementById('printaviso');if(d)d.remove();try{localStorage.setItem('pn_'+DB.xid+'|'+DB.me,'1')}catch(er){}}});
 function best(x,sc){
   const a=[0,1].map(b=>(x.k||{})[`${sc}.${b}`]);
   if(a.some(v=>v===undefined))return null;
@@ -1226,14 +1277,28 @@ function bar(){
   const L=DB.list.filter(x=>vis(x)&&(!isAdmV()||!x.st.h.prof)).slice().sort((a,b)=>dn(a)-dn(b)||String(a.st.h.alumno||'').localeCompare(String(b.st.h.alumno||''),'es'));
   el.innerHTML=L.map(x=>{const h=x.st.h;return `<option value="${x.id}"${x.id===DB.cur?' selected':''}>${esc((h.dorsal?'Dorsal '+h.dorsal:'Sin dorsal')+' · '+(h.alumno||'Sin alumno')+(Object.values(x.st.k||{}).some(Boolean)?' ✔':''))}</option>`}).join('');
 }
+const ncOpen=new Set();
+function comHtml(x){
+  const old=st;let out='';
+  try{
+    st=x.st;
+    out=OFB().map(([sc,nm])=>{
+      const best_=best(x.st,sc),auto=autoHtml(sc),has=!/class="empty"/.test(auto),extra=((x.st.c&&x.st.c[sc])||'').trim(),tr=((x.st.c&&x.st.c[sc+'~t'])||'').trim();
+      const body=(has?auto:'')+(extra?`<p><b class="bh">Comentarios adicionales:</b> ${esc(extra)}</p>`:'')+(tr?`<p><b class="bh">Transcripción:</b> ${esc(tr).replace(/\n/g,'<br>')}</p>`:'');
+      return `<div class="ncm"><h4>${esc(nm)}${best_===null?'':` · nota ${esc(best_)}`}</h4>${body||'<p class="dvs">Sin comentarios registrados.</p>'}</div>`}).join('');
+  }finally{st=old}
+  return out||'<p class="dvs">No hay maniobras para mostrar.</p>';
+}
 function renderNotas(){
   const el=document.getElementById('v-notas');
   const th=OFB().map(([,t])=>`<th>${t}</th>`).join(''),thm=OFG().map(([n,c])=>`<th colspan="${c}">${n}</th>`).join('');
+  const nc=4+OFB().length+1;
   const rows=DB.list.filter(vis).map(x=>{
     const cells=OFB().map(([sc])=>{const v=best(x.st,sc);return v===null?'<td class="pend">—</td>':`<td class="${v==='NIM'?'nim':''}"><b>${v}</b></td>`}).join('');
-    return `<tr><td class="l"><button class="lnk" data-open="${x.id}">${esc(x.st.h.alumno||'Sin nombre')}</button></td><td>${esc(x.st.h.dorsal||'')}</td><td>${esc(x.st.h.deleg||'')}</td><td>${esc(x.st.h.fecha||'')}</td>${cells}</tr>`;
+    const op=ncOpen.has(x.id);
+    return `<tr><td class="l"><button class="lnk" data-open="${x.id}">${esc(x.st.h.alumno||'Sin nombre')}</button></td><td>${esc(x.st.h.dorsal||'')}</td><td>${esc(x.st.h.deleg||'')}</td><td>${esc(x.st.h.fecha||'')}</td>${cells}<td><button class="btn sec" data-ncom="${x.id}" aria-expanded="${op}">${op?'Ocultar comentarios':'Ver comentarios'}</button></td></tr>${op?`<tr class="ncom"><td colspan="${nc}" class="l">${comHtml(x)}</td></tr>`:''}`;
   }).join('');
-  el.innerHTML=`<h2 class="nt">Notas finales por alumno</h2><p class="dvs">Cada celda muestra la nota más alta de las dos bajadas, una vez confirmadas ambas. “—” significa pendiente.</p>${pendTxt()}<div class="tw"><table><thead><tr><th rowspan="2">Alumno</th><th rowspan="2">Dorsal</th><th rowspan="2">Delegación</th><th rowspan="2">Fecha</th>${thm}</tr><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div>`;
+  el.innerHTML=`<h2 class="nt">Notas finales por alumno</h2>${isExr()?(notasCompletas()?'<p class="dvm" role="status"><b>✔ Notas finales completas.</b> Ya podés imprimir con el botón «Imprimir / PDF».</p>':'<p class="dvs">El botón «Imprimir / PDF» aparece cuando están completas las notas finales de todos tus cursantes.</p>'):''}<p class="dvs">Cada celda muestra la nota más alta de las dos bajadas, una vez confirmadas ambas. “—” significa pendiente. Con «Ver comentarios» se despliegan los comentarios de cada maniobra de ese cursante.</p>${pendTxt()}<div class="tw"><table><thead><tr><th rowspan="2">Alumno</th><th rowspan="2">Dorsal</th><th rowspan="2">Delegación</th><th rowspan="2">Fecha</th>${thm}<th rowspan="2">Comentarios</th></tr><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 let xlMsg='';
 function parseCSV(t){
@@ -1293,13 +1358,15 @@ function enCursoHtml(){
   if(DB.me&&!DB.adm&&!DB.dir){
     const mi=ids.filter(id=>DB.exams[id].ex.exam.includes(DB.me));
     return `<div class="gx"><h3>Mi examen en curso</h3>${mi.length?mi.map(card).join(''):'<p class="dvs" style="margin:2px 0 0">No tenés un examen en curso asignado.</p>'}</div>`}
+  const tl=id=>{const e=DB.exams[id].ex,ti=tipoById(e.tipo);return (ti?ti[1]:'Examen')+(e.fecha?' · '+e.fecha.split('-').reverse().slice(0,2).join('/'):'')};
+  const dTabs=l=>`<div class="gtabs${l.includes(DB.xid)?' hs':''}" role="tablist" aria-label="Exámenes en curso">${l.map(id=>`<button class="gtab${id===DB.xid?' on':''}" role="tab" aria-selected="${id===DB.xid}" title="${esc(exLabel(DB.exams[id].ex))}"${id===DB.xid?'':` data-xsel="${id}"`}>${esc(tl(id))}</button>`).join('')}</div>`+(l.includes(DB.xid)?(GXSH||''):'<p class="dvs" style="margin:2px 0 0">Elegí un examen para ver sus opciones.</p>');
   const gr={};ids.forEach(id=>{const d=(DB.exams[id].ex.lugar||'').trim()||'Sin delegación';(gr[d]=gr[d]||[]).push(id)});
   const ds=DELEGS.slice();Object.keys(gr).forEach(d=>{if(d!=='Sin delegación'&&!ds.includes(d))ds.push(d)});ds.sort((x,y)=>((gr[y]||[]).length-(gr[x]||[]).length)||x.localeCompare(y,'es'));if(gr['Sin delegación'])ds.push('Sin delegación');
-  return `<h3 class="gh">Exámenes en curso por delegación</h3><div class="dgrid">${ds.map(d=>{const l=(gr[d]||[]).sort((x,y)=>lvl(x)-lvl(y));return `<div class="gx"><h3>${esc(d)} (${l.length})</h3>${l.length?l.map(card).join(''):'<p class="dvs" style="margin:2px 0 0">Sin exámenes en curso.</p>'}</div>`}).join('')}</div>`}
+  return `<h3 class="gh">Exámenes en curso por delegación</h3><div class="dgrid">${ds.map(d=>{const l=(gr[d]||[]).sort((x,y)=>lvl(x)-lvl(y));return `<div class="gx"><h3>${esc(d)} (${l.length})</h3>${l.length?dTabs(l):'<p class="dvs" style="margin:2px 0 0">Sin exámenes en curso.</p>'}</div>`}).join('')}</div>`}
 let xMsg='',nivOpen=false;
 function restorePv(){if(!PV)return;st=PV.savedSt;tab=PV.savedTab;PV=null}
 function openPv(k,tid){
-  if(!isMgr()||!HAS[k]||!tipoById(tid))return;
+  if((!isMgr()&&!DB.me)||!HAS[k]||!tipoById(tid))return;
   if(PV)restorePv();
   PV={k,tipo:tid,savedSt:st,savedTab:tab};
   st=newSt();st.h.alumno='Vista previa';tab={};
@@ -1307,7 +1374,7 @@ function openPv(k,tid){
 }
 function pvBanner(){
   const m=document.getElementById('main'),d=document.createElement('div');d.className='gx';d.setAttribute('role','status');
-  d.innerHTML=`<p class="dvm"><b>Vista previa · ${esc(MAN[PV.k]||PV.k)} · ${esc((tipoById(PV.tipo)||[])[1]||'')}.</b> Podés probar la planilla; no se guarda nada en el examen.</p><button class="btn sec" data-pvend>Volver a Gestión de Exámenes</button>`;
+  d.innerHTML=`<p class="dvm"><b>Vista previa · ${esc(MAN[PV.k]||PV.k)} · ${esc((tipoById(PV.tipo)||[])[1]||'')}.</b> Podés probar la planilla; no se guarda nada en el examen.</p><button class="btn sec" data-pvend>Volver</button>`;
   m.insertBefore(d,m.firstChild);
 }
 let PDFS=(()=>{try{return JSON.parse(localStorage.getItem('planillas_pdf_v1')||'{}')||{}}catch(e){return {}}})(),pdfMsg='',pdfArm='';
@@ -1315,17 +1382,15 @@ const savePdfs=()=>{try{localStorage.setItem('planillas_pdf_v1',JSON.stringify(P
 const pdfKB=b=>b>1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';
 const CST={n1cu:'a',n1el:'a',n3cu:'a',n3el:'a'},CSL={a:'Comentarios actualizados',p:'Comentarios parciales',s:'Sin cambios'};
 function nivBlock(){
-  if(!nivOpen)return `<div class="gx"><h3>Planillas por nivel (Previsualización y prueba de criterios)</h3><p class="dvs">Abrí las planillas de cada nivel como vista previa.</p><button class="btn" data-nivtoggle>Planillas por nivel</button></div>`;
   const lv=n=>{
     const gr=TIPOS.map(([gn,ls])=>{
       const ts=ls.filter(x=>Number(x[0].slice(1))===n);if(!ts.length)return '';
-      const mods=MODS.map(([mn,ks])=>{
-        const bt=[];ts.forEach(x=>ks.filter(k=>x[2].includes(k)).forEach(k=>{const lb=MAN[k]||k,sx=CST[k]||'s';bt.push(HAS[k]?`<span class="cst"><button class="btn sec" data-pv="${k}" data-pt="${x[0]}">${esc(lb)}</button><small class="cs ${sx}">${CSL[sx]}</small></span>`:`<button class="btn sec" disabled>${esc(lb)} (pendiente)</button>`)}));
-        return bt.length?[mn,bt.join(' ')]:null}).filter(Boolean);
-      const mh=mods.length===1?`<div class="dvm">${mods[0][1]}</div>`:mods.map(([mn,h])=>`<div class="dvm">${esc(mn)}<br>${h}</div>`).join('');
-      return mods.length?`<div style="margin-top:6px"><b>${esc(gn)}</b>${mh}</div>`:''}).join('');
-    return `<div style="margin-top:10px"><b>Nivel ${n}</b>${gr}</div>`};
-  return `<div class="gx"><h3>Planillas por nivel (Previsualización y prueba de criterios)</h3>${[1,2,3,4].map(lv).join('')}<p class="dvs"><small class="cs a">Comentarios actualizados</small> todos los criterios revisados. <small class="cs p">Comentarios parciales</small> solo algunos criterios. <small class="cs s">Sin cambios</small> redacción anterior (salvo ADE e IZQ+DER, que se actualizaron en todas).</p><p class="dvs">Las planillas se abren como vista previa (no se guarda nada).</p><button class="btn sec" data-nivtoggle>Cerrar</button></div>`;
+      const bt=[];
+      const addK=(x,k)=>{const lb=MAN[k]||k,sx=CST[k]||'s';bt.push(HAS[k]?`<button class="gtab" role="tab" data-pv="${k}" data-pt="${x[0]}" title="${esc(x[1])}"><span class="nvl">${esc(lb.replace(/ · Nivel \d$/,''))}</span><small class="nvt">${esc(x[1])}</small><small class="cs ${sx}">${CSL[sx]}</small></button>`:`<button class="gtab" disabled><span class="nvl">${esc(lb.replace(/ · Nivel \d$/,''))}</span><small class="nvt">${esc(x[1])}</small><small class="cs s">Pendiente</small></button>`)};
+      if(gn==='Examen técnico')MODS.forEach(([mn,ids])=>{const ks=[];ts.forEach(x=>x[2].filter(k=>ids.includes(k)).forEach(k=>ks.push([x,k])));if(ks.length){bt.push(`<div class="nvm">${esc(mn)}</div>`);ks.forEach(([x,k])=>addK(x,k))}});else ts.forEach(x=>x[2].forEach(k=>addK(x,k)));
+      const dk='nv'+n+gn.slice(0,3);return bt.length?`<details class="xdet nvd" data-dtg="${dk}"${dOpen[dk]?' open':''}><summary>${esc(gn)}</summary><div class="gtabs nvg" role="tablist" aria-label="${esc(gn)}">${bt.join('')}</div></details>`:''}).join('');
+    return `<div class="gx"><h3>Nivel ${n}</h3>${gr||'<p class="dvs" style="margin:2px 0 0">Sin planillas.</p>'}</div>`};
+  return `<h3 class="gh">Planillas por nivel</h3><p class="dvs">Previsualización y prueba de criterios. Las planillas se abren como vista previa y no se guarda nada.</p><div class="dgrid">${[1,2,3,4].map(lv).join('')}</div><p class="dvs"><small class="cs a">Comentarios actualizados</small> <small class="cs p">Comentarios parciales</small> <small class="cs s">Sin cambios</small></p>`;
 }
 function pdfLoad(n,files){
   const fl=[...(files||[])];if(!fl.length||!isMgr())return;
@@ -1340,9 +1405,13 @@ function pdfLoad(n,files){
     r.onerror=()=>{bad.push(f.name);done()};r.readAsDataURL(f);
   });
 }
+let GXSH='';
+function tutBlock(){
+  const bt=(u,n)=>u?`<a class="btn" href="${esc(u)}" target="_blank" rel="noopener">${n}</a>`:`<button class="btn" disabled title="El enlace todavía no está cargado">${n}</button>`;
+  return `<div class="gx"><h3>Tutoriales</h3><div class="tutb">${bt(TUT_GENERAL,'Tutorial de uso general')}${bt(TUT_MANIOBRAS,'Tutorial de maniobras')}${isMgr()?bt(TUT_DIRECCION,'Tutorial de Dirección'):''}</div>${TUT_GENERAL&&TUT_MANIOBRAS&&(TUT_DIRECCION||!isMgr())?'':'<p class="dvs">Los botones deshabilitados se activan cuando se cargue su enlace.</p>'}</div>`}
+
 function exListHtml(){
-  const ids=Object.keys(DB.exams);
-  return `<div class="gx"><h3>Exámenes (${ids.length})</h3>${ids.length?`<ul class="gl">${ids.map(id=>{const e=DB.exams[id].ex,cur=id===DB.xid;return `<li${cur?' style="font-weight:700"':''}>${esc(exLabel(e))} · <span class="dvs">${exEstado(e)} · ${e.exam.length} examinadores · ${e.alu.length} alumnos</span> ${cur?'<span class="dvs">(abierto)</span>':`<button class="lnk" data-xsel="${id}">Abrir</button>`}</li>`}).join('')}</ul>`:'<p class="dvs">Todavía no hay exámenes. Creá el primero.</p>'}<button class="btn" data-xnew>Nuevo examen</button>${xMsg?`<p class="dvm" role="status">${esc(xMsg)}</p>`:''}<p class="dvs">Un examinador o un alumno no puede estar en dos exámenes sin finalizar a la vez.</p></div>`}
+  return `<div class="gx"><h3>Gestión de exámenes</h3><p class="dvm">Desde acá se crean nuevos exámenes. Para modificar, finalizar o eliminar un examen en curso, elegilo en <b>Inicio</b>, dentro de su delegación.</p><button class="btn" data-xnew>Nuevo examen</button>${xMsg?`<p class="dvm" role="status">${esc(xMsg)}</p>`:''}<p class="dvs">Un examinador o un alumno no puede estar en dos exámenes sin finalizar a la vez.</p></div>`}
 async function openEx(id){
   if(CL.uid&&DB.xid){clearTimeout(cKT);let n=0;while(cBusy&&n++<50)await new Promise(r=>setTimeout(r,100));if(!cBusy){cBusy=true;try{await cPush()}catch(e){}cBusy=false}}
   if(DI&&DI.active&&DI.active())DI.stop();stopRec();
@@ -1371,26 +1440,98 @@ function regExit(){
   const c=DB.exams[r.id];if(c){c.of=r.cs.of;c.conf=r.cs.conf}
   DB.xid=r.sv.xid;DB.ex=r.sv.ex;DB.of=r.sv.of;DB.conf=r.sv.conf;DB.list=r.sv.list;DB.cur=r.sv.cur;st=r.sv.st;tab=r.sv.tab;
 }
+let INV=null,invLoad=false,usrMsg='';
+const NIVS=[1,2,3,4,5];
+const nivOf=v=>{const n=Number(v&&v.niv);return n>=1&&n<=5?n:0};
+const nivSel=(k,v)=>isMgr()?`<select data-uxniv="${esc(k)}" aria-label="Validación"><option value="">—</option>${NIVS.map(n=>`<option value="${n}"${nivOf(v)===n?' selected':''}>Nivel ${n}</option>`).join('')}</select>`:(nivOf(v)?'Nivel '+nivOf(v):'<span class="dvs">Sin validar</span>');
+const dOpen={usr:false,reg:true};
+const xlsDet=(k,n,body)=>`<details class="xdet" data-dtg="${k}"${dOpen[k]?' open':''}><summary>Ver lista de examinadores (${n})</summary>${body}</details>`;
+const xlsTab=(rows,hdr)=>`<div class="id" style="margin:6px 0"><label style="max-width:340px">Buscar examinador<input type="search" data-xsrch placeholder="Nombre o correo" autocomplete="off"></label></div><p class="dvs" data-xcnt hidden></p><div class="xlsw"><table class="xls"><thead><tr><th class="rn"></th><th>A</th><th>B</th><th>C</th><th>D</th></tr><tr class="xh"><th class="rn">1</th>${hdr.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map((r,i)=>`<tr data-xr><td class="rn">${i+2}</td>${r.map((c,j)=>`<td${j===3?' class="ac"':j===1?' class="vl"':''}>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const exListUsr=()=>{const l=Object.entries(INV||{}).filter(([k,v])=>v&&v.role==='prof').map(([k,v])=>({k,n:v.name||'',e:k.replace(/,/g,'.')})).sort((a,b)=>a.n.localeCompare(b.n,'es'));return l.length?xlsDet('usr',l.length,xlsTab(l.map(x=>[esc(x.n),nivSel(x.k,INV[x.k]),esc(x.e),`<button class="lnk" data-usrexdel="${esc(x.k)}">Quitar</button>`]),['Nombre','Validación','Correo',''])):'<p class="dvs">Todavía no hay examinadores registrados.</p>'};
+async function loadInv(){if(LOCAL||invLoad)return;invLoad=true;try{INV=(await cDb('GET','invites'))||{}}catch(e){INV=INV||{}}invLoad=false;const b=document.getElementById('exlist');if(b)b.innerHTML=exListUsr();const r=document.getElementById('exreg');if(r)r.innerHTML=regExList()}
+function usrExBlock(){if(INV===null){if(LOCAL)INV={};else loadInv()}return `<div class="gx"><h3>Examinadores</h3><p class="dvs">Agregá examinadores con su nombre y correo. Deben crear su acceso con ese correo (Primer ingreso). Después se los asigna a un examen desde Crear examen. <b>Validación</b> es el nivel de examen hasta el que Dirección validó a cada examinador (del 1 al 5); se completa desde la lista. Al quitar a alguien, ya no puede crear su acceso; si ya lo había creado, el acceso no se elimina desde acá.</p><div class="bar"><label>Nombre<input id="uen"></label><label>Correo<input id="uee" type="email" autocapitalize="none"></label><label>Validación<select id="uev"><option value="">Sin validar</option>${NIVS.map(n=>`<option value="${n}">Nivel ${n}</option>`).join('')}</select></label><button class="btn" data-usrexadd>Agregar examinador</button></div><div class="bar"><label>O cargá una lista (Excel o CSV)<input type="file" data-uxl accept=".xlsx,.xls,.csv,.txt"></label></div><p class="dvs">Columnas: Nombre, Correo y, si querés, Validación (nivel del 1 al 5), con o sin fila de títulos (también sirven Apellido y Nombre por separado). Los repetidos se omiten.</p>${usrMsg?`<p class="dvm" role="status">${esc(usrMsg)}</p>`:''}<div id="exlist">${exListUsr()}</div></div>`}
+async function delUsrEx(k){
+  const v=(INV||{})[k];if(!v)return;
+  const ex=Object.values(DB.exams).find(c=>!c.ex.fin&&c.ex.exam.some(n=>nz(n)===nz(v.name||'')));
+  if(ex){usrMsg=`No se puede quitar a ${v.name}: participa en un examen sin finalizar (${exLabel(ex.ex)}). Sacalo del examen primero.`;renderGestion();return}
+  try{if(!LOCAL)await cDb('DELETE','invites/'+k);delete INV[k];usrMsg=`Se quitó a ${v.name} de la lista de examinadores.`}
+  catch(e){usrMsg=e&&e.denied?'Sin permiso para quitar. Revisá las reglas de Firebase.':'Sin conexión: no se pudo quitar. Reintentá con internet.'}
+  renderGestion();
+}
+async function addUsrEx(){
+  const n=gv('uen').trim(),em=gv('uee').trim();
+  if(!n||!/^\S+@\S+\.\S+$/.test(em)){usrMsg='Escribí el nombre y un correo válido.';renderGestion();return}
+  if(Object.entries(INV||{}).some(([k,v])=>v&&(k===ek(em)||nz(v.name||'')===nz(n)))){usrMsg=`«${n}» o ese correo ya está registrado.`;renderGestion();return}
+  const nv=Number(gv('uev'))||0;try{await cInvite(n,em,'prof',nv);INV=INV||{};INV[ek(em)]={name:n,role:'prof',k:fk(n),niv:nv||undefined};usrMsg=`Se agregó a ${n}. Debe crear su acceso con el correo ${em}.`}
+  catch(e){usrMsg=e&&e.denied?'Sin permiso para agregar. Revisá las reglas de Firebase.':'Sin conexión: no se pudo agregar. Reintentá con internet.'}
+  renderGestion();
+}
+
+function rowsToEx(rows){
+  rows=rows.map(r=>r.map(c=>String(c==null?'':c).trim())).filter(r=>r.some(Boolean));
+  if(!rows.length)return[];
+  const h=rows[0].map(nz),hdr=h.some(x=>/nombre|apellido|examinador|correo|mail/.test(x)&&!/@/.test(x));
+  let iN=0,iE=1,iAp=-1,iNo=-1,iV=-1;
+  if(hdr){
+    iAp=h.findIndex(x=>/^apellidos?$/.test(x));iNo=h.findIndex(x=>/^nombres?$/.test(x));
+    const full=h.findIndex(x=>/examinador|apellido y nombre|nombre y apellido|nombre completo/.test(x));
+    iE=h.findIndex(x=>/correo|mail/.test(x));iV=h.findIndex(x=>/validaci|nivel/.test(x));
+    iN=full>=0?full:((iAp>=0||iNo>=0)?-1:0);
+    if(iE<0)iE=1;
+    rows=rows.slice(1);
+  }
+  return rows.map(r=>{let e=(r[iE]||'').trim();let n=(iN>=0?r[iN]||'':[r[iAp],r[iNo]].filter(Boolean).join(' ')).trim();
+    if(!/^\S+@\S+\.\S+$/.test(e)){const c=r.find(x=>/^\S+@\S+\.\S+$/.test(x));if(c){e=c;if(n===c)n=r.find(x=>x&&x!==c)||''}}
+    const nm=String(iV>=0?r[iV]||'':'').match(/[1-5]/);return{n:n.slice(0,80),e:e.toLowerCase(),v:nm?Number(nm[0]):0}}).filter(x=>x.n||x.e);
+}
+async function importUsrEx(f){
+  if(!f||!isMgr())return;
+  try{
+    const list=rowsToEx(await readRows(f));
+    if(!list.length){usrMsg='No encontré examinadores en el archivo. Revisá que tenga las columnas Nombre y Correo.';renderGestion();return}
+    INV=INV||{};let ok=0,dup=0,bad=0,den=0;
+    for(const x of list){
+      if(!x.n||!/^\S+@\S+\.\S+$/.test(x.e)){bad++;continue}
+      if(Object.entries(INV).some(([k,v])=>v&&(k===ek(x.e)||nz(v.name||'')===nz(x.n)))){dup++;continue}
+      try{await cInvite(x.n,x.e,'prof',x.v);INV[ek(x.e)]={name:x.n,role:'prof',k:fk(x.n),niv:x.v||undefined};ok++}
+      catch(er){if(er&&er.denied){den++;break}else throw er}
+    }
+    usrMsg=den?'Sin permiso para agregar. Revisá las reglas de Firebase.':`Se cargaron ${ok} examinadores${dup?` (${dup} repetidos omitidos)`:''}${bad?` (${bad} filas sin nombre o con correo inválido omitidas)`:''}. Cada uno debe crear su acceso con su correo.`;
+  }catch(e){usrMsg='No pude leer el archivo. Probá con un .xlsx o .csv, o revisá tu conexión (el Excel necesita internet para leerse).'}
+  renderGestion();
+}
+const examLvl=()=>{const tp=tipoOf();const n=tp?Number(String(tp[0]).replace(/\D/g,'')):0;return n>=1&&n<=5?n:0};
+function regExList(){
+  const x=DB.ex;
+  const l=Object.entries(INV||{}).filter(([k,v])=>v&&v.role==='prof'&&v.name&&!x.exam.some(n=>nz(n)===nz(v.name))).map(([k,v])=>({k,n:v.name,e:k.replace(/,/g,'.')})).sort((a,b)=>a.n.localeCompare(b.n,'es'));
+  if(!l.length)return `<p class="dvs">${Object.keys(INV||{}).length?'Todos los examinadores registrados ya están en este examen.':'Todavía no hay examinadores registrados. Agregalos en la pestaña Usuarios.'}</p>`;
+  return xlsDet('reg',l.length,xlsTab(l.map(o=>{const bx=busyExam(o.n);const nv=nivOf((INV||{})[o.k]),L=examLvl();const lb=nv?`Nivel ${nv}`+(L&&nv<L?` <span class="dvs" style="color:var(--no)">(menor al nivel ${L} del examen)</span>`:''):`<span class="dvs" style="color:var(--no)">Sin validar</span>`;return [esc(o.n),lb,esc(o.e),bx?'<span class="dvs">En otro examen</span>':`<button class="btn sec" data-exreg="${esc(o.k)}">Agregar al examen</button>`]}),['Nombre','Validación','Correo','']));}
+function addRegEx(k){
+  const v=(INV||{})[k];if(!v||!v.name)return;const n=v.name,em=k.replace(/,/g,'.');
+  if(DB.ex.exam.some(x=>nz(x)===nz(n))){exMsg=`«${n}» ya está en la lista.`;renderGestion();return}
+  const bx=busyExam(n);if(bx){exMsg=`«${n}» ya participa en otro examen sin finalizar (${exLabel(bx)}).`;renderGestion();return}
+  DB.ex.exam.push(n);DB.ex.em=DB.ex.em||{};DB.ex.em[n]=em;const nv=nivOf(v),L=examLvl();exMsg=`Se agregó a ${n}.`+(!nv?' Atención: no tiene un nivel de validación cargado.':(L&&nv<L?` Atención: está validado hasta el nivel ${nv} y el examen es de nivel ${L}.`:''));save();renderGestion();
+}
 let gTab='inicio';
 function renderGestion(){
   actMan();updTabs();
   const x=DB.ex,el=document.getElementById('v-gestion');
   const t=tipoOf(),fl=x.fecha?x.fecha.split('-').reverse().join('/'):'sin definir';
-  const GXS=(!DB.xid?'':`<div class="gx"><h3>Gestión de Examen · ${esc(exEstado(x))}</h3><p class="dvm"><b>${t[1]}${modName()?' · módulo '+modName():''}</b> · Fecha: ${esc(fl)} · Delegación: ${esc(x.lugar||'sin definir')}<br>Examinadores: ${x.exam.length}${x.jefe>=0&&x.exam[x.jefe]?' (jefe de mesa: '+esc(x.exam[x.jefe])+')':''} · Alumnos inscriptos: ${x.alu.length}</p>${x.fin?'<p class="dvs">Este examen está finalizado: los examinadores ya no tienen acceso. Reabrilo para modificarlo.</p>':(dirLocked()?`<button class="btn" data-xedit${propOf()?' disabled':''}>Modificar examen</button> `:`<button class="btn" data-view="crear">${x.creado?'Modificar examen':'Crear Examen'}</button> `)}<button class="btn sec" data-view="oficial">Planilla oficial</button> ${x.creado&&!x.fin?`<button class="btn sec" data-xfin${dirLocked()&&propOf()?' disabled':''}>${dirLocked()?'Solicitar finalización':'Finalizar examen'}</button> `:''}${x.fin?(jefeFirmo()?'<p class="dvs"><b>Examen cerrado definitivamente</b> por la firma del jefe de mesa. No se puede modificar ni reabrir.</p>':'<button class="btn" data-xreopen>Reabrir examen</button> '):''}<button class="btn sec" data-exdelask${dirLocked()&&propOf()?' disabled':''}>${dirLocked()?'Solicitar eliminación':'Eliminar examen'}</button>${dirLocked()?'<p class="dvs">Este examen está en curso: todo cambio necesita la confirmación del jefe de mesa.</p>':''}${delAsk?`<div class="gx" style="margin-top:10px" role="alert"><p class="dvm"><b>¿Eliminar el examen ${esc(exLabel(x))}?</b> Se borran los examinadores, los alumnos inscriptos, las notas de la planilla oficial y las firmas. Los accesos de los examinadores a las planillas también se eliminan (las planillas ya cargadas se conservan). No se puede deshacer.</p><button class="btn" data-exdelok>Sí, eliminar</button> <button class="btn sec" data-exdelno>Cancelar</button></div>`:''}</div>`),ME=DB.me?`${miEx()?`<div class="gx"><h3>Planilla oficial</h3><p class="dvm">${canEditOf()?'Eres el jefe de mesa: puedes modificarla y firmarla.':'Puedes verla y firmarla. Solo el jefe de mesa puede modificarla.'}</p><button class="btn" data-view="oficial">Abrir planilla oficial</button></div>`:''}${isJefe()?`<div class="gx"><h3>Alumnos inscriptos (${x.alu.length})</h3><p class="dvm">Como jefe de mesa podés agregar o quitar alumnos del examen.</p><button class="btn" data-view="alumnos">Gestionar alumnos inscriptos</button></div>`:''}`:'',A=accBlock(),C=locked()&&!DB.dir?'':enCursoHtml(),P=propBlock();
+  const GXS=(!DB.xid?'':`<div class="gx gxs"><h3>Gestión de Examen · ${esc(exEstado(x))}</h3><p class="dvm"><b>${t[1]}${modName()?' · módulo '+modName():''}</b> · Fecha: ${esc(fl)}<br>Examinadores: ${x.exam.length}${x.jefe>=0&&x.exam[x.jefe]?' (jefe de mesa: <b>'+esc(x.exam[x.jefe])+'</b>)':''}<br>Alumnos inscriptos: <b>${x.alu.length}</b></p>${x.fin?'<p class="dvs">Este examen está finalizado: los examinadores ya no tienen acceso. Reabrilo para modificarlo.</p>':(dirLocked()?`<button class="btn" data-xedit${propOf()?' disabled':''}>Modificar examen</button> `:`<button class="btn" data-view="crear">${x.creado?'Modificar examen':'Crear Examen'}</button> `)}<button class="btn sec" data-view="oficial">Planilla oficial</button> ${x.creado&&!x.fin?`<button class="btn sec" data-xfin${dirLocked()&&propOf()?' disabled':''}>${dirLocked()?'Solicitar finalización':'Finalizar examen'}</button> `:''}${x.fin?(jefeFirmo()?'<p class="dvs"><b>Examen cerrado definitivamente</b> por la firma del jefe de mesa. No se puede modificar ni reabrir.</p>':'<button class="btn" data-xreopen>Reabrir examen</button> '):''}<button class="btn sec" data-exdelask${dirLocked()&&propOf()?' disabled':''}>${dirLocked()?'Solicitar eliminación':'Eliminar examen'}</button>${dirLocked()?'<p class="dvs">Este examen está en curso: todo cambio necesita la confirmación del jefe de mesa.</p>':''}${delAsk?`<div class="gx" style="margin-top:10px" role="alert"><p class="dvm"><b>¿Eliminar el examen ${esc(exLabel(x))}?</b> Se borran los examinadores, los alumnos inscriptos, las notas de la planilla oficial y las firmas. Los accesos de los examinadores a las planillas también se eliminan (las planillas ya cargadas se conservan). No se puede deshacer.</p><button class="btn" data-exdelok>Sí, eliminar</button> <button class="btn sec" data-exdelno>Cancelar</button></div>`:''}</div>`),ME=DB.me?`${miEx()?`<div class="gx"><h3>Planilla oficial</h3><p class="dvm">${canEditOf()?'Eres el jefe de mesa: puedes modificarla y firmarla.':'Puedes verla y firmarla. Solo el jefe de mesa puede modificarla.'}</p><button class="btn" data-view="oficial">Abrir planilla oficial</button></div>`:''}${isJefe()?`<div class="gx"><h3>Alumnos inscriptos (${x.alu.length})</h3><p class="dvm">Como jefe de mesa podés agregar o quitar alumnos del examen.</p><button class="btn" data-view="alumnos">Gestionar alumnos inscriptos</button></div>`:''}`:'',A=accBlock(),C=locked()&&!DB.dir?'':(GXSH=(DB.adm||DB.dir)?GXS:'',enCursoHtml()),P=propBlock();
   let inner;
-  if(!isMgr())inner=A+C+P+ME+(DB.me?regHtml():'');
+  if(!isMgr())inner=(DB.me&&gTab==='reg')?A+regHtml():(DB.me&&gTab==='plan')?A+tutBlock()+nivBlock():A+C+P+ME;
   else{
-    const TB=[['inicio','Inicio',C+P],['exam','Exámenes',exListHtml()+GXS],['plan','Planillas por nivel',nivBlock()],['reg','Registro de planillas oficiales',regHtml()],['usu','Usuarios',(LOCAL?'':'<div class="gx" id="presbox">'+presHtml()+'</div>')+(DB.adm?adminsBlock():'')]];
+    const TB=[['inicio','Inicio',C+P],['exam','Gestión de exámenes',exListHtml()],['reg','Registro de planillas oficiales',regHtml()],['usu','Usuarios',(LOCAL?'':'<div class="gx" id="presbox">'+presHtml()+'</div>')+usrExBlock()+(DB.adm?adminsBlock():'')],['plan','Información',tutBlock()+nivBlock()]];
     if(!TB.some(b=>b[0]===gTab))gTab='inicio';
-    inner=A+`<div class="gtabs" role="tablist">${TB.map(b=>`<button class="gtab${b[0]===gTab?' on':''}" role="tab" aria-selected="${b[0]===gTab}" data-gtab="${b[0]}">${b[1]}</button>`).join('')}</div>`+TB.find(b=>b[0]===gTab)[2]+ME;
+    inner=A+TB.find(b=>b[0]===gTab)[2]+ME;
   }
-  el.innerHTML=`<h2 class="nt">${secName()}</h2>${inner}`;
+  el.innerHTML=`${isMgr()?'':`<h2 class="nt">${DB.me&&gTab==='plan'?'Información':secName()}</h2>`}${inner}`;
   renderCrear();renderAlumnos();
 }
 const canAlu=()=>(isMgr()&&editOk())||isJefe();
 function aluBlock(){const x=DB.ex;return `<div class="gx"><h3>Alumnos inscriptos (${x.alu.length})</h3><p class="dvs">Pertenecen a la delegación del examen: <b>${esc(x.lugar||'sin definir')}</b>.</p><div class="bar"><label>Lista de alumnos (Excel o CSV)<input type="file" data-xl accept=".xlsx,.xls,.csv,.txt"></label>${x.alu.length?'<button class="btn sec" data-exclear>Vaciar lista</button>':''}</div><div class="bar"><label>Agregar alumno manualmente<input id="exa" placeholder="Apellido y nombre"></label><label style="max-width:120px">Dorsal<input id="exd" inputmode="numeric"></label><button class="btn" data-exadd="alu">Agregar alumno</button></div><p class="dvs">Columnas: Alumno y Dorsal, con o sin fila de títulos (también sirven Apellido y Nombre por separado). La delegación se toma del examen. Los alumnos repetidos se omiten.</p>${xlMsg?`<p class="dvm" role="status">${esc(xlMsg)}</p>`:''}
   ${x.alu.length?`<div class="tw"><table><thead><tr><th>Alumno</th><th>Dorsal</th><th></th></tr></thead><tbody>${x.alu.map((a,i)=>`<tr><td class="l">${esc(a.n)}</td><td>${esc(a.d)}</td><td><button class="lnk" data-exdel="alu:${i}">Quitar</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="dvs">Aún no hay alumnos inscriptos.</p>'}</div>`}
-function renderAlumnos(){const el=document.getElementById('v-alumnos');if(!el)return;el.innerHTML=`<button class="btn sec" data-view="gestion">← Volver a ${secName()}</button><h2 class="nt" style="margin-top:10px">Alumnos inscriptos</h2>${canAlu()?aluBlock():''}`}
+function renderAlumnos(){const el=document.getElementById('v-alumnos');if(!el)return;el.innerHTML=`<button class="btn sec" data-view="gestion">${isMgr()?'← Volver':'← Volver a '+secName()}</button><h2 class="nt" style="margin-top:10px">Alumnos inscriptos</h2>${canAlu()?aluBlock():''}`}
 const esPrueba=n=>/^Examinador de prueba( \d+)?$/.test(n||'');
 let exKind='nuevo';
 async function addExaminer(){
@@ -1404,7 +1545,7 @@ async function addExaminer(){
   if(DB.ex.exam.some(x=>nz(x)===nz(n))){exMsg=`«${n}» ya está en la lista.`;renderGestion();return}
   {const bx=busyExam(n);if(bx){exMsg=`«${n}» ya participa en otro examen sin finalizar (${exLabel(bx)}). Finalizá ese examen antes de agregarlo.`;renderGestion();return}}
   try{await cInvite(n,em,'prof')}catch(e){exMsg=e&&e.denied?'Sin permiso para invitar. Revisá las reglas de Firebase.':'Sin conexión: no se pudo agregar al examinador. Reintentá con internet.';renderGestion();return}
-  DB.ex.exam.push(n);DB.ex.em=DB.ex.em||{};DB.ex.em[n]=em;exMsg=`Se agregó a ${n}. Pedile que cree su acceso con el correo ${em}.`;save();renderGestion();
+  INV=INV||{};INV[ek(em)]={name:n,role:'prof',k:fk(n)};DB.ex.exam.push(n);DB.ex.em=DB.ex.em||{};DB.ex.em[n]=em;exMsg=`Se agregó a ${n}. Pedile que cree su acceso con el correo ${em}.`;save();renderGestion();
 }
 async function addDir(){
   const n=gv('dgn').trim(),em=gv('dge').trim();
@@ -1430,11 +1571,12 @@ function crearBlock(){
   return `<div class="gx"><h3>Crear examen</h3>${f.length?`<p class="dvs">Para crear el examen falta: ${f.join(', ')}.</p>`:'<p class="dvm">Todo listo. Al crear el examen, los examinadores acceden a sus planillas.</p>'}<button class="btn" data-excrear${f.length?' hidden':''}>Crear examen</button></div>`}
 function renderCrear(){
   const x=DB.ex,el=document.getElementById('v-crear');
+  if(INV===null){if(LOCAL)INV={};else loadInv()}
   if(!el)return;
-  el.innerHTML=`<button class="btn sec" data-view="gestion">← Volver a ${secName()}</button><h2 class="nt" style="margin-top:10px">Crear Examen</h2>
+  el.innerHTML=`<button class="btn sec" data-view="gestion">${isMgr()?'← Volver':'← Volver a '+secName()}</button><h2 class="nt" style="margin-top:10px">Crear Examen</h2>
   <div class="id"><label>Tipo de Examen<select data-tsel>${TIPOS.map(([g,ls])=>`<optgroup label="${g}">${ls.map(([id,n,ms])=>{const cur=x.tipo===id;return `<option value="${id}"${cur&&!modIds()?' selected':''}>${n} — todos los módulos</option>`+MODS.map(([mn,ids],i)=>ids.some(k=>ms.includes(k))?`<option value="${id}:${MK[i]}"${cur&&x.mod===MK[i]?' selected':''}>${n} — módulo ${mn}</option>`:'').join('')}).join('')}</optgroup>`).join('')}</select></label><label>Fecha<input type="date" data-ex="fecha" value="${esc(x.fecha)}"></label><label>Delegación<select data-ex="lugar">${delOpts(x.lugar)}</select></label></div>
   <div class="gx"><h3>${tipoOf()[1]}${modName()?' · módulo '+modName():''}</h3><p class="dvs">Nota mínima: ${baseTxt(tipoOf()[3])}</p><p class="dvm">${modTxt(actMan())}</p>${tipoOf()[4]?`<p class="dvs">${tipoOf()[4]}</p>`:''}</div>
-  <div class="gx"><h3>Examinadores (${x.exam.length})</h3><div class="bar"><label>Tipo de examinador<select data-exk><option value="nuevo"${exKind==='nuevo'?' selected':''}>Nuevo examinador</option><option value="prueba"${exKind==='prueba'?' selected':''}>Examinador de prueba</option></select></label>${exKind==='nuevo'?'<label>Nombre<input id="exn"></label><label>Correo<input id="exe" type="email" autocapitalize="none"></label>':''}<button class="btn" data-exadd="exam">${exKind==='nuevo'?'Agregar':'Agregar examinador de prueba'}</button></div>${exKind==='prueba'?'<p class="dvs">El examinador de prueba es solo para probar las funciones: no tiene correo ni acceso propio y no bloquea a otros exámenes. Podés verlo con "Ver como" en el modo local.</p>':''}${exMsg?`<p class="dvm" role="status">${esc(exMsg)}</p>`:''}
+  <div class="gx"><h3>Examinadores (${x.exam.length})</h3><h4 style="margin:6px 0">Examinadores registrados</h4><div id="exreg">${regExList()}</div><h4 style="margin:12px 0 6px">Agregar uno nuevo</h4><div class="bar"><label>Tipo de examinador<select data-exk><option value="nuevo"${exKind==='nuevo'?' selected':''}>Nuevo examinador</option><option value="prueba"${exKind==='prueba'?' selected':''}>Examinador de prueba</option></select></label>${exKind==='nuevo'?'<label>Nombre<input id="exn"></label><label>Correo<input id="exe" type="email" autocapitalize="none"></label>':''}<button class="btn" data-exadd="exam">${exKind==='nuevo'?'Agregar':'Agregar examinador de prueba'}</button></div>${exKind==='prueba'?'<p class="dvs">El examinador de prueba es solo para probar las funciones: no tiene correo ni acceso propio y no bloquea a otros exámenes. Podés verlo con "Ver como" en el modo local.</p>':''}${exMsg?`<p class="dvm" role="status">${esc(exMsg)}</p>`:''}
   ${x.exam.length?`<ul class="gl">${x.exam.map((n,i)=>`<li>${esc(n)}${esPrueba(n)?' <span class="dvs">(de prueba)</span>':''}${(x.em&&x.em[n])?' <span class="dvs">'+esc(x.em[n])+'</span>':''} <button class="jf" data-jefe="${i}" aria-pressed="${x.jefe===i}">${x.jefe===i?'★ Jefe de mesa':'Marcar como jefe de mesa'}</button> <button class="lnk" data-exdel="exam:${i}">Quitar</button></li>`).join('')}</ul>`:'<p class="dvs">Aún no hay examinadores.</p>'}</div>
   ${aluBlock()}
   <div id="crearblk">${crearBlock()}</div>`;
@@ -1551,10 +1693,10 @@ async function ofSign(){
 function renderOficial(){
   const el=document.getElementById('v-oficial'),{alu,mem}=ofData(),B=OFB();
   let body;
-  if(!alu.length)body='<p class="dvs">Aún no hay alumnos. Cárgalos en Gestión de Exámenes o crea planillas.</p>';
-  else if(!mem.length)body='<p class="dvs">Aún no hay examinadores. Cárgalos en Gestión de Exámenes.</p>';
+  if(!alu.length)body='<p class="dvs">Aún no hay alumnos. Cárgalos en la pestaña Gestión de exámenes o crea planillas.</p>';
+  else if(!mem.length)body='<p class="dvs">Aún no hay examinadores. Cárgalos en la pestaña Gestión de exámenes.</p>';
   else body=alu.map((a,i)=>`<div class="gx of"><h3>${esc(a.n)}${a.d?' · dorsal '+esc(a.d):''}${a.l?' · '+esc(a.l):''}</h3><div class="tw"><table><thead><tr><th rowspan="2"></th>${OFG().map(([n,c])=>`<th colspan="${c}">${n}</th>`).join('')}</tr><tr>${B.map(([k,t])=>`<th>${t}</th>`).join('')}</tr></thead><tbody><tr><td class="l"><b>Nota promediada</b></td>${B.map(([sc])=>`<td id="res-${i}-${sc}">${ofRes(a.k,sc,mem)[0]}</td>`).join('')}</tr></tbody></table></div></div>`).join('');
-  el.innerHTML=`<button class="btn sec" data-view="gestion">← Volver a ${secName()}</button><h2 class="nt" style="margin-top:10px">Planilla oficial</h2>
+  el.innerHTML=`<button class="btn sec" data-view="gestion">${isMgr()?'← Volver':'← Volver a '+secName()}</button><h2 class="nt" style="margin-top:10px">Planilla oficial</h2>
   <p class="dvm"><b>La planilla oficial no puede ser modificada por nadie.</b> Las notas surgen de las planillas que confirmó cada examinador.</p>
   <p class="dvs">Cada miembro de la mesa aporta la nota más alta de sus dos bajadas (de su planilla confirmada en este dispositivo). <b>NIM</b> significa No interpreta la maniobra: no tiene nota, no se promedia y pasa directamente como resultado.</p>
   <div class="gx"><p class="dvm">Nota base: <b>${baseTxt(tipoOf()[3])}</b> (según protocolo)</p>
@@ -1562,14 +1704,38 @@ function renderOficial(){
 }
 let CURV='gestion';
 const hasEx=()=>!!DB.xid&&DB.ex.exam.length>0&&!!DB.ex.creado;
-const secName=()=>(DB.me&&!DB.adm&&!DB.dir)?'Mis Exámenes':'Gestión de Exámenes';
-function updTabs(){const g=document.getElementById('vt-gestion');if(g)g.textContent=secName()+(isJefe()&&propOf()?' ●':'');['vt-plan','vt-notas'].forEach(i=>{const t=document.getElementById(i);if(t)t.hidden=!hasEx()||DB.dir})}
+const secName=()=>(DB.me&&!DB.adm&&!DB.dir)?'Mis Exámenes':'Principal';
+const MGT=[['inicio','Inicio'],['exam','Gestión de exámenes'],['reg','Registro de planillas oficiales'],['usu','Usuarios'],['plan','Información']];
+function updMg(){
+  const nav=document.querySelector('.vtabs');if(!nav)return;
+  let m=document.getElementById('mgtabs');
+  const mgr=isMgr(),ex=!mgr&&!!DB.me;
+  if(!mgr&&!ex){if(m)m.remove();return}
+  if(!m){m=document.createElement('div');m.id='mgtabs';m.className='gtabs';m.setAttribute('role','tablist');m.style.margin='0';nav.appendChild(m)}
+  ['vt-plan','vt-notas','vt-gestion'].forEach(i=>{const e=document.getElementById(i);if(e)e.hidden=true});
+  const inG=['gestion','oficial','crear','alumnos'].includes(CURV);
+  let items;
+  if(mgr)items=MGT.map(b=>['g',b[0],b[1]]);
+  else{
+    const inEx=hasEx()&&!noAccess();
+    items=[['g','inicio','Mis Exámenes'+(isJefe()&&propOf()?' ●':'')]];
+    if(inEx&&!DB.dir)items.push(['v','plan','Planilla'],['v','notas','Notas finales']);
+    if(miEx()&&!noAccess())items.push(['v','oficial','Planilla oficial']);
+    items.push(['g','reg','Registro de planillas oficiales'],['g','plan','Información']);
+  }
+  const gt=mgr?gTab:(gTab==='reg'||gTab==='plan'?gTab:'inicio');
+  const h=items.map(([k,id,lb])=>{
+    const on=mgr?(inG&&id===gTab):(k==='g'?((CURV==='gestion'||(REG&&CURV==='oficial'))&&(REG&&CURV==='oficial'?id==='reg':gt===id)):(CURV===id&&!REG));
+    return `<button class="gtab${on?' on':''}" role="tab" aria-selected="${on}" ${k==='g'?'data-gtab':'data-view'}="${id}">${lb}</button>`}).join('');
+  if(m.dataset.h!==h){m.dataset.h=h;m.innerHTML=h}
+}
+function updTabs(){try{updPrint()}catch(e){}const g=document.getElementById('vt-gestion');if(g){g.textContent=secName()+(isJefe()&&propOf()?' ●':'');g.hidden=isMgr()}['vt-plan','vt-notas'].forEach(i=>{const t=document.getElementById(i);if(t)t.hidden=!hasEx()||DB.dir});updMg()}
 function showView(v){
-  if((v==='plan'||v==='notas')&&!(v==='plan'&&PV&&isMgr())&&(!hasEx()||DB.dir))v='gestion';
+  if((v==='plan'||v==='notas')&&!(v==='plan'&&PV)&&(!hasEx()||DB.dir))v='gestion';
   updTabs();
-  if(noAccess()&&v!=='gestion')v='gestion';
+  if(noAccess()&&v!=='gestion'&&!(v==='plan'&&PV))v='gestion';
   if(v!=='gestion')delAsk=false;
-  if(locked()&&!DB.dir&&v!=='gestion')v='gestion';
+  if(locked()&&!DB.dir&&v!=='gestion'&&!(v==='plan'&&PV))v='gestion';
   if(v==='crear'&&(!isMgr()||!DB.xid||DB.ex.fin||(dirLocked()&&!DB.liveEx)))v='gestion';
   if(v==='alumnos'&&!canAlu())v='gestion';
   if(v==='oficial'&&!DB.adm&&!DB.dir&&!(DB.me&&ofData().mem.includes(DB.me)))v='gestion';
@@ -1584,6 +1750,7 @@ function showView(v){
   document.getElementById('vt-plan').setAttribute('aria-selected',String(v==='plan'));
   document.getElementById('vt-notas').setAttribute('aria-selected',String(v==='notas'));
   document.getElementById('vt-gestion').setAttribute('aria-selected',String(v==='gestion'||v==='oficial'||v==='crear'||v==='alumnos'));
+  updMg();
   if(v==='notas')renderNotas();
   if(v==='gestion'||v==='crear'||v==='alumnos')renderGestion();
   if(v==='oficial')renderOficial();
