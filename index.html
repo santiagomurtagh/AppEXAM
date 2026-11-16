@@ -134,6 +134,19 @@ details[data-dtg=usr] .xls th:nth-child(3),details[data-dtg=usr] .xls td:nth-chi
 .opt{display:flex;margin:6px 0;align-items:flex-start}.opt input{margin-top:4px}.tg{margin-bottom:10px}.tg>b{display:block;color:var(--ink)}
 .com{padding:0 14px 14px}
 @media print{body{background:#fff}.btns,.tabs,.microw,.dv,.vtabs,.bar{display:none}.pane{display:block!important;break-inside:avoid}.sec-card{break-inside:avoid}.wrap{padding:0}}
+.sgf{display:flex;flex-direction:column;gap:12px;margin:12px 0 18px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+.sgf .r2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.sgf label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600;color:var(--mute);min-width:0}
+.sgf select,.sgf textarea{font:400 15px Barlow,system-ui,sans-serif;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%;max-width:100%;box-sizing:border-box}
+.sgf select:disabled{opacity:.55}.sgf textarea{min-height:100px;resize:vertical;line-height:1.45}
+.sgf .sgbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}.sgf .sgcnt{font-size:13px;color:var(--mute)}
+.sgi{display:grid;grid-template-columns:36px minmax(0,1fr);gap:4px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:12px 14px;margin:0 0 10px}
+.sgi .av{width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;grid-row:1/3}
+.sgi .mt{display:flex;gap:4px 8px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--mute);min-width:0}.sgi .mt b{font-size:15px;color:var(--ink)}
+.sgi p{margin:0;grid-column:2;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
+.sgi .ac{grid-column:2;display:flex;gap:8px;margin-top:4px}.sgi .ac .btn{padding:4px 10px;font-size:13px}
+.sgi .tg2{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:12px}
+.sge{border:1px dashed var(--line);border-radius:10px;padding:20px;text-align:center;color:var(--mute)}
 </style>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
 </head>
@@ -1384,6 +1397,10 @@ document.addEventListener('click',e=>{
   {const q=e.target.closest('[data-sdq]');if(q){if(!sdOk())return;const[i,k]=q.dataset.sdq.split('|');SDQ={id:i,k};SDM='';renderGestion();return}}
   if(e.target.closest('[data-sdno]')){SDQ=null;renderGestion();return}
   if(e.target.closest('[data-sddo]')){if(SDQ)supDel(SDQ.id,SDQ.k);return}
+  if(e.target.closest('[data-sgsend]')){sgSend();return}
+  {const d=e.target.closest('[data-sgdel]');if(d){SG.del=d.dataset.sgdel;renderGestion();return}}
+  if(e.target.closest('[data-sgdno]')){SG.del=null;renderGestion();return}
+  {const d=e.target.closest('[data-sgdok]');if(d){sgDel(d.dataset.sgdok);return}}
   {const tm=e.target.closest('[data-tmopen]');if(tm){if(TMP&&TMP.id===tm.dataset.tmopen){TMP=null;renderGestion()}else tmOpen(tm.dataset.tmopen);return}}
   {const ro=e.target.closest('[data-roopen]');if(ro){roOpen(ro.dataset.roopen);return}}
   if(e.target.closest('[data-roback]')){ROP=null;renderGestion();return}
@@ -1438,6 +1455,10 @@ document.addEventListener('click',e=>{
     const si=SECS.findIndex(x=>k.startsWith(x[0]+'.'));sec(si);
   }else if(t){tab[t.dataset.s]=+t.dataset.b;sec(SECS.findIndex(x=>x[0]===t.dataset.s))}
 });
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='sgtxt')SG.txt=e.target.value});
+document.addEventListener('change',e=>{const t=e.target;if(!t)return;
+  if(t.id==='sgl'){SG.lvl=t.value;if(!SG.lvl||(SG.k&&!new RegExp(' · Nivel '+SG.lvl+'$').test(MAN[SG.k]||'')))SG.k='';renderGestion()}
+  else if(t.id==='sgk'){SG.k=t.value;renderGestion()}});
 document.addEventListener('input',e=>{
   if(PV&&PV.ro&&e.target.closest&&e.target.closest('#main'))return;
   const d=e.target.dataset;
@@ -1895,6 +1916,45 @@ function addRegEx(k){
   DB.ex.exam.push(n);DB.ex.em=DB.ex.em||{};DB.ex.em[n]=em;const nv=nivOf(v),L=examLvl();exMsg=`Se agregó a ${n}.`+(!nv?' Atención: no tiene un nivel de validación cargado.':(L&&nv<L?` Atención: está validado hasta el nivel ${nv} y el examen es de nivel ${L}.`:''));save();renderGestion();
 }
 let gTab='inicio';
+const SG={items:[],loaded:false,err:'',msg:'',txt:'',lvl:'',k:'',busy:false,del:null,t:0,fetching:false};
+const SGK='appexam_sug_local';
+const sgRole=r=>r==='admin'?'Administración':r==='dir'?'Dirección':'Examinador';
+const sgMine=x=>LOCAL?true:x.by===CL.uid;
+async function sgLoad(force){
+  if(SG.fetching||(!force&&Date.now()-SG.t<12000))return;SG.fetching=true;
+  try{
+    if(LOCAL){try{SG.items=JSON.parse(localStorage.getItem(SGK)||'[]')}catch(e){SG.items=[]}}
+    else{const o=(await cDb('GET','appsug'))||{};SG.items=Object.keys(o).flatMap(u=>Object.keys(o[u]||{}).map(id=>Object.assign({id,by:u},o[u][id])))}
+    SG.items.sort((a,b)=>(b.ts||0)-(a.ts||0));SG.err='';SG.loaded=true;
+  }catch(e){SG.err=e&&e.denied?'Firebase rechazó la lectura. Hay que publicar las reglas nuevas (nodo appsug).':'No se pudieron cargar las sugerencias. Revisá la conexión.';SG.loaded=true}
+  SG.t=Date.now();SG.fetching=false;
+  if(gTab==='sug'&&CURV==='gestion'&&document.activeElement!==document.getElementById('sgtxt'))renderGestion()}
+function sgHtml(){
+  sgLoad();
+  const ks=SG.lvl?Object.keys(MAN).filter(k=>new RegExp(' · Nivel '+SG.lvl+'$').test(MAN[k])):[];
+  const its=SG.items;
+  const form=`<div class="sgf"><div class="r2"><label>Nivel (si aplica)<select id="sgl"><option value="">General (toda la app)</option>${[1,2,3,4].map(l=>`<option value="${l}"${SG.lvl===String(l)?' selected':''}>Nivel ${l}</option>`).join('')}</select></label><label>Maniobra (si aplica)<select id="sgk"${SG.lvl?'':' disabled'}><option value="">${SG.lvl?'Ninguna en particular':'Elegí un nivel primero'}</option>${ks.map(k=>`<option value="${esc(k)}"${SG.k===k?' selected':''}>${esc(MAN[k].replace(/ · Nivel \d$/,''))}</option>`).join('')}</select></label></div><label>Tu sugerencia<textarea id="sgtxt" rows="4" maxlength="1500" placeholder="Una idea, una corrección, un error que viste o una duda sobre la app">${esc(SG.txt)}</textarea></label><div class="sgbar"><span class="sgcnt" role="status">${SG.msg?esc(SG.msg):'La ven todos los usuarios de la app.'}</span><button class="btn" data-sgsend="1"${SG.busy?' disabled':''}>Enviar sugerencia</button></div></div>`;
+  const row=x=>{const mine=sgMine(x),can=mine||isSuper(),nm=x.n||'Usuario',k=x.k&&MAN[x.k],key=esc(x.by+'/'+x.id);
+    return `<div class="sgi"><div class="av" aria-hidden="true">${esc((nm.trim()[0]||'?').toUpperCase())}</div><div class="mt"><b>${esc(nm)}${mine&&!LOCAL?' (vos)':''}</b><span>${esc(sgRole(x.r))}</span><span>${esc(new Date(x.ts||0).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'}))}</span><span class="tg2">${x.lvl?'Nivel '+x.lvl:'General'}</span>${k?`<span class="tg2">${esc(k.replace(/ · Nivel \d$/,''))}</span>`:''}</div><p>${esc(x.txt)}</p>${can?(SG.del===x.by+'/'+x.id?`<div class="ac"><button class="btn" data-sgdok="${key}">Confirmar</button><button class="btn sec" data-sgdno="1">Cancelar</button></div>`:`<div class="ac"><button class="btn sec" data-sgdel="${key}">Eliminar</button></div>`):''}</div>`};
+  return `<h3 class="gh">Notas y Sugerencias</h3><div class="gx"><p class="dvs">Dejá acá notas y sugerencias sobre la app: planillas, criterios, funcionamiento, errores o ideas nuevas. Las ven todos los usuarios de la app.</p>${form}${SG.err?`<p class="dvm" role="alert">${esc(SG.err)}</p>`:''}<h3>Sugerencias (${its.length})</h3>${its.length?its.map(row).join(''):(SG.loaded?'<div class="sge">Todavía no hay sugerencias. Sé la primera persona en dejar una.</div>':'<p class="dvs" role="status">Cargando…</p>')}</div>`}
+async function sgSend(){
+  if(SG.busy)return;const txt=String(SG.txt||'').trim();
+  if(!txt){SG.msg='Escribí la sugerencia antes de enviarla.';renderGestion();return}
+  SG.busy=true;SG.msg='Enviando…';renderGestion();
+  const it={txt:txt.slice(0,1500),lvl:SG.lvl?Number(SG.lvl):0,k:SG.k||'',n:(CL.name||DB.me||String(CL.email||'').split('@')[0]||'Usuario'),r:CL.role||(DB.adm?'admin':DB.dir?'dir':'prof'),ts:Date.now()};
+  try{
+    if(LOCAL){const a=JSON.parse(localStorage.getItem(SGK)||'[]');a.push(Object.assign({id:Date.now().toString(36),by:'local'},it));localStorage.setItem(SGK,JSON.stringify(a))}
+    else await cDb('PUT','appsug/'+CL.uid+'/'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),it);
+    SG.msg='Sugerencia enviada.';SG.txt='';SG.k='';await sgLoad(true)}
+  catch(e){SG.msg=e&&e.denied?'No se pudo enviar: hay que publicar las reglas nuevas (nodo appsug).':'No se pudo enviar. Probá de nuevo en un momento.'}
+  SG.busy=false;renderGestion()}
+async function sgDel(key){
+  const [u,id]=key.split('/');SG.del=null;
+  try{if(LOCAL){const a=JSON.parse(localStorage.getItem(SGK)||'[]').filter(x=>x.id!==id);localStorage.setItem(SGK,JSON.stringify(a))}else await cDb('DELETE','appsug/'+u+'/'+id);SG.msg='Sugerencia eliminada.';await sgLoad(true)}
+  catch(e){SG.msg='No se pudo eliminar.'}
+  renderGestion()}
+setInterval(()=>{if(gTab==='sug'&&CURV==='gestion'&&!document.hidden)sgLoad(true)},15000);
+
 function renderGestion(){
   actMan();updTabs();
   const x=DB.ex,el=document.getElementById('v-gestion');
@@ -1903,13 +1963,13 @@ function renderGestion(){
   if(!isMgr()&&gTab==='jefe'&&!((isJefe()&&hasEx()&&!noAccess())||jfFin()))gTab='inicio';
   const JF=()=>x.fin?`<div class="gx"><h3>Jefe de Mesa</h3><p class="dvm"><b>${esc(exLabel(x))}</b><br>El examen ya quedó cerrado con tu firma. Falta terminar el cronómetro.</p></div>`+jTimer():`<div class="gx"><h3>Jefe de Mesa</h3><p class="dvm"><b>${esc(exLabel(x))}</b><br>Sos el jefe de mesa de este examen. Desde acá gestionás los alumnos inscriptos, confirmás los cambios que pide Dirección y accedés a la planilla oficial.</p><button class="btn" data-view="oficial">Abrir planilla oficial</button></div>`+`<div class="gx"><h3>Estado de Medios</h3><button class="btn" disabled style="width:100%">Estado de Medios</button><p class="dvs" style="margin-top:6px">Agregar link a la web de la Delegación</p></div>`+jTimer()+P+(canAlu()?aluBlock():'');
   let inner;
-  if(!isMgr())inner=(DB.me&&gTab==='reg')?A+regHtml():(DB.me&&gTab==='plan')?A+tutBlock()+nivBlock():(DB.me&&gTab==='jefe')?A+JF()+pruebaCard():A+C+(isJefe()?'':P)+ME+pruebaCard();
+  if(!isMgr())inner=(DB.me&&gTab==='sug')?A+sgHtml():(DB.me&&gTab==='reg')?A+regHtml():(DB.me&&gTab==='plan')?A+tutBlock()+nivBlock():(DB.me&&gTab==='jefe')?A+JF()+pruebaCard():A+C+(isJefe()?'':P)+ME+pruebaCard();
   else{
-    const TB=[['inicio','Inicio',pruebaCard()+C+P],['exam','Gestión de exámenes',exListHtml()],['reg','Registro de Planillas',regHtml()],['usu','Usuarios',(LOCAL?'':'<div class="gx" id="presbox">'+presHtml()+'</div>')+usrExBlock()+(DB.adm&&(LOCAL||isSuper())?adminsBlock():'')],['plan','Información',tutBlock()+nivBlock()]];
+    const TB=[['inicio','Inicio',pruebaCard()+C+P],['exam','Gestión de exámenes',exListHtml()],['reg','Registro de Planillas',regHtml()],['usu','Usuarios',(LOCAL?'':'<div class="gx" id="presbox">'+presHtml()+'</div>')+usrExBlock()+(DB.adm&&(LOCAL||isSuper())?adminsBlock():'')],['sug','Notas y Sugerencias',sgHtml()],['plan','Información',tutBlock()+nivBlock()]];
     if(!TB.some(b=>b[0]===gTab))gTab='inicio';
     inner=A+TB.find(b=>b[0]===gTab)[2]+ME;
   }
-  el.innerHTML=`${isMgr()||!(DB.me||DB.adm||DB.dir)?'':`<h2 class="nt">${DB.me&&gTab==='plan'?'Información':DB.me&&gTab==='jefe'?'Jefe de Mesa':secName()}</h2>`}${inner}`;
+  el.innerHTML=`${isMgr()||!(DB.me||DB.adm||DB.dir)?'':`<h2 class="nt">${DB.me&&gTab==='plan'?'Información':DB.me&&gTab==='sug'?'Notas y Sugerencias':DB.me&&gTab==='jefe'?'Jefe de Mesa':secName()}</h2>`}${inner}`;
   renderCrear();renderAlumnos();
 }
 const canAlu=()=>(isMgr()&&editOk())||isJefe();
@@ -2120,7 +2180,7 @@ let CURV='gestion';
 const jfFin=()=>isJefe()&&!REG&&!!DB.xid&&!!DB.ex.creado&&!!DB.ex.fin&&!!DB.ex.ini&&!DB.ex.fim; /* examen cerrado por la firma del jefe, con el cronómetro todavía en marcha */
 const hasEx=()=>!!DB.xid&&DB.ex.exam.length>0&&!!DB.ex.creado;
 const secName=()=>(DB.me&&!DB.adm&&!DB.dir)?'Mis Exámenes':'Principal';
-const MGT=[['inicio','Inicio'],['exam','Gestión de exámenes'],['reg','Registro de Planillas'],['usu','Usuarios'],['plan','Información']];
+const MGT=[['inicio','Inicio'],['exam','Gestión de exámenes'],['reg','Registro de Planillas'],['usu','Usuarios'],['sug','Notas y Sugerencias'],['plan','Información']];
 function updMg(){
   const nav=document.querySelector('.vtabs');if(!nav)return;
   let m=document.getElementById('mgtabs');
@@ -2137,10 +2197,10 @@ function updMg(){
     if((inEx&&isJefe())||jfFin())items.unshift(['g','jefe','Jefe de Mesa'+(propOf()?' ●':'')]);
     if(inEx&&!DB.dir)items.push(['v','notas','Notas finales']);
     if(miEx()&&!noAccess())items.push(['v','oficial','Planilla oficial']);
-    items.push(['g','reg','Registro de Planillas'],['g','plan','Información']);
+    items.push(['g','reg','Registro de Planillas'],['g','sug','Notas y Sugerencias'],['g','plan','Información']);
   }
   if(CT())items.push(['l',LOCAL?'https://claude.ai/artifact/1yauN2BfRzue4i2GRpx7p3':'criterios.html','Criterios']);
-  const gt=mgr?gTab:(gTab==='reg'||gTab==='plan'||gTab==='jefe'?gTab:'inicio');
+  const gt=mgr?gTab:(gTab==='reg'||gTab==='plan'||gTab==='jefe'||gTab==='sug'?gTab:'inicio');
   const h=items.map(([k,id,lb])=>{
     if(k==='l')return `<a class="gtab" href="${id}" target="_blank" rel="noopener" title="Se abre en otra pestaña" style="text-decoration:none;display:inline-block">${lb} ↗</a>`;
     const on=mgr?(inG&&id===gTab):(k==='g'?((CURV==='gestion'||(REG&&CURV==='oficial'))&&(REG&&CURV==='oficial'?id==='reg':gt===id)):(CURV===id&&!REG));

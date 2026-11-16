@@ -160,6 +160,32 @@ td.nm{border-left:3px solid var(--accent)}
 .verd.bad{color:var(--diff)}
 .legv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:13px;margin:8px 0 0}
 .legv b{font-family:var(--f-head)}
+.sgf{display:flex;flex-direction:column;gap:12px;margin:14px 0 22px;padding:16px;border:1px solid var(--line3);border-radius:10px;background:var(--surface)}
+.sgf h3{margin:0;font:600 15px var(--f-head)}
+.sgf .r2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.sgf label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ink2);min-width:0}
+.sgf select,.sgf textarea{font:400 14px var(--f-body);padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);max-width:100%;box-sizing:border-box;width:100%}
+.sgf select:disabled{opacity:.55;cursor:not-allowed}
+.sgf textarea{min-height:104px;resize:vertical;line-height:1.45}
+.sgf select:focus,.sgf textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.sgf .sgbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
+.sgf .sgbar .sgcnt{font-size:12px;color:var(--ink2)}
+.sgf .btn.send{padding:9px 18px;font-weight:600;border-radius:8px}
+.sgh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line3)}
+.sgh h3{margin:0;font:600 16px var(--f-head)}.sgh span{font-size:12px;color:var(--ink2)}
+.sgi{display:grid;grid-template-columns:36px minmax(0,1fr);gap:4px 12px;border:1px solid var(--line3);border-radius:10px;background:var(--surface);padding:12px 14px;margin:0 0 10px}
+.sgi .av{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:700 15px var(--f-head);grid-row:1/3}
+:root[data-theme="dark"] .sgi .av{color:#08121c}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sgi .av{color:#08121c}}
+.sgi .mt{display:flex;gap:4px 8px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--ink2);min-width:0}
+.sgi .mt b{font-size:13.5px;color:var(--ink)}
+.sgi p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;font-size:14px;grid-column:2}
+.sgi .ac{grid-column:2;display:flex;gap:8px;margin-top:4px}
+.sgi .ac .btn{padding:4px 10px;font-size:12px}
+.sgi .tg2{background:var(--bg);border:1px solid var(--line3);border-radius:999px;padding:1px 9px;font-size:11.5px;color:var(--ink2)}
+.sgcall{display:flex;gap:12px 16px;align-items:center;flex-wrap:wrap;justify-content:space-between;border:1px solid var(--accent);border-left-width:5px;border-radius:10px;background:var(--surface);padding:14px 16px;margin:0 0 14px}
+.sgcall>div{display:flex;flex-direction:column;gap:3px;flex:1 1 280px;min-width:0;font-size:14px;line-height:1.45}
+.sgcall>div span{color:var(--ink2)}.sgcall .btn.send{padding:9px 16px;font-weight:600;border-radius:8px}
+.sge{border:1px dashed var(--line);border-radius:10px;padding:22px;text-align:center;color:var(--ink2)}
 
 .acct{margin:-4px 0 12px;font-size:12.5px;color:var(--ink2)}
 .acct button{font:inherit;color:var(--accent);background:none;border:0;padding:0 0 0 6px;cursor:pointer;text-decoration:underline}
@@ -190,6 +216,7 @@ td.nm{border-left:3px solid var(--accent)}
  <button class="tab" role="tab" id="t-bas" aria-selected="false" data-v="bas">Bases de aprobación</button>
  <button class="tab" role="tab" id="t-esc" aria-selected="false" data-v="esc">Prueba de escala</button>
  <button class="tab" role="tab" id="t-sim" aria-selected="false" data-v="sim">Simular Examen</button>
+ <button class="tab" role="tab" id="t-sug" aria-selected="false" data-v="sug">Notas y Sugerencias</button>
  <button class="tab" role="tab" id="t-res" aria-selected="false" data-v="res" hidden>Resultados enviados</button>
 </div>
 <div id="v"></div>
@@ -223,7 +250,7 @@ async function rest(method,path,body,q){
   if(!r.ok)throw {code:'unavailable'};
   try{return await r.json()}catch(e){return null}}
 /* rutas: envios -> simulaciones */
-function map(p){const a=p.split('/');if(a[0]!=='envios')throw {code:'invalid_argument'};
+function map(p){const a=p.split('/');if(a[0]==='sugerencias'){if(a.length===1)return 'sugerencias';if(a.length===2)return 'sugerencias/'+a[1]+'/meta';return 'sugerencias/'+a.slice(1).join('/')}if(a[0]!=='envios')throw {code:'invalid_argument'};
   if(a.length===1)return NODE;
   if(a.length===2)return NODE+'/'+a[1]+'/meta';
   return NODE+'/'+a.slice(1).join('/')}
@@ -236,8 +263,9 @@ function collection(p){return {doc:i=>doc(p+'/'+i),onSnapshot(next,err){
   let dead=false,busy=false;
   const run=async()=>{if(dead||busy)return;busy=true;
     try{let o;const a=p.split('/');
-      if(a.length===1){o=Object.fromEntries(Object.keys(await fullNode()).map(k=>[k,{by:k}]))}
-      else if(a.length===3&&a[2]==='items'&&isOwner()){const n=await fullNode();o=(n[a[1]]&&n[a[1]].items)||{}}
+      if(a.length===1&&a[0]==='sugerencias'){o=Object.fromEntries(Object.keys((await rest('GET','sugerencias',undefined,'shallow=true'))||{}).map(k=>[k,{by:k}]))}
+      else if(a.length===1){o=Object.fromEntries(Object.keys(await fullNode()).map(k=>[k,{by:k}]))}
+      else if(a[0]==='envios'&&a.length===3&&a[2]==='items'&&isOwner()){const n=await fullNode();o=(n[a[1]]&&n[a[1]].items)||{}}
       else o=(await rest('GET',map(p)))||{};
       if(!dead)next(snap(o))}
     catch(e){if(!dead&&err)err(e&&e.code?e:{code:'unavailable'})}
@@ -249,7 +277,7 @@ function doc(p){return {id:p.split('/').pop(),path:p,
   async delete(){await rest('DELETE',map(p));kick()},
   collection:c=>collection(p+'/'+c)}}
 const names={};
-const userApi={isOwner:async()=>isOwner(),id:async()=>ek(S.email),
+const userApi={isOwner:async()=>isOwner(),id:async()=>ek(S.email),async me(){let n='';try{const m=await rest('GET','invites/'+ek(S.email));n=(m&&m.name)||''}catch(e){}return {name:n||String(S.email).split('@')[0]}},
   async profiles(ids){const o={};for(const id of ids){if(names[id]===undefined){try{const m=await rest('GET','invites/'+id);names[id]=(m&&m.name)||''}catch(e){names[id]=''}}o[id]={name:names[id]}}return o}};
 const dlApi={async save(r){const b=new Blob([r.data],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=r.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}};
 let resolveReady;const ready=new Promise(r=>{resolveReady=r});
@@ -519,7 +547,7 @@ function vIni(){
   <div class="panel"><h2>Para qué sirve esta herramienta</h2><p>Reúne las notas que proponen examinadores para distintas combinaciones de criterios de la planilla de AppEXAM. Con esos datos se podrá armar una escala de valores que relacione cada combinación con una nota.</p><p class="lvlnote"><b>Cada nivel tiene su propia escala de valores.</b> Las notas de un nivel no se mezclan con las de otro: se analizan y se arman por separado.</p></div>
   <div class="panel"><h3>Cómo se usa Simular Examen</h3><ol class="steps"><li>Elegí el examen y la maniobra.</li><li>Completá cada criterio: todas sus calificaciones y al menos una observación. El siguiente criterio aparece cuando terminás el actual.</li><li>Elegí una Nota Sugerida de 0 a 100, de 5 en 5, y agregá un comentario si querés.</li><li>Tocá Guardar y Enviar. Si la nota supera lo que indican las reglas, se muestra un aviso, pero igual podés enviarla.</li></ol><p class="note">Lo que enviás lo ve solo el administrador de esta herramienta.</p></div>
   <div class="gos">${go('bas','Bases de aprobación','La nota base de cada examen y las combinaciones que sugieren una nota menor que la base, maniobra por maniobra.')}${go('esc','Prueba de escala','La planilla de cada maniobra tal como funciona en AppEXAM, con opciones bloqueadas, para ver qué resultado da cada marca.')}${go('sim','Simular Examen','Elegís un examen y completás sus criterios de a uno. Podés sugerir una nota y enviarla con un comentario.')}${OWN?go('res','Resultados enviados','Lo que enviaron los integrantes del Comité Técnico, agrupado por combinación. Solo lo ve el administrador.'):''}</div>
-  `+vMy()}
+  `+vMy()+`<div class="sgcall" role="note"><div><b>${MY.items.length?'¿Notaste algo mientras simulabas?':'¿Tenés algo para comentar?'}</b><span>${MY.items.length?'Ya hiciste '+(MY.items.length===1?'una simulación':MY.items.length+' simulaciones')+'. Te recomendamos pasar por ':'Cuando hagas simulaciones, o en cualquier momento, podés pasar por '}<b>Notas y Sugerencias</b> y dejar tus comentarios, ideas o errores que hayas visto en la app.</span></div><button class="btn send" data-go="sug">Ir a Notas y Sugerencias</button></div>`}
 
 function trigOf(m){
   const has=id=>m.crit.some(c=>c.id===id),CUL=m.name==='Cuña',ELL=m.name==='Elemental',N1S=m.k==='n1cp'||m.k==='n1sp',T=[];
@@ -602,14 +630,51 @@ function vBas(){
     h+=`<div class="rules"><h3>Reglas por maniobra · Nivel ${l}</h3>`+mm.map(m=>{const R=rulesOf(m),li=a=>`<ul>${a.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`;
       return `<details class="rl"><summary>${esc(m.name)}<small>${trigOf(m).length} combinaciones que bajan la nota</small></summary><div class="rg">${sheet(m)}<details class="rl2"><summary>Otras reglas: NIM y opciones bloqueadas</summary><h4>NIM (no interpreta la maniobra)</h4>${li(R.nim)}<h4>Opciones que se bloquean</h4>${li(R.bl)}</details></div></details>`}).join('')+`</div>`});
   return h+`<p class="note">Cuando un examen tiene bases distintas según la maniobra, cada maniobra muestra su propia base.</p>`}
+
+const SUG={started:false,loaded:false,err:'',items:{},subs:{},names:{},del:null,msg:'',busy:false,raf:0,txt:'',lvl:'',k:'',uid:''};
+function schedSug(){if(cur!=='sug')return;cancelAnimationFrame(SUG.raf);SUG.raf=requestAnimationFrame(()=>{const a=document.activeElement;if(a&&(a.id==='sugtxt'))return;render()})}
+function startSug(){
+  if(SUG.started||!DBX||!UX)return;SUG.started=true;
+  (async()=>{try{SUG.uid=await UX.id()||''}catch(_){}
+    DBX.collection('sugerencias').onSnapshot(s=>{SUG.loaded=true;SUG.err='';
+      s.docs.forEach(d=>{const u=d.id;if(SUG.subs[u])return;
+        SUG.subs[u]=DBX.collection('sugerencias/'+u+'/items').onSnapshot(q=>{SUG.items[u]=q.docs.map(x=>Object.assign({id:x.id,by:u},x.data()));schedSug()},e=>{SUG.err='No se pudo leer parte de las sugerencias ('+(e&&e.code)+').';schedSug()})});
+      schedSug()},e=>{SUG.err='No se pudieron leer las sugerencias ('+(e&&e.code)+').';schedSug()})})()}
+const allSug=()=>Object.values(SUG.items).flat().sort((a,b)=>b.ts-a.ts);
+async function sendSug(){
+  if(!DBX||!UX||SUG.busy)return;const txt=String(SUG.txt||'').trim();
+  if(!txt){SUG.msg='Escribí la sugerencia antes de enviarla.';render();return}
+  SUG.busy=true;SUG.msg='Enviando…';render();
+  try{const uid=SUG.uid||await UX.id();if(!uid)throw {code:'sin_id'};
+    let n='';try{const m=await UX.me();n=(m&&m.name)||''}catch(_){}
+    const it={txt:txt.slice(0,1500),lvl:SUG.lvl?Number(SUG.lvl):0,k:SUG.k||'',n,ts:Date.now()};
+    await DBX.collection('sugerencias/'+uid+'/items').doc(rid()).set(it);
+    await DBX.doc('sugerencias/'+uid).set({by:uid,ts:it.ts});
+    SUG.msg='Sugerencia enviada.';SUG.txt='';SUG.k=''}
+  catch(e){SUG.msg='No se pudo enviar'+(e&&e.code==='permission_denied'?': tu acceso no permite guardar datos.':'. Probá de nuevo en un momento.')}
+  SUG.busy=false;render()}
+function vSug(){
+  startSug();
+  const head='<h2>Notas y Sugerencias</h2>';
+  if(!DBX||!UX)return `<div class="panel">${head}<p class="none">Cargando…</p></div>`;
+  const ks=SUG.lvl?Object.keys(byK).filter(k=>String(byK[k].lvl)===SUG.lvl):[];
+  const its=allSug();
+  const form=`<div class="sgf"><h3>Nueva sugerencia</h3><div class="r2"><label>Nivel (si aplica)<select id="sugl"><option value="">General (toda la app)</option>${[1,2,3,4].map(l=>`<option value="${l}"${SUG.lvl===String(l)?' selected':''}>Nivel ${l}</option>`).join('')}</select></label><label>Maniobra (si aplica)<select id="sugk"${SUG.lvl?'':' disabled'}><option value="">${SUG.lvl?'Ninguna en particular':'Elegí un nivel primero'}</option>${ks.map(k=>`<option value="${esc(k)}"${SUG.k===k?' selected':''}>${esc(byK[k].name)}</option>`).join('')}</select></label></div><label>Tu sugerencia<textarea id="sugtxt" rows="4" maxlength="1500" placeholder="Una idea, una corrección, un error que viste o una duda sobre la app">${esc(SUG.txt)}</textarea></label><div class="sgbar"><span class="sgcnt" role="status">${SUG.msg?esc(SUG.msg):'La ven todos los integrantes del Comité Técnico.'}</span><button class="btn send" data-sugsend="1"${SUG.busy?' disabled':''}>Enviar sugerencia</button></div></div>`;
+  const row=x=>{const m=x.k&&byK[x.k],mine=x.by===SUG.uid,can=mine||OWN,nm=x.n||(mine?'Vos':'Comité Técnico');
+    return `<div class="sgi"><div class="av" aria-hidden="true">${esc((nm.trim()[0]||'?').toUpperCase())}</div><div class="mt"><b>${esc(nm)}${mine?' (vos)':''}</b><span>${esc(fdate(x.ts))}</span>${x.lvl?`<span class="tg2">Nivel ${x.lvl}</span>`:'<span class="tg2">General</span>'}${m?`<span class="tg2">${esc(m.name)}</span>`:''}</div><p>${esc(x.txt)}</p>${can?(SUG.del===x.by+'/'+x.id?`<div class="ac"><button class="btn" data-sugdok="${esc(x.by+'/'+x.id)}">Confirmar</button><button class="btn" data-sugdno="1">Cancelar</button></div>`:`<div class="ac"><button class="btn" data-sugdel="${esc(x.by+'/'+x.id)}">Eliminar</button></div>`):''}</div>`};
+  return `<div class="panel">${head}<p>Espacio para los integrantes del Comité Técnico. Dejá acá notas y sugerencias sobre la app en general: planillas, criterios, funcionamiento, errores o ideas nuevas. Las ven todos los integrantes del Comité Técnico.</p>${form}${SUG.err?`<p class="none" role="status">${esc(SUG.err)}</p>`:''}<div class="sgh"><h3>Sugerencias</h3><span>${its.length} en total</span></div>${its.length?its.map(row).join(''):(SUG.loaded?'<div class="sge">Todavía no hay sugerencias. Sé la primera persona en dejar una.</div>':'<p class="none" role="status">Cargando…</p>')}</div>`}
 function render(){const v=document.getElementById('v');const fr=cur==='sim';if(ES.free!==fr){ES.free=fr;ES.msg='';ES.v={};ES.vs={};ES.skip=new Set();ES.com='';ES.nota=''}
- v.innerHTML={ini:vIni,sim:vEsc,crit:vCrit,esc:vEsc,cmp:vCmp,bas:vBas,res:vRes}[cur]();
+ v.innerHTML={ini:vIni,sim:vEsc,crit:vCrit,esc:vEsc,cmp:vCmp,bas:vBas,sug:vSug,res:vRes}[cur]();
  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.v===cur));
  [['rf-k','k'],['rf-l','l'],['rf-h','h']].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.onchange=()=>{RES.f[k]=el.value;render()}});
  const se=document.getElementById('se'),sx=document.getElementById('sx');if(sx)sx.onchange=()=>{ES.ex=sx.value;ES.vs={};ES.v={};ES.skip=new Set();ES.msg='';ES.com='';ES.nota='';const e=D.tipos.find(x=>x.id===ES.ex);ES.k=e.man.find(k=>byK[k])||ES.k;render()};const sf=document.getElementById('sf');if(sf)sf.onchange=()=>{TAB.f=sf.value;render()}}
 document.addEventListener('click',e=>{const t=e.target.closest('.tab');if(t){cur=t.dataset.v;try{history.replaceState(null,'','#'+cur)}catch(_){}render();return}
  const sv=e.target.closest('.sv');if(sv){if(sv.disabled)return;const k=sv.dataset.k,x=sv.dataset.x,cur=ES.v[k]||[];if(cur.includes(x)){const r=cur.filter(y=>y!==x);if(r.length)ES.v[k]=r;else delete ES.v[k]}else ES.v[k]=sv.dataset.m==='1'?cur.concat(x):[x];render();return}
  if(e.target.closest('[data-send]')){sendRes();return}
+ if(e.target.closest('[data-sugsend]')){sendSug();return}
+ {const d=e.target.closest('[data-sugdel]');if(d){SUG.del=d.dataset.sugdel;render();return}
+  if(e.target.closest('[data-sugdno]')){SUG.del=null;render();return}
+  const dk=e.target.closest('[data-sugdok]');if(dk){const [u,id]=dk.dataset.sugdok.split('/');SUG.del=null;DBX.doc('sugerencias/'+u+'/items/'+id).delete().then(()=>{SUG.items[u]=(SUG.items[u]||[]).filter(x=>x.id!==id);render()}).catch(()=>{SUG.msg='No se pudo eliminar.';render()});return}}
  if(e.target.closest('[data-csvg]')){if(DLX){const f=RES.f,rows=allRes().filter(x=>(!f.k||x.k===f.k)&&(!f.l||String(x.lvl)===f.l)&&(!f.h||(f.h==='nim'?x.nim:f.h==='hit'?(x.hit&&!x.nim):(!x.hit&&!x.nim))));DLX.save({filename:'resumen-combinaciones-'+new Date().toISOString().slice(0,10)+'.csv',data:csvGrp(groupsOf(rows))}).catch(()=>{})}return}
  if(e.target.closest('[data-csv]')){if(DLX){const f=RES.f,rows=allRes().filter(x=>(!f.k||x.k===f.k)&&(!f.l||String(x.lvl)===f.l)&&(!f.h||(f.h==='nim'?x.nim:f.h==='hit'?(x.hit&&!x.nim):(!x.hit&&!x.nim))));DLX.save({filename:'envios-prueba-escala-'+new Date().toISOString().slice(0,10)+'.csv',data:csvRes(rows)}).catch(()=>{})}return}
  {const d=e.target.closest('[data-del]');if(d){RES.del=d.dataset.del;render();return}
@@ -621,9 +686,9 @@ document.addEventListener('click',e=>{const t=e.target.closest('.tab');if(t){cur
  const mk=e.target.closest('[data-mk]');if(mk){goMan(mk.dataset.mk);render();return}
  const p=e.target.closest('.pill');if(p){if(p.dataset.c)TAB.crit=p.dataset.c;render()}});
 document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.dataset.rid){if(d.open)RES.open.add(d.dataset.rid);else RES.open.delete(d.dataset.rid)}},true);
-document.addEventListener('input',e=>{if(e.target&&e.target.id==='com')ES.com=e.target.value});
-document.addEventListener('change',e=>{if(e.target&&e.target.id==='nsug'){ES.nota=e.target.value;render()}});
-{const h=(location.hash||'').slice(1);if(['ini','esc','sim','bas'].includes(h))cur=h}
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='sugtxt')SUG.txt=e.target.value;if(e.target&&e.target.id==='com')ES.com=e.target.value});
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='sugl'){SUG.lvl=e.target.value;if(!SUG.lvl||(SUG.k&&String(byK[SUG.k].lvl)!==SUG.lvl))SUG.k='';render();return}if(e.target&&e.target.id==='sugk'){SUG.k=e.target.value;render();return}if(e.target&&e.target.id==='nsug'){ES.nota=e.target.value;render()}});
+{const h=(location.hash||'').slice(1);if(['ini','esc','sim','bas','sug'].includes(h))cur=h}
 render();
 </script>
 </body>
