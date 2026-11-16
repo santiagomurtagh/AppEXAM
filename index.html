@@ -544,7 +544,7 @@ async function cPull(depth){
     if(cAdopt('exam',false)){
       const nr=exFromRemote(meta,alu,exDef());
       const rv=metaVal(nr);
-      if(cj(rv)!==cSnap('exam')){const o=DB.ex;o.tipo=nr.tipo;o.mod=nr.mod;o.creado=nr.creado;o.fin=nr.fin;o.ini=nr.ini;o.fim=nr.fim;o.fecha=nr.fecha;o.lugar=nr.lugar;o.exam=nr.exam;o.jefe=nr.jefe;chg.ex=true}
+      if(cj(rv)!==cSnap('exam')){const o=DB.ex;o.tipo=nr.tipo;o.mod=nr.mod;o.creado=nr.creado;o.fin=nr.fin;o.ini=nr.ini;o.fim=nr.fim;o.fecha=nr.fecha;o.lugar=nr.lugar;o.bor=nr.bor;o.exam=nr.exam;o.jefe=nr.jefe;chg.ex=true}
       CL.last.exam=cSnap('exam');
     }
     if(cAdopt('alu',!alu)){
@@ -1625,7 +1625,7 @@ function nivBlock(){
     const gr=TIPOS.map(([gn,ls])=>{
       const ts=ls.filter(x=>Number(x[0].slice(1))===n);if(!ts.length)return '';
       const bt=[];
-      const addK=(x,k)=>{const lb=MAN[k]||k,sx=CST[k]||'s';bt.push(HAS[k]?`<button class="gtab" role="tab" data-pv="${k}" data-pt="${x[0]}" title="${esc(x[1])}"><span class="nvl">${esc(lb.replace(/ · Nivel \d$/,''))}</span><small class="nvt">${esc(x[1])}</small><small class="cs ${sx}">${CSL[sx]}</small></button>`:`<button class="gtab" disabled><span class="nvl">${esc(lb.replace(/ · Nivel \d$/,''))}</span><small class="nvt">${esc(x[1])}</small><small class="cs s">Pendiente</small></button>`)};
+      const addK=(x,k)=>{const lb=MAN[k]||k,sx=CST[k]||(HAS[k]?'a':'s');bt.push(HAS[k]?`<button class="gtab" role="tab" data-pv="${k}" data-pt="${x[0]}" title="${esc(x[1])}"><span class="nvl">${esc(lb.replace(/ · Nivel \d$/,''))}</span><small class="nvt">${esc(x[1])}</small><small class="cs ${sx}">${CSL[sx]}</small></button>`:`<button class="gtab" disabled><span class="nvl">${esc(lb.replace(/ · Nivel \d$/,''))}</span><small class="nvt">${esc(x[1])}</small><small class="cs s">Pendiente</small></button>`)};
       if(gn==='Examen técnico')MODS.forEach(([mn,ids])=>{const ks=[];ts.forEach(x=>x[2].filter(k=>ids.includes(k)).forEach(k=>ks.push([x,k])));if(ks.length){bt.push(`<div class="nvm">${esc(mn)}</div>`);ks.forEach(([x,k])=>addK(x,k))}});else ts.forEach(x=>x[2].forEach(k=>addK(x,k)));
       const dk='nv'+n+gn.slice(0,3);return bt.length?`<details class="xdet nvd" data-dtg="${dk}"${dOpen[dk]?' open':''}><summary>${esc(gn)}</summary><div class="gtabs nvg" role="tablist" aria-label="${esc(gn)}">${bt.join('')}</div></details>`:''}).join('');
     return `<div class="gx"><h3>Nivel ${n}</h3>${gr||'<p class="dvs" style="margin:2px 0 0">Sin planillas.</p>'}</div>`};
@@ -1691,7 +1691,7 @@ async function supDel(id,k){
       if(k==='of'){c.of={man:{},base:null,hab:false,fir:{},pis:{}};c.conf={}}
     }
     c.ex.bor=Object.assign({},c.ex.bor,{[k]:1});
-    if(LOCAL)saveLocal();else await cDb('PUT','xm/'+id+'/bor/'+k,true);
+    if(!LOCAL)await cDb('PUT','xm/'+id+'/bor/'+k,true);saveLocal();
     TMP=null;ROP=null;SDM='Se borraron '+SDN[k]+'.';
   }catch(e){SDM=e&&e.denied?'Firebase rechazó el borrado: hay que publicar las reglas nuevas (firebase_rules.json).':'No se pudo borrar (sin conexión). Probá de nuevo.'}
   SDQ=null;renderGestion()}
