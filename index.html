@@ -367,8 +367,11 @@ async function cDb(method,path,body){
   try{return await r.json()}catch(e){return null}
 }
 function cSet(j,em){CL.tok=j.idToken;CL.rt=j.refreshToken;CL.exp=Date.now()+Number(j.expiresIn||3600)*1000;CL.uid=j.localId;CL.email=String(j.email||em||'').toLowerCase()}
-async function cCt(){try{const inv=await cDb('GET','invites/'+ek(CL.email));const v=CL.role==='admin'&&!!(inv&&inv.ct);if(v!==CL.ct){CL.ct=v;cSave();return true}}catch(e){}return false}
-async function cProfile(){await cProfile0();await cCt()}
+const SUPER=['murtagh.santiago@gmail.com','santiagomurtagh@aadidess.com'];
+const isSuper=()=>SUPER.includes(String(CL.email||'').trim().toLowerCase());
+async function cCt(){let inv=null;try{inv=await cDb('GET','invites/'+ek(CL.email))}catch(e){if(!isSuper())return false}const v=CL.role==='admin'&&(isSuper()||!!(inv&&inv.ct));if(v!==CL.ct){CL.ct=v;cSave();return true}return false}
+async function cSuper(){if(!isSuper()||CL.role==='admin'||CL.role==='pending')return;try{const n=CL.name||String(CL.email).split('@')[0];await cDb('PUT','admins/'+CL.uid,true);await cDb('PUT','members/'+CL.uid,{name:n,email:CL.email,role:'admin',k:fk(n)});CL.role='admin';CL.name=n;CL.k=fk(n)}catch(e){}}
+async function cProfile(){await cProfile0();await cSuper();await cCt()}
 async function cProfile0(){
   const m=await cDb('GET','members/'+CL.uid);
   if(m&&m.name){CL.role=m.role==='admin'?'admin':(m.role==='dir'?'dir':'prof');CL.name=m.name;CL.k=m.k||fk(m.name);return}
@@ -635,7 +638,7 @@ const PERMN={prof:'Examinador',dir:'Dirección',admin:'Administrador'};
 async function setPerm(k,np,sel){
   const v=(INV||{})[k];if(!v)return;
   const prev=permOf(v),back=()=>{if(sel)sel.value=prev};
-  if(!DB.adm||(!LOCAL&&CL.role!=='admin')){back();return}
+  if(!DB.adm||(!LOCAL&&(CL.role!=='admin'||!isSuper()))){back();return}
   if(np===prev)return;
   const em=k.replace(/,/g,'.');
   if(!LOCAL&&ek(CL.email)===k){usrMsg='No podés cambiar tus propios permisos.';back();renderGestion();return}
@@ -1362,6 +1365,7 @@ document.addEventListener('click',e=>{
   {const rb=e.target.closest('[data-exreg]');if(rb){if(isMgr()&&!dirLocked())addRegEx(rb.dataset.exreg);return}}
   if(e.target.closest('[data-admadd]')){if(DB.adm)addAdmin();return}
   if(e.target.closest('[data-ctadd]')){if(DB.adm)addCt();return}
+  {const o=e.target.closest('[data-ctoff]');if(o){if(DB.adm)offCt(o.dataset.ctoff);return}}
   if(e.target.closest('[data-diradd]')){if(DB.adm)addDir();return}
   if(e.target.closest('[data-xedit]')){if(!isMgr()||!dirLocked()||!DB.xid)return;if(propOf()){xMsg='Ya hay una solicitud pendiente.';renderGestion();return}DB.liveEx=DB.ex;DB.ex=JSON.parse(JSON.stringify(DB.ex));xMsg='';showView('crear');return}
   if(e.target.closest('[data-nivtoggle]')){nivOpen=!nivOpen;pdfArm='';renderGestion();return}
@@ -1779,7 +1783,7 @@ let INV=null,invLoad=false,usrMsg='';
 const NIVS=[1,2,3,4,5];
 const nivOf=v=>{const n=Number(v&&v.niv);return n>=1&&n<=5?n:0};
 const permOf=v=>v&&(v.perm==='admin'||v.perm==='dir')?v.perm:'prof';
-const permSel=(k,v)=>`<select data-uxperm="${esc(k)}" aria-label="Permisos"><option value="prof"${permOf(v)==='prof'?' selected':''}>Examinador</option><option value="dir"${permOf(v)==='dir'?' selected':''}>Dirección</option><option value="admin"${permOf(v)==='admin'?' selected':''}>Administrador</option></select>`;
+const permSel=(k,v)=>(!LOCAL&&!isSuper())?`<span>${PERMN[permOf(v)]}</span>`:`<select data-uxperm="${esc(k)}" aria-label="Permisos"><option value="prof"${permOf(v)==='prof'?' selected':''}>Examinador</option><option value="dir"${permOf(v)==='dir'?' selected':''}>Dirección</option><option value="admin"${permOf(v)==='admin'?' selected':''}>Administrador</option></select>`;
 const nivSel=(k,v)=>isMgr()?`<select data-uxniv="${esc(k)}" aria-label="Validación"><option value="">—</option>${NIVS.map(n=>`<option value="${n}"${nivOf(v)===n?' selected':''}>Nivel ${n}</option>`).join('')}</select>`:(nivOf(v)?'Nivel '+nivOf(v):'<span class="dvs">Sin validar</span>');
 const dOpen={usr:false,reg:true};
 const xlsDet=(k,n,body)=>`<details class="xdet" data-dtg="${k}"${dOpen[k]?' open':''}><summary>Ver lista de examinadores (${n})</summary>${body}</details>`;
@@ -1860,7 +1864,7 @@ function renderGestion(){
   let inner;
   if(!isMgr())inner=(DB.me&&gTab==='reg')?A+regHtml():(DB.me&&gTab==='plan')?A+tutBlock()+nivBlock():(DB.me&&gTab==='jefe')?A+JF()+pruebaCard():A+C+(isJefe()?'':P)+ME+pruebaCard();
   else{
-    const TB=[['inicio','Inicio',pruebaCard()+C+P],['exam','Gestión de exámenes',exListHtml()],['reg','Registro de Planillas',regHtml()],['usu','Usuarios',(LOCAL?'':'<div class="gx" id="presbox">'+presHtml()+'</div>')+usrExBlock()+(DB.adm?adminsBlock():'')],['plan','Información',tutBlock()+nivBlock()]];
+    const TB=[['inicio','Inicio',pruebaCard()+C+P],['exam','Gestión de exámenes',exListHtml()],['reg','Registro de Planillas',regHtml()],['usu','Usuarios',(LOCAL?'':'<div class="gx" id="presbox">'+presHtml()+'</div>')+usrExBlock()+(DB.adm&&(LOCAL||isSuper())?adminsBlock():'')],['plan','Información',tutBlock()+nivBlock()]];
     if(!TB.some(b=>b[0]===gTab))gTab='inicio';
     inner=A+TB.find(b=>b[0]===gTab)[2]+ME;
   }
@@ -1901,7 +1905,15 @@ async function addDir(){
   try{await cInvite(n,em,'dir');admMsg=`Se agregó a ${n} como usuario de Dirección. Debe crear su acceso con el correo ${em}.`}catch(e){admMsg=e&&e.denied?'Sin permiso. Revisá las reglas de Firebase.':'Sin conexión: reintentá con internet.'}
   renderGestion();
 }
+function ctList(){const l=Object.entries(INV||{}).filter(([k,v])=>v&&v.ct).map(([k,v])=>({k,n:v.name||'',e:k.replace(/,/g,'.')})).sort((a,b)=>a.n.localeCompare(b.n,'es'));
+  return l.length?`<ul class="gl">${l.map(x=>`<li>${esc(x.n)} · ${esc(x.e)} <button class="lnk" data-ctoff="${esc(x.k)}">Quitar del Comité Técnico</button></li>`).join('')}</ul>`:'<p class="dvs">Todavía no hay integrantes cargados en el Comité Técnico.</p>'}
+async function offCt(k){
+  if(!LOCAL&&!isSuper())return;
+  try{if(!LOCAL)await cDb('DELETE','invites/'+k+'/ct');if(INV&&INV[k])delete INV[k].ct;admMsg='Se quitó a esa persona del Comité Técnico. Sigue como administrador/a; deja de ver Criterios cuando vuelva a ingresar.'}catch(e){admMsg=e&&e.denied?'Sin permiso. Revisá las reglas de Firebase.':'Sin conexión: reintentá con internet.'}
+  renderGestion();
+}
 async function addCt(){
+  if(!LOCAL&&!isSuper())return;
   const n=gv('ctn').trim(),em=gv('cte').trim();
   if(!n||!/^\S+@\S+\.\S+$/.test(em)){admMsg='Escribe el nombre y un correo válido.';renderGestion();return}
   try{await cInvite(n,em,'admin',0,true);admMsg=`Se agregó a ${n} al Comité Técnico (mismos permisos que un administrador, más el acceso a Criterios). Debe crear su acceso con el correo ${em}; si ya tiene acceso, lo verá al volver a ingresar.`}catch(e){admMsg=e&&e.denied?'Sin permiso. Revisá las reglas de Firebase.':'Sin conexión: reintentá con internet.'}
@@ -1913,7 +1925,7 @@ async function addAdmin(){
   try{await cInvite(n,em,'admin');admMsg=`Se agregó a ${n} como administrador/a. Debe crear su acceso con el correo ${em}.`}catch(e){admMsg=e&&e.denied?'Sin permiso. Revisá las reglas de Firebase.':'Sin conexión: reintentá con internet.'}
   renderGestion();
 }
-function adminsBlock(){return `<div class="gx"><h3>Usuarios de Dirección</h3><p class="dvs">Pueden crear y modificar exámenes y ver las planillas oficiales. Si un examen está en curso, cada cambio necesita la confirmación del jefe de mesa. Deben crear su acceso con ese correo.</p><div class="bar"><label>Nombre<input id="dgn"></label><label>Correo<input id="dge" type="email" autocapitalize="none"></label><button class="btn" data-diradd>Agregar usuario de Dirección</button></div></div><div class="gx"><h3>Administradores</h3><p class="dvs">Agregá a otra persona como administradora. Debe crear su acceso con ese correo.</p><div class="bar"><label>Nombre<input id="adn"></label><label>Correo<input id="ade" type="email" autocapitalize="none"></label><button class="btn" data-admadd>Agregar administrador</button></div></div><div class="gx"><h3>Comité Técnico</h3><p class="dvs">Tienen los mismos permisos que un administrador y además ven la pestaña Criterios. Si la persona ya tiene acceso, agregala acá con su mismo correo para darle ese rol.</p><div class="bar"><label>Nombre<input id="ctn"></label><label>Correo<input id="cte" type="email" autocapitalize="none"></label><button class="btn" data-ctadd>Agregar al Comité Técnico</button></div>${admMsg?`<p class="dvm" role="status">${esc(admMsg)}</p>`:''}</div>`}
+function adminsBlock(){return `<div class="gx"><h3>Usuarios de Dirección</h3><p class="dvs">Pueden crear y modificar exámenes y ver las planillas oficiales. Si un examen está en curso, cada cambio necesita la confirmación del jefe de mesa. Deben crear su acceso con ese correo.</p><div class="bar"><label>Nombre<input id="dgn"></label><label>Correo<input id="dge" type="email" autocapitalize="none"></label><button class="btn" data-diradd>Agregar usuario de Dirección</button></div></div><div class="gx"><h3>Administradores</h3><p class="dvs">Agregá a otra persona como administradora. Debe crear su acceso con ese correo.</p><div class="bar"><label>Nombre<input id="adn"></label><label>Correo<input id="ade" type="email" autocapitalize="none"></label><button class="btn" data-admadd>Agregar administrador</button></div></div><div class="gx"><h3>Comité Técnico</h3><p class="dvs">Tienen los mismos permisos que un administrador y además ven la pestaña Criterios. Si la persona ya tiene acceso, agregala acá con su mismo correo para darle ese rol.</p><div class="bar"><label>Nombre<input id="ctn"></label><label>Correo<input id="cte" type="email" autocapitalize="none"></label><button class="btn" data-ctadd>Agregar al Comité Técnico</button></div>${ctList()}${admMsg?`<p class="dvm" role="status">${esc(admMsg)}</p>`:''}</div>`}
 function refreshPl(){if(locked()||!hasEx())return;syncPl();save();bar();all()}
 function exFalta(){const x=DB.ex,f=[];if(!x.tipo)f.push('tipo de examen');if(!x.fecha)f.push('fecha');if(!x.lugar)f.push('delegación');if(!x.exam.length)f.push('examinadores');else if(x.jefe<0||!x.exam[x.jefe])f.push('jefe de mesa');if(!x.alu.length)f.push('alumnos inscriptos');return f}
 function crearBlock(){
