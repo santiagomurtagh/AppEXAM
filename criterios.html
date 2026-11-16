@@ -177,10 +177,10 @@ td.nm{border-left:3px solid var(--accent)}
 <body>
 
 
-<div id="login" hidden><form id="lf" autocomplete="on"><h1>Criterios por Nivel</h1><p id="lintro">Escribí tu correo y te enviamos un enlace para entrar. Usá el mismo correo de tu cuenta de AppEXAM.</p>
+<div id="login" hidden><form id="lf" autocomplete="on"><h1>Criterios por Nivel</h1><p id="lintro">Acceso exclusivo del Comité Técnico. Escribí tu correo para entrar.</p>
 <label>Correo<input id="lem" type="email" autocomplete="username" required></label>
 <div class="lm" id="lmsg" role="status"></div>
-<button class="btn send" id="lgo" type="submit">Enviarme el enlace</button></form></div>
+<button class="btn send" id="lgo" type="submit">Ingresar</button></form></div>
 <div class="wrap">
 <h1>Criterios por maniobra y nivel</h1>
 <p class="sub">Bases de aprobación y reglas de cada maniobra, y una prueba de escala para ensayar combinaciones. Los datos salen de las planillas de AppEXAM.</p>
@@ -200,13 +200,14 @@ td.nm{border-left:3px solid var(--accent)}
 const FB={key:'AIzaSyAkLoPruGPwA4_1fXn2kHrgulm1LsCRhww',db:'https://appexam-14708-default-rtdb.firebaseio.com'};
 const KEY='criterios_nivel_sesion',KEY_APP='planillas_n3_cloud',NODE='simulaciones';
 const ADMIN_EM=['murtagh.santiago@gmail.com','santiagomurtagh@aadidess.com'];
-const S={tok:'',rt:'',exp:0,uid:'',email:''};
+const S={tok:'',rt:'',exp:0,uid:'',email:'',anon:false};
+const ek=e=>String(e||'').trim().toLowerCase().replace(/\./g,',');
 const $=id=>document.getElementById(id);
-function save(){try{localStorage.setItem(KEY,JSON.stringify({rt:S.rt,uid:S.uid,email:S.email}))}catch(e){}}
-function load(){for(const k of [KEY,KEY_APP]){try{const s=JSON.parse(localStorage.getItem(k)||'null');if(s&&s.rt&&s.uid){Object.assign(S,{rt:s.rt,uid:s.uid,email:String(s.email||'').toLowerCase()});return true}}catch(e){}}return false}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({rt:S.rt,uid:S.uid,email:S.email,anon:S.anon}))}catch(e){}}
+function load(){for(const k of [KEY,KEY_APP]){try{const s=JSON.parse(localStorage.getItem(k)||'null');if(s&&s.rt&&s.uid){Object.assign(S,{rt:s.rt,uid:s.uid,email:String(s.email||'').toLowerCase(),anon:!!s.anon&&k===KEY});return true}}catch(e){}}return false}
 function logout(){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}
 const PEND='criterios_correo_pendiente';
-const EMS={OPERATION_NOT_ALLOWED:'El ingreso por enlace no está activado en Firebase (Authentication > Método de acceso > Vínculo de correo electrónico).',UNAUTHORIZED_DOMAIN:'Este sitio no está autorizado en Firebase (Authentication > Configuración > Dominios autorizados).',INVALID_CONTINUE_URI:'Este sitio no está autorizado en Firebase (Authentication > Configuración > Dominios autorizados).',EXPIRED_OOB_CODE:'El enlace venció. Pedí uno nuevo.',INVALID_OOB_CODE:'El enlace ya se usó o no es válido. Pedí uno nuevo.',EMAIL_NOT_FOUND:'Correo o contraseña incorrectos.',INVALID_PASSWORD:'Correo o contraseña incorrectos.',INVALID_LOGIN_CREDENTIALS:'Correo o contraseña incorrectos.',INVALID_EMAIL:'El correo no es válido.',MISSING_PASSWORD:'Escribí tu contraseña.',USER_DISABLED:'Esa cuenta está deshabilitada.',TOO_MANY_ATTEMPTS_TRY_LATER:'Demasiados intentos. Probá de nuevo en unos minutos.'};
+const EMS={NO_REGISTRADO:'Este correo no tiene acceso. Esta página es exclusiva del Comité Técnico.',NO_PERMISO:'Firebase rechazó la consulta. Revisá las reglas.',ADMIN_ONLY_OPERATION:'El acceso anónimo no está activado en Firebase (Authentication > Método de acceso > Anónimo).',OPERATION_NOT_ALLOWED:'Falta activar un método de ingreso en Firebase: Anónimo (Comité Técnico) o Vínculo de correo electrónico (administrador). Detalle: el ingreso por enlace no está activado en Firebase (Authentication > Método de acceso > Vínculo de correo electrónico).',UNAUTHORIZED_DOMAIN:'Este sitio no está autorizado en Firebase (Authentication > Configuración > Dominios autorizados).',INVALID_CONTINUE_URI:'Este sitio no está autorizado en Firebase (Authentication > Configuración > Dominios autorizados).',EXPIRED_OOB_CODE:'El enlace venció. Pedí uno nuevo.',INVALID_OOB_CODE:'El enlace ya se usó o no es válido. Pedí uno nuevo.',EMAIL_NOT_FOUND:'Correo o contraseña incorrectos.',INVALID_PASSWORD:'Correo o contraseña incorrectos.',INVALID_LOGIN_CREDENTIALS:'Correo o contraseña incorrectos.',INVALID_EMAIL:'El correo no es válido.',MISSING_PASSWORD:'Escribí tu contraseña.',USER_DISABLED:'Esa cuenta está deshabilitada.',TOO_MANY_ATTEMPTS_TRY_LATER:'Demasiados intentos. Probá de nuevo en unos minutos.'};
 async function auth(ep,body){let r;try{r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:'+ep+'?key='+FB.key,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){throw {net:true}}
   const j=await r.json().catch(()=>({}));if(!r.ok){const c=(j.error&&j.error.message)||'ERROR';throw {code:c}}return j}
 async function token(){
@@ -248,8 +249,8 @@ function doc(p){return {id:p.split('/').pop(),path:p,
   async delete(){await rest('DELETE',map(p));kick()},
   collection:c=>collection(p+'/'+c)}}
 const names={};
-const userApi={isOwner:async()=>isOwner(),id:async()=>S.uid,
-  async profiles(ids){const o={};for(const id of ids){if(names[id]===undefined){try{const m=await rest('GET','members/'+id);names[id]=(m&&m.name)||''}catch(e){names[id]=''}}o[id]={name:names[id]}}return o}};
+const userApi={isOwner:async()=>isOwner(),id:async()=>ek(S.email),
+  async profiles(ids){const o={};for(const id of ids){if(names[id]===undefined){try{const m=await rest('GET','invites/'+id);names[id]=(m&&m.name)||''}catch(e){names[id]=''}}o[id]={name:names[id]}}return o}};
 const dlApi={async save(r){const b=new Blob([r.data],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=r.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}};
 let resolveReady;const ready=new Promise(r=>{resolveReady=r});
 window.claude={use:async n=>{await ready;return n==='db'?{collection,doc}:n==='user'?userApi:n==='downloads'?dlApi:null}};
@@ -264,19 +265,26 @@ async function finish(em,code){
   const j=await auth('signInWithEmailLink',{email:em,oobCode:code});
   S.tok=j.idToken;S.rt=j.refreshToken;S.exp=Date.now()+Number(j.expiresIn||3600)*1000;S.uid=j.localId;S.email=String(j.email||em).toLowerCase();save();
   try{localStorage.removeItem(PEND)}catch(e){}cleanUrl();enter()}
+async function enterAnon(em){
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))throw {code:'INVALID_EMAIL'};
+  if(!(S.anon&&S.rt)){const j=await auth('signUp',{returnSecureToken:true});S.tok=j.idToken;S.rt=j.refreshToken;S.exp=Date.now()+Number(j.expiresIn||3600)*1000;S.uid=j.localId;S.anon=true}
+  let inv;try{inv=await rest('GET','invites/'+ek(em))}catch(e){throw {code:e&&e.code==='permission_denied'?'NO_PERMISO':'ERROR'}}
+  if(!(inv&&inv.ct===true)){throw {code:'NO_REGISTRADO'}}
+  S.email=em;S.anon=true;save();enter()}
 async function boot(){
   $('lf').addEventListener('submit',async ev=>{ev.preventDefault();const em=$('lem').value.trim().toLowerCase();if(!em)return;$('lgo').disabled=true;
     try{
       if(confirmMode){$('lmsg').textContent='Ingresando…';await finish(em,CODE)}
-      else{$('lmsg').textContent='Enviando…';await auth('sendOobCode',{requestType:'EMAIL_SIGNIN',email:em,canHandleCodeInApp:true,continueUrl:location.origin+location.pathname});
+      else if(ADMIN_EM.includes(em)){$('lmsg').textContent='Enviando…';await auth('sendOobCode',{requestType:'EMAIL_SIGNIN',email:em,canHandleCodeInApp:true,continueUrl:location.origin+location.pathname});
         try{localStorage.setItem(PEND,em)}catch(e){}
-        $('lmsg').textContent='Listo. Te enviamos un enlace a '+em+'. Abrilo para entrar (revisá también la carpeta de spam).';$('lgo').textContent='Enviar de nuevo'}}
+        $('lmsg').textContent='Listo. Como administrador, te enviamos un enlace a '+em+'. Abrilo para entrar (revisá también la carpeta de spam).';$('lgo').textContent='Enviar de nuevo'}
+      else{$('lmsg').textContent='Ingresando…';await enterAnon(em)}}
     catch(e){$('lmsg').textContent=emsg(e)}
     $('lgo').disabled=false});
   if(CODE){let em='';try{em=localStorage.getItem(PEND)||''}catch(e){}
     if(em){try{await finish(em,CODE);return}catch(e){showLogin(emsg(e));cleanUrl();return}}
     confirmMode=true;$('lem').value='';$('lgo').textContent='Completar ingreso';$('lintro').textContent='Para terminar, confirmá el correo al que te llegó el enlace.';showLogin('');return}
-  if(load()){try{await token();enter();return}catch(e){S.tok='';showLogin(e&&e.auth?'Tu sesión venció. Ingresá de nuevo.':'No hay conexión con el servidor. Revisá tu internet o ingresá de nuevo.');return}}
+  if(load()){try{await token();if(!isOwner()){let iv=null;try{iv=await rest('GET','invites/'+ek(S.email))}catch(e){}if(!(iv&&iv.ct===true)){S.tok='';showLogin('Este correo no tiene acceso. Esta página es exclusiva del Comité Técnico.');return}}enter();return}catch(e){S.tok='';showLogin(e&&e.auth?'Tu sesión venció. Ingresá de nuevo.':'No hay conexión con el servidor. Revisá tu internet o ingresá de nuevo.');return}}
   showLogin('')}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
@@ -432,7 +440,7 @@ async function sendRes(){
     await DBX.collection('envios/'+uid+'/items').doc(rid()).set(it);
     await DBX.doc('envios/'+uid).set({by:uid,ts:it.ts});
     ES.msg='Enviado. Quedó guardado para su análisis.';ES.com='';ES.nota=''}
-  catch(e){ES.msg='No se pudo enviar'+(e&&e.code==='permission_denied'?': tu correo no está registrado como examinador en AppEXAM.':'. Probá de nuevo en un momento.')}
+  catch(e){ES.msg='No se pudo enviar'+(e&&e.code==='permission_denied'?': tu correo no tiene acceso de Comité Técnico.':'. Probá de nuevo en un momento.')}
   ES.busy=false;render()}
 function schedRes(){if(cur!=='res')return;cancelAnimationFrame(RES.raf);RES.raf=requestAnimationFrame(render)}
 function startRes(){
@@ -461,7 +469,7 @@ function vRes(){
   const cm={};rows.forEach(x=>(x.cumple||[]).forEach(c=>{const k=x.k+'|'+c.t;cm[k]=(cm[k]||0)+1}));
   const top=Object.entries(cm).sort((a,b)=>b[1]-a[1]).slice(0,8),mx=top.length?top[0][1]:1;
   const ks=[...new Set(all.map(x=>x.k))].filter(k=>byK[k]).sort((a,b)=>byK[a].lvl-byK[b].lvl);
-  let h=`<div class="panel"><h2>Resultados enviados</h2><p>Lo que enviaron los examinadores desde la pestaña Simular Examen. Solo lo ve el administrador.</p>${RES.err?`<p class="none" role="status">${esc(RES.err)}</p>`:''}${!RES.loaded&&!RES.err?'<p class="none" role="status">Cargando…</p>':''}</div>`;
+  let h=`<div class="panel"><h2>Resultados enviados</h2><p>Lo que enviaron los integrantes del Comité Técnico desde la pestaña Simular Examen. Solo lo ve el administrador.</p>${RES.err?`<p class="none" role="status">${esc(RES.err)}</p>`:''}${!RES.loaded&&!RES.err?'<p class="none" role="status">Cargando…</p>':''}</div>`;
   h+=`<div class="sel"><label>Maniobra<select id="rf-k"><option value="">Todas</option>${ks.map(k=>`<option value="${k}"${f.k===k?' selected':''}>${esc(byK[k].name)} · Nivel ${byK[k].lvl}</option>`).join('')}</select></label><label>Nivel<select id="rf-l"><option value="">Todos</option>${[1,2,3,4].map(l=>`<option${f.l===String(l)?' selected':''}>${l}</option>`).join('')}</select></label><label>Resultado<select id="rf-h"><option value="">Todos</option><option value="hit"${f.h==='hit'?' selected':''}>Menor que la base</option><option value="ok"${f.h==='ok'?' selected':''}>Sin sugerencia</option><option value="nim"${f.h==='nim'?' selected':''}>NIM</option></select></label><button class="btn" data-csv="1"${DLX&&tot?'':' disabled'}>Descargar CSV</button></div>`;
   h+=`<div class="stats"><div class="stat"><b>${tot}</b><span>envíos</span></div><div class="stat"><b>${tot?Math.round(hit*100/tot):0}%</b><span>sugieren nota menor que la base (${hit})</span></div><div class="stat"><b>${nim}</b><span>NIM</span></div>${(()=>{const ns=rows.filter(x=>x.nota!=null).map(x=>x.nota);return `<div class="stat"><b>${ns.length?Math.round(ns.reduce((a,b)=>a+b,0)/ns.length):'–'}</b><span>nota sugerida promedio (${ns.length} con nota)</span></div>`})()}${byL.map(([l,n])=>`<div class="stat"><b>${n}</b><span>nivel ${l}</span></div>`).join('')}</div>`;
   h+=`<div class="panel"><h3>Combinaciones más cumplidas</h3>${top.length?top.map(([k,n])=>{const [mk,...tx]=k.split('|'),m=byK[mk];return `<div class="brow"><span>${esc((m?m.name+' · N'+m.lvl:mk)+' — '+tx.join('|'))}</span><div class="bar"><i style="width:${Math.round(n*100/mx)}%"></i></div><b>${n}</b></div>`}).join(''):'<p class="none">Todavía no hay combinaciones para mostrar.</p>'}</div>`;
@@ -510,7 +518,7 @@ function vIni(){
   return `<div class="dev" role="note"><span class="tag">En desarrollo</span><p>Esta herramienta está en desarrollo. Se utilizará para generar una base de datos que permita que todos los exámenes sean bien objetivos.</p></div>
   <div class="panel"><h2>Para qué sirve esta herramienta</h2><p>Reúne las notas que proponen examinadores para distintas combinaciones de criterios de la planilla de AppEXAM. Con esos datos se podrá armar una escala de valores que relacione cada combinación con una nota.</p><p class="lvlnote"><b>Cada nivel tiene su propia escala de valores.</b> Las notas de un nivel no se mezclan con las de otro: se analizan y se arman por separado.</p></div>
   <div class="panel"><h3>Cómo se usa Simular Examen</h3><ol class="steps"><li>Elegí el examen y la maniobra.</li><li>Completá cada criterio: todas sus calificaciones y al menos una observación. El siguiente criterio aparece cuando terminás el actual.</li><li>Elegí una Nota Sugerida de 0 a 100, de 5 en 5, y agregá un comentario si querés.</li><li>Tocá Guardar y Enviar. Si la nota supera lo que indican las reglas, se muestra un aviso, pero igual podés enviarla.</li></ol><p class="note">Lo que enviás lo ve solo el administrador de esta herramienta.</p></div>
-  <div class="gos">${go('bas','Bases de aprobación','La nota base de cada examen y las combinaciones que sugieren una nota menor que la base, maniobra por maniobra.')}${go('esc','Prueba de escala','La planilla de cada maniobra tal como funciona en AppEXAM, con opciones bloqueadas, para ver qué resultado da cada marca.')}${go('sim','Simular Examen','Elegís un examen y completás sus criterios de a uno. Podés sugerir una nota y enviarla con un comentario.')}${OWN?go('res','Resultados enviados','Lo que enviaron los examinadores, agrupado por combinación. Solo lo ve el administrador.'):''}</div>
+  <div class="gos">${go('bas','Bases de aprobación','La nota base de cada examen y las combinaciones que sugieren una nota menor que la base, maniobra por maniobra.')}${go('esc','Prueba de escala','La planilla de cada maniobra tal como funciona en AppEXAM, con opciones bloqueadas, para ver qué resultado da cada marca.')}${go('sim','Simular Examen','Elegís un examen y completás sus criterios de a uno. Podés sugerir una nota y enviarla con un comentario.')}${OWN?go('res','Resultados enviados','Lo que enviaron los integrantes del Comité Técnico, agrupado por combinación. Solo lo ve el administrador.'):''}</div>
   `+vMy()}
 
 function trigOf(m){
