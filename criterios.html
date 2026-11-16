@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Criterios por Nivel</title>
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+/* Concepto: planilla técnica de consulta. Tablas densas sobre fondo gris azulado, un único acento (azul glaciar) y ámbar solo para marcar diferencias entre niveles. */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#16202c; --ink2:#4a5868; --line:#d9dfe7; --line2:#e9edf2;
+  --accent:#0b5fa5; --accent-bg:#e2eefa; --diff:#9a5b00; --diff-bg:#fdf0d5; --ok-bg:#eef3f8;
+  --chip:#e8edf3; --chip-ink:#2b3a4a; --line3:#aab6c4; --band:#eaf0f7; --r-no:#c62828; --r-r:#e8710a; --r-b:#d4a800; --r-mb:#5aa02c; --r-exc:#0b7d36; --r-ink:#fff; --r-inkb:#2a2100;
+  --f-head:'Space Grotesk','Segoe UI',system-ui,sans-serif; --f-body:'Inter','Segoe UI',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1620; --surface:#18222f; --ink:#e6ecf3; --ink2:#a3b1c2; --line:#2b3a4c; --line2:#223142;
+  --accent:#6db3ee; --accent-bg:#17314a; --diff:#f0b954; --diff-bg:#3a2e12; --ok-bg:#1c2836;
+  --chip:#243344; --chip-ink:#d3deea; --line3:#4d6178; --band:#1f2d3e; --r-no:#ef5350; --r-r:#ff9a3c; --r-b:#e6c229; --r-mb:#8bc34a; --r-exc:#2ecc71; --r-ink:#08121c; --r-inkb:#08121c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1620; --surface:#18222f; --ink:#e6ecf3; --ink2:#a3b1c2; --line:#2b3a4c; --line2:#223142;
+  --accent:#6db3ee; --accent-bg:#17314a; --diff:#f0b954; --diff-bg:#3a2e12; --ok-bg:#1c2836;
+  --chip:#243344; --chip-ink:#d3deea; --line3:#4d6178; --band:#1f2d3e; --r-no:#ef5350; --r-r:#ff9a3c; --r-b:#e6c229; --r-mb:#8bc34a; --r-exc:#2ecc71; --r-ink:#08121c; --r-inkb:#08121c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1100px;margin:0 auto}
+h1{font:600 26px/1.15 var(--f-head);margin:0 0 4px;letter-spacing:-.01em;text-wrap:balance}
+h2{font:600 18px/1.25 var(--f-head);margin:0 0 10px}
+h3{font:600 14px/1.3 var(--f-head);margin:0}
+.sub{color:var(--ink2);margin:0 0 18px;max-width:68ch}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;flex-wrap:wrap}
+.tab{font:500 14px var(--f-body);background:none;border:0;border-bottom:3px solid transparent;color:var(--ink2);padding:10px 14px;cursor:pointer;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.tab:focus-visible,.pill:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.pill{font:500 13px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer}
+.pill[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pill[aria-pressed="true"]{color:#08121c}}
+:root[data-theme="dark"] .pill[aria-pressed="true"]{color:#08121c}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:0 0 16px}
+.panel p{margin:6px 0 0;color:var(--ink2)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:0 0 16px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:13.5px}
+th,td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line2)}
+thead th{font:600 12px var(--f-body);letter-spacing:.04em;text-transform:uppercase;color:var(--ink2);background:var(--ok-bg);position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+tr.lv th{background:var(--accent-bg);color:var(--ink);font:600 13px var(--f-head);letter-spacing:0;text-transform:none}
+tr.lv th small{font:400 12.5px var(--f-body);color:var(--ink2);margin-left:8px}
+td.nm{font-weight:600;white-space:nowrap}
+td.nm small{display:block;font-weight:400;color:var(--ink2)}
+.chip{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:4px;padding:1px 7px;margin:2px 4px 2px 0;font-size:12.5px;white-space:nowrap}
+.chip.d{background:var(--diff-bg);color:var(--diff);font-weight:600}
+.esc{font-family:var(--f-head);font-weight:600;font-size:12.5px;color:var(--accent)}
+.grp{margin:0 0 4px}.grp b{font-weight:600;font-size:12px;color:var(--ink2);margin-right:6px}
+.none{color:var(--ink2)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:0 0 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
+.card .big{font:600 30px/1 var(--f-head);color:var(--accent);font-variant-numeric:tabular-nums}
+.card ul{margin:8px 0 0;padding-left:18px;color:var(--ink2)}
+.sel{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+.sel label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink2);min-width:0}
+select{font:14px var(--f-body);padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);max-width:100%}
+.st{font:600 11.5px var(--f-body);border-radius:4px;padding:2px 7px;white-space:nowrap}
+.st.ig{background:var(--ok-bg);color:var(--ink2)}.st.di{background:var(--diff-bg);color:var(--diff)}.st.so{background:var(--accent-bg);color:var(--accent)}
+.note{font-size:13px;color:var(--ink2);margin:8px 0 0;max-width:80ch}
+.leg{font-size:12.5px;color:var(--ink2);margin:0 0 12px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;margin:2px 0}
+.sv{font:600 13px var(--f-head);min-width:44px;padding:7px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer}
+.sv[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sv[aria-pressed="true"]{color:#08121c}}
+:root[data-theme="dark"] .sv[aria-pressed="true"]{color:#08121c}
+.sv:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{font:500 13px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:7px 12px;cursor:pointer}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:16px;align-items:start}
+@media (max-width:820px){.two{grid-template-columns:minmax(0,1fr)}}
+.sum{position:sticky;top:8px}
+.rowc{padding:10px 0;border-bottom:1px solid var(--line2)}.rowc:last-child{border-bottom:0}
+.rowc h3{margin-bottom:4px}.rowc .lb{font-size:12px;color:var(--ink2);margin:6px 0 2px}
+
+
+/* escala de colores de calificación */
+[data-r="NO"]{--rc:var(--r-no)}[data-r="R"]{--rc:var(--r-r)}[data-r="B"]{--rc:var(--r-b)}[data-r="MB"]{--rc:var(--r-mb)}[data-r="EXC"],[data-r="OK"]{--rc:var(--r-exc)}
+.chip[data-r],.sv[data-r]{background:color-mix(in srgb,var(--rc) 16%,var(--surface));border:1px solid var(--rc);color:var(--ink);font-weight:700}
+.rowc .sv[data-r][aria-pressed="true"]{background:var(--rc);border-color:var(--rc);color:var(--r-ink);box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--rc)}
+.rowc .sv[data-r="B"][aria-pressed="true"]{color:var(--r-inkb)}
+.sv[data-r]:disabled{opacity:.4}
+.legv b[data-r]{display:inline-block;background:var(--rc);color:var(--r-ink);border-radius:4px;padding:1px 7px;text-align:center}
+.legv b[data-r="B"]{color:var(--r-inkb)}
+.rt{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.btn.tg[aria-pressed="true"]{background:var(--diff);border-color:var(--diff);color:#fff;font-weight:600}
+:root[data-theme="dark"] .btn.tg[aria-pressed="true"]{color:#08121c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.tg[aria-pressed="true"]{color:#08121c}}
+.bn{font:700 22px var(--f-head);color:var(--accent);font-variant-numeric:tabular-nums}
+.rules{margin:0 0 18px}.rules h3{font-size:16px;margin:0 0 8px}
+.rl{border:1px solid var(--line3);border-left:4px solid var(--accent);border-radius:6px;background:var(--surface);margin:0 0 6px}
+.rl:nth-of-type(even){background:var(--band)}
+.rl summary{cursor:pointer;padding:9px 12px;font-weight:600;list-style:revert}
+.rl summary small{font-weight:400;color:var(--ink2);margin-left:10px}
+.rl .rg{padding:2px 14px 12px 14px}.rl h4{margin:10px 0 4px;font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink2)}
+.rl ul{margin:0;padding-left:20px}.rl li{margin:2px 0}
+.sheet{margin:6px 0 4px}
+.sh{border:1px solid var(--line3);border-radius:8px;overflow:hidden;background:var(--surface)}
+.sr{display:grid;grid-template-columns:150px 1fr;gap:10px;padding:7px 10px;border-bottom:1px solid var(--line3);align-items:center}
+.sr:last-child{border-bottom:0}.sr:nth-child(even){background:var(--band)}
+.sr>b{font-size:13.5px}
+.sg{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;margin-right:14px}
+.sg em{font-style:normal;font-size:12px;color:var(--ink2);margin-right:2px}
+.sc{display:inline-flex;align-items:center;gap:5px;font-size:13px;padding:2px 8px;border-radius:5px;background:var(--chip);color:var(--chip-ink);border:1px solid transparent}
+.sc.tg{background:var(--r-no);color:var(--r-ink);font-weight:700}
+.sc.tg i{font-style:normal;font-size:11px;font-weight:700;background:var(--surface);color:var(--r-no);border-radius:9px;padding:0 5px;line-height:16px}
+.sc.rm{border:1px dashed var(--r-no);background:transparent;color:var(--ink)}
+.cbs{margin-top:12px}.cbs h4{margin:0 0 6px;font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink2)}
+.cb{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line3)}
+.cb .nb{width:22px;height:22px;border-radius:11px;background:var(--r-no);color:var(--r-ink);font:700 12px/22px var(--f-body);text-align:center;flex:none}
+.cb .plus{font-weight:700;color:var(--ink2)}.cb .art{font-size:12px;color:var(--ink2);font-style:italic}
+.rl2{margin-top:12px;border-top:1px solid var(--line3);padding-top:6px}.rl2>summary{cursor:pointer;font-weight:600;font-size:14px;padding:4px 0}
+@media(max-width:560px){.sr{grid-template-columns:1fr;gap:4px}}
+.nb2{display:inline-block;min-width:20px;height:20px;border-radius:10px;background:var(--r-no);color:var(--r-ink);font:700 12px/20px var(--f-body);text-align:center;margin-right:8px}
+.com{margin:0 0 14px}.com label{display:block;font:600 12.5px var(--f-body);color:var(--ink2);margin-bottom:4px}
+.com textarea{width:100%;max-width:640px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line3);border-radius:6px;padding:8px;resize:vertical}
+.lvlnote{margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--diff);background:var(--diff-bg);border-radius:0 6px 6px 0;color:var(--ink);font-size:13.5px}
+.dev{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--diff);color:#fff;border-radius:8px;padding:12px 16px;margin:0 0 14px;font-size:15px;line-height:1.45}
+.dev p{margin:0;flex:1 1 260px;color:inherit;font-weight:500}
+.dev .tag{font:700 12px var(--f-body);letter-spacing:.06em;text-transform:uppercase;border:2px solid currentColor;border-radius:5px;padding:3px 8px;white-space:nowrap}
+:root[data-theme="dark"] .dev{color:#08121c}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dev{color:#08121c}}
+.gos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:0 0 14px}
+.go{display:flex;flex-direction:column;gap:4px;text-align:left;font:inherit;border:1px solid var(--line3);border-left:3px solid var(--accent);border-radius:8px;background:var(--surface);color:var(--ink);padding:12px 14px;cursor:pointer}
+.go b{font:600 15px var(--f-head)}.go span{font-size:13px;color:var(--ink2);line-height:1.4}.go:hover{background:var(--ok-bg)}.go:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.steps{margin:6px 0 10px;padding-left:20px;line-height:1.55}
+.nxt{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px dashed var(--line);border-radius:8px;padding:10px 12px;margin-top:10px;font-size:13px;color:var(--ink2)}
+.btn.send{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.send{color:#08121c}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.send{color:#08121c}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:0 0 14px}
+.stat{border:1px solid var(--line3);border-radius:8px;padding:8px 10px;background:var(--surface)}.stat b{display:block;font:700 24px var(--f-head);color:var(--accent)}.stat span{font-size:12.5px;color:var(--ink2)}
+.brow{display:grid;grid-template-columns:minmax(0,1fr) 120px 30px;gap:10px;align-items:center;padding:4px 0;font-size:14px}
+.bar{height:10px;background:var(--chip);border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:var(--r-no)}
+tr.dt td{padding-top:0}tr.dt details summary{cursor:pointer;font-size:13.5px;color:var(--ink2)}tr.dt ul{margin:6px 0 8px;padding-left:20px}.cm{margin:6px 0;font-style:italic}
+@media(max-width:560px){.brow{grid-template-columns:1fr 70px 26px}}
+.com .cf{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}.com .cc{flex:1 1 320px;max-width:640px;min-width:0}.com .cn{flex:0 0 auto}.com .cn select{display:block;min-width:130px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line3);border-radius:6px;padding:8px}
+.warn{margin:8px 0 0;padding:8px 12px;border:1px solid var(--r-r);border-left:4px solid var(--r-r);border-radius:6px;background:color-mix(in srgb,var(--r-r) 14%,var(--surface));color:var(--ink);font-size:14px;max-width:640px}
+/* contraste entre criterios */
+tbody tr:not(.lv) td{border-bottom:1px solid var(--line3)}
+tbody tr:not(.lv):nth-of-type(even) td{background:var(--band)}
+tbody td+td,thead th+th{border-left:1px solid var(--line2)}
+td.nm{border-left:3px solid var(--accent)}
+.rowc{padding:12px 12px 12px 14px;margin:0 0 8px;border:1px solid var(--line3);border-left:4px solid var(--accent);border-radius:6px;background:var(--surface)}
+.rowc:nth-child(even){background:var(--band)}
+.rowc:last-child{border-bottom:1px solid var(--line3)}
+.rowc h3{font-size:15px;color:var(--ink);padding-bottom:4px;margin-bottom:6px;border-bottom:1px solid var(--line3)}
+.rowc .sv[aria-pressed="true"]{background:var(--accent)}
+.pd{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.pd li{display:flex;gap:8px;align-items:flex-start}
+.pd .st{flex:none;min-width:84px;text-align:center}
+.verd{font:600 15px/1.35 var(--f-head);margin:8px 0 0}
+.verd.bad{color:var(--diff)}
+.legv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:13px;margin:8px 0 0}
+.legv b{font-family:var(--f-head)}
+
+.acct{margin:-4px 0 12px;font-size:12.5px;color:var(--ink2)}
+.acct button{font:inherit;color:var(--accent);background:none;border:0;padding:0 0 0 6px;cursor:pointer;text-decoration:underline}
+#login{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));overflow:auto}
+#login form{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--line3);border-radius:10px;padding:20px;margin-top:8vh;display:flex;flex-direction:column;gap:10px}
+#login h1{font:700 22px var(--f-head);margin:0}
+#login p{margin:0;color:var(--ink2);font-size:13.5px}
+#login label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--ink2)}
+#login input{font:inherit;font-size:15px;padding:9px 10px;border:1px solid var(--line3);border-radius:6px;background:var(--bg);color:var(--ink)}
+#login .btn.send{padding:10px 12px;font-size:14px}
+#login .lk{align-self:flex-start;font:inherit;font-size:13px;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+#login .lm{min-height:1.3em;font-size:13px;color:var(--diff)}
+</style>
+</head>
+<body>
+
+
+<div id="login" hidden><form id="lf" autocomplete="on"><h1>Criterios por Nivel</h1><p id="lintro">Escribí tu correo y te enviamos un enlace para entrar. Usá el mismo correo de tu cuenta de AppEXAM.</p>
+<label>Correo<input id="lem" type="email" autocomplete="username" required></label>
+<div class="lm" id="lmsg" role="status"></div>
+<button class="btn send" id="lgo" type="submit">Enviarme el enlace</button></form></div>
+<div class="wrap">
+<h1>Criterios por maniobra y nivel</h1>
+<p class="sub">Bases de aprobación y reglas de cada maniobra, y una prueba de escala para ensayar combinaciones. Los datos salen de las planillas de AppEXAM.</p>
+<p class="acct" id="acct" hidden></p>
+<div class="tabs" role="tablist">
+ <button class="tab" role="tab" id="t-ini" aria-selected="true" data-v="ini">Inicio</button>
+ <button class="tab" role="tab" id="t-bas" aria-selected="false" data-v="bas">Bases de aprobación</button>
+ <button class="tab" role="tab" id="t-esc" aria-selected="false" data-v="esc">Prueba de escala</button>
+ <button class="tab" role="tab" id="t-sim" aria-selected="false" data-v="sim">Simular Examen</button>
+ <button class="tab" role="tab" id="t-res" aria-selected="false" data-v="res" hidden>Resultados enviados</button>
+</div>
+<div id="v"></div>
+</div>
+<script>
+/* ===== Conexión con Firebase (misma cuenta y mismo proyecto que AppEXAM) ===== */
+(function(){
+const FB={key:'AIzaSyAkLoPruGPwA4_1fXn2kHrgulm1LsCRhww',db:'https://appexam-14708-default-rtdb.firebaseio.com'};
+const KEY='criterios_nivel_sesion',KEY_APP='planillas_n3_cloud',NODE='simulaciones';
+const ADMIN_EM=['murtagh.santiago@gmail.com','santiagomurtagh@aadidess.com'];
+const S={tok:'',rt:'',exp:0,uid:'',email:''};
+const $=id=>document.getElementById(id);
+function save(){try{localStorage.setItem(KEY,JSON.stringify({rt:S.rt,uid:S.uid,email:S.email}))}catch(e){}}
+function load(){for(const k of [KEY,KEY_APP]){try{const s=JSON.parse(localStorage.getItem(k)||'null');if(s&&s.rt&&s.uid){Object.assign(S,{rt:s.rt,uid:s.uid,email:String(s.email||'').toLowerCase()});return true}}catch(e){}}return false}
+function logout(){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}
+const PEND='criterios_correo_pendiente';
+const EMS={OPERATION_NOT_ALLOWED:'El ingreso por enlace no está activado en Firebase (Authentication > Método de acceso > Vínculo de correo electrónico).',UNAUTHORIZED_DOMAIN:'Este sitio no está autorizado en Firebase (Authentication > Configuración > Dominios autorizados).',INVALID_CONTINUE_URI:'Este sitio no está autorizado en Firebase (Authentication > Configuración > Dominios autorizados).',EXPIRED_OOB_CODE:'El enlace venció. Pedí uno nuevo.',INVALID_OOB_CODE:'El enlace ya se usó o no es válido. Pedí uno nuevo.',EMAIL_NOT_FOUND:'Correo o contraseña incorrectos.',INVALID_PASSWORD:'Correo o contraseña incorrectos.',INVALID_LOGIN_CREDENTIALS:'Correo o contraseña incorrectos.',INVALID_EMAIL:'El correo no es válido.',MISSING_PASSWORD:'Escribí tu contraseña.',USER_DISABLED:'Esa cuenta está deshabilitada.',TOO_MANY_ATTEMPTS_TRY_LATER:'Demasiados intentos. Probá de nuevo en unos minutos.'};
+async function auth(ep,body){let r;try{r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:'+ep+'?key='+FB.key,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){throw {net:true}}
+  const j=await r.json().catch(()=>({}));if(!r.ok){const c=(j.error&&j.error.message)||'ERROR';throw {code:c}}return j}
+async function token(){
+  if(S.tok&&Date.now()<S.exp-60000)return S.tok;
+  let r;try{r=await fetch('https://securetoken.googleapis.com/v1/token?key='+FB.key,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(S.rt)})}catch(e){throw {net:true}}
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok){const c=(j.error&&j.error.message)||'';if(/TOKEN_EXPIRED|USER_DISABLED|USER_NOT_FOUND|INVALID_REFRESH_TOKEN/.test(c))throw {auth:true};throw {net:true}}
+  S.tok=j.id_token;S.rt=j.refresh_token||S.rt;S.exp=Date.now()+Number(j.expires_in||3600)*1000;save();return S.tok}
+async function rest(method,path,body,q){
+  const t=await token();let r;
+  try{r=await fetch(FB.db+'/'+path+'.json?'+(q?q+'&':'')+'auth='+encodeURIComponent(t),{method,headers:body!==undefined?{'Content-Type':'application/json'}:undefined,body:body!==undefined?JSON.stringify(body):undefined})}catch(e){throw {code:'unavailable'}}
+  if(r.status===401||r.status===403)throw {code:'permission_denied'};
+  if(!r.ok)throw {code:'unavailable'};
+  try{return await r.json()}catch(e){return null}}
+/* rutas: envios -> simulaciones */
+function map(p){const a=p.split('/');if(a[0]!=='envios')throw {code:'invalid_argument'};
+  if(a.length===1)return NODE;
+  if(a.length===2)return NODE+'/'+a[1]+'/meta';
+  return NODE+'/'+a.slice(1).join('/')}
+const isOwner=()=>ADMIN_EM.includes(S.email);
+const polls=new Set();let memo=null;
+const kick=()=>{memo=null;polls.forEach(f=>f())};
+async function fullNode(){if(memo&&Date.now()-memo.t<4000)return memo.v;const v=(await rest('GET',NODE))||{};memo={t:Date.now(),v};return v}
+const snap=o=>{const ids=Object.keys(o||{});return {docs:ids.map(id=>({id,exists:true,data:()=>o[id]})),size:ids.length}};
+function collection(p){return {doc:i=>doc(p+'/'+i),onSnapshot(next,err){
+  let dead=false,busy=false;
+  const run=async()=>{if(dead||busy)return;busy=true;
+    try{let o;const a=p.split('/');
+      if(a.length===1){o=Object.fromEntries(Object.keys(await fullNode()).map(k=>[k,{by:k}]))}
+      else if(a.length===3&&a[2]==='items'&&isOwner()){const n=await fullNode();o=(n[a[1]]&&n[a[1]].items)||{}}
+      else o=(await rest('GET',map(p)))||{};
+      if(!dead)next(snap(o))}
+    catch(e){if(!dead&&err)err(e&&e.code?e:{code:'unavailable'})}
+    busy=false};
+  polls.add(run);run();const iv=setInterval(()=>{if(!document.hidden)run()},8000);
+  return ()=>{dead=true;clearInterval(iv);polls.delete(run)}}}}
+function doc(p){return {id:p.split('/').pop(),path:p,
+  async set(d){try{await rest('PUT',map(p),JSON.parse(JSON.stringify(d)))}catch(e){throw e}kick()},
+  async delete(){await rest('DELETE',map(p));kick()},
+  collection:c=>collection(p+'/'+c)}}
+const names={};
+const userApi={isOwner:async()=>isOwner(),id:async()=>S.uid,
+  async profiles(ids){const o={};for(const id of ids){if(names[id]===undefined){try{const m=await rest('GET','members/'+id);names[id]=(m&&m.name)||''}catch(e){names[id]=''}}o[id]={name:names[id]}}return o}};
+const dlApi={async save(r){const b=new Blob([r.data],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=r.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}};
+let resolveReady;const ready=new Promise(r=>{resolveReady=r});
+window.claude={use:async n=>{await ready;return n==='db'?{collection,doc}:n==='user'?userApi:n==='downloads'?dlApi:null}};
+function enter(){$('login').hidden=true;const a=$('acct');a.hidden=false;a.textContent='Sesión: '+S.email;const b=document.createElement('button');b.type='button';b.textContent='Salir';b.onclick=logout;a.appendChild(b);resolveReady()}
+function showLogin(msg){$('login').hidden=false;$('lmsg').textContent=msg||'';const e=$('lem');if(e&&!e.value&&S.email)e.value=S.email}
+const qs=new URLSearchParams(location.search);
+const CODE=qs.get('mode')==='signIn'&&qs.get('oobCode')?qs.get('oobCode'):'';
+let confirmMode=false;
+function cleanUrl(){try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}}
+const emsg=e=>e&&e.net?'No hay conexión con el servidor. Revisá tu internet.':(EMS[e&&e.code]||'No se pudo completar ('+(e&&e.code)+').');
+async function finish(em,code){
+  const j=await auth('signInWithEmailLink',{email:em,oobCode:code});
+  S.tok=j.idToken;S.rt=j.refreshToken;S.exp=Date.now()+Number(j.expiresIn||3600)*1000;S.uid=j.localId;S.email=String(j.email||em).toLowerCase();save();
+  try{localStorage.removeItem(PEND)}catch(e){}cleanUrl();enter()}
+async function boot(){
+  $('lf').addEventListener('submit',async ev=>{ev.preventDefault();const em=$('lem').value.trim().toLowerCase();if(!em)return;$('lgo').disabled=true;
+    try{
+      if(confirmMode){$('lmsg').textContent='Ingresando…';await finish(em,CODE)}
+      else{$('lmsg').textContent='Enviando…';await auth('sendOobCode',{requestType:'EMAIL_SIGNIN',email:em,canHandleCodeInApp:true,continueUrl:location.origin+location.pathname});
+        try{localStorage.setItem(PEND,em)}catch(e){}
+        $('lmsg').textContent='Listo. Te enviamos un enlace a '+em+'. Abrilo para entrar (revisá también la carpeta de spam).';$('lgo').textContent='Enviar de nuevo'}}
+    catch(e){$('lmsg').textContent=emsg(e)}
+    $('lgo').disabled=false});
+  if(CODE){let em='';try{em=localStorage.getItem(PEND)||''}catch(e){}
+    if(em){try{await finish(em,CODE);return}catch(e){showLogin(emsg(e));cleanUrl();return}}
+    confirmMode=true;$('lem').value='';$('lgo').textContent='Completar ingreso';$('lintro').textContent='Para terminar, confirmá el correo al que te llegó el enlace.';showLogin('');return}
+  if(load()){try{await token();enter();return}catch(e){S.tok='';showLogin(e&&e.auth?'Tu sesión venció. Ingresá de nuevo.':'No hay conexión con el servidor. Revisá tu internet o ingresá de nuevo.');return}}
+  showLogin('')}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+
+</script>
+<script>
+const D={"man":[{"k":"n4ci","name":"Curva Intermedia","lvl":4,"mod":"Perfeccionamiento","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Derrapa","Pivoteos","Inestable"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Hacia adentro","A los pies"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n4sp","name":"Super Paralelo","lvl":4,"mod":"Perfeccionamiento","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Derrapa","Pivoteos","Inestable"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Hacia adentro","A los pies"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n4cp","name":"Corto Paralelo","lvl":4,"mod":"Perfeccionamiento","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Derrapa","Pivoteos","Inestable"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Hacia adentro","A los pies"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n4fp","name":"Fuera de Pista","lvl":4,"mod":"Técnicos","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Control"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Adentro","A los pies","No elige línea"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"adterr","nm":"Ad. terr.","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["No anticipa","Reactivo","Miedo","Apoyo Alt."]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n4bu","name":"Bumps","lvl":4,"mod":"Técnicos","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Control"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Adentro","A los pies","No elige línea"]}]},{"id":"carga","nm":"G. carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Pierde contacto","Rebota","Retiene","No se adapta"]}]},{"id":"adterr","nm":"Ad. terr.","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["No anticipa","Reactivo","Miedo","Apoyo Alt."]}]},{"id":"estrategia","nm":"Estrategia","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Pivot","Derrapaje","Freno","Diag."]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Alternado","Pivoteos","Inestable"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Temprano","Tarde","Rebota"]}]}]},{"k":"n3cu","name":"Cuña","lvl":3,"mod":"Básicos","crit":[{"id":"imagen","nm":"Imagen gral.","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["No natural","En bloque","Forzado"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Eje pista","Eje avance","Adentro"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Zig zag","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Aplana interno","Pierde cuña","Cuña resistida"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"vel","nm":"Velocidad","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]},{"l":"","m":false,"r":false,"sc":null,"o":["Exc. rozamiento","C. cortada"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","ROD.","CAD."]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Ap. temprano","Ap. tarde","Ap. circular"]}]}]},{"k":"n3el","name":"Elemental","lvl":3,"mod":"Básicos","crit":[{"id":"imagen","nm":"Imagen gral.","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["No natural","En bloque","Forzado"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Eje pista","Eje avance","Adentro"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","No prepara","Diagonal","Confunde fases"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Toma carga int.","Elimina cuña","Deriva lateral"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"vel","nm":"Velocidad","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]},{"l":"","m":true,"r":false,"sc":null,"o":["Frena cuña","Fin. cortada"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","ROD.","CAD."]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"reunion","nm":"Reunión","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Temprana","Tardía","Activa"]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Ap. finalización","Ap. circular"]}]}]},{"k":"n3cib","name":"Curva Intermedia Básica","lvl":3,"mod":"Básicos","crit":[{"id":"imagen","nm":"Imagen gral.","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["No natural","Estático","Exagerado"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Diagonal"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Cortada","Pivoteos"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"encad","nm":"Tipo encad.","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Siempre"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","ROD.","CAD."]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Adentro","A los pies"]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n3ci","name":"Curva Intermedia","lvl":3,"mod":"Perfeccionamiento","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Derrapa","Pivoteos","Inestable"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Hacia adentro","A los pies"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n3sp","name":"Super Paralelo","lvl":3,"mod":"Perfeccionamiento","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Derrapa","Pivoteos","Inestable"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Hacia adentro","A los pies"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n3cp","name":"Corto Paralelo","lvl":3,"mod":"Perfeccionamiento","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Derrapa","Pivoteos","Inestable"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Hacia adentro","A los pies"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n3fp","name":"Fuera de Pista","lvl":3,"mod":"Técnicos","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Control"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Adentro","A los pies","No elige línea"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"adterr","nm":"Ad. terr.","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["No anticipa","Reactivo","Miedo","Apoyo Alt."]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n3bu","name":"Bumps","lvl":3,"mod":"Técnicos","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Control"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Adentro","A los pies","No elige línea"]}]},{"id":"carga","nm":"G. carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Pierde contacto","Rebota","Retiene","No se adapta"]}]},{"id":"adterr","nm":"Ad. terr.","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["No anticipa","Reactivo","Miedo","Apoyo Alt."]}]},{"id":"estrategia","nm":"Estrategia","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Pivot","Derrapaje","Freno","Diag."]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Alternado","Pivoteos","Inestable"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Temprano","Tarde","Rebota"]}]}]},{"k":"n2sp","name":"Super Paralelo","lvl":2,"mod":"Perfeccionamiento","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Derrapa","Pivoteos","Inestable"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Hacia adentro","A los pies"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n2cp","name":"Corto Paralelo","lvl":2,"mod":"Perfeccionamiento","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Derrapa","Pivoteos","Inestable"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Hacia adentro","A los pies"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n2cib","name":"Curva Intermedia Básica","lvl":2,"mod":"Básicos","crit":[{"id":"imagen","nm":"Imagen gral.","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["No natural","Estático","Exagerado"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Diagonal"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Cortada","Pivoteos"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"encad","nm":"Tipo encad.","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Siempre"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","ROD.","CAD."]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Adentro","A los pies"]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n2fp","name":"Fuera de Pista","lvl":2,"mod":"Técnicos","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Control"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Adentro","A los pies","No elige línea"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"adterr","nm":"Ad. terr.","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["No anticipa","Reactivo","Miedo","Apoyo Alt."]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n2bu","name":"Bumps","lvl":2,"mod":"Técnicos","crit":[{"id":"interp","nm":"Interp. maniobra","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["Sí","No"]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Control"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Adentro","A los pies","No elige línea"]}]},{"id":"carga","nm":"G. carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Pierde contacto","Rebota","Retiene","No se adapta"]}]},{"id":"adterr","nm":"Ad. terr.","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["No anticipa","Reactivo","Miedo","Apoyo Alt."]}]},{"id":"estrategia","nm":"Estrategia","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Pivot","Derrapaje","Freno","Diag."]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Alternado","Pivoteos","Inestable"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Temprano","Tarde","Rebota"]}]}]},{"k":"n1sp","name":"Super Paralelo","lvl":1,"mod":"Perfeccionamiento","crit":[{"id":"imagen","nm":"Imagen gral.","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No interpreta","No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame","Derrapa","Pivoteos","Inestable"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Hacia adentro","A los pies"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n1cp","name":"Corto Paralelo","lvl":1,"mod":"Perfeccionamiento","crit":[{"id":"imagen","nm":"Imagen gral.","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"Observaciones","m":false,"r":false,"sc":null,"o":["No interpreta","No natural","Estático","Exagerado","Errático"]}]},{"id":"ritmo","nm":"Ritmo","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Lento","Alto"]},{"l":"Velocidad","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["IZQ","DER"]},{"l":"Forma","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Irregular","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["A Frame(alt)","Derrapa","Pivoteos","Inestable"]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"carga","nm":"Gestión de carga","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Falta al inicio","Exceso final","Retiene finales","No se adapta","Flotado"]}]},{"id":"encad","nm":"Encadenamiento","gs":[{"l":"","m":false,"r":false,"sc":null,"o":["DIR","IND"]},{"l":"Frecuencia","m":false,"r":false,"sc":null,"o":["A veces","Casi siempre","Siempre"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Hacia adentro","A los pies"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","CAD.","ROD."]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Rebota","Ap. circular"]}]}]},{"k":"n1cu","name":"Cuña","lvl":1,"mod":"Básicos","crit":[{"id":"imagen","nm":"Imagen gral.","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["No natural","En bloque","Forzado"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Eje pista","Eje avance","Adentro"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","Zig zag","Diagonal"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Aplana interno","Pierde cuña","Cuña resistida"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"vel","nm":"Velocidad","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]},{"l":"","m":false,"r":false,"sc":null,"o":["Exc. rozamiento","C. cortada"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","ROD.","CAD."]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Ap. temprano","Ap. tarde","Ap. circular"]}]}]},{"k":"n1el","name":"Elemental","lvl":1,"mod":"Básicos","crit":[{"id":"imagen","nm":"Imagen gral.","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["No natural","En bloque","Forzado"]}]},{"id":"visual","nm":"Ant. visual","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Eje pista","Eje avance","Adentro"]}]},{"id":"curva","nm":"Diseño curva","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Arco","Cuerda","Flecha","No prepara","Diagonal","Confunde fases"]}]},{"id":"apoyos","nm":"Apoyos","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Toma carga int.","Elimina cuña","Deriva lateral"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"vel","nm":"Velocidad","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":false,"r":false,"sc":null,"o":["Alta","Baja","Varía"]},{"l":"","m":true,"r":false,"sc":null,"o":["Frena cuña","Fin. cortada"]}]},{"id":"ade","nm":"ADE","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["AD.","RETR.","TOB.","ROD.","CAD."]}]},{"id":"ejes","nm":"Ejes","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Rot.","Inc.","C.Rot"]},{"l":"","m":true,"r":false,"sc":null,"o":["IZQ","DER"]}]},{"id":"reunion","nm":"Reunión","gs":[{"l":"","m":false,"r":true,"sc":"S5","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Temprana","Tardía","Activa"]}]},{"id":"baston","nm":"Uso bastón","gs":[{"l":"","m":false,"r":true,"sc":"RT","o":[]},{"l":"","m":true,"r":false,"sc":null,"o":["Acompaña","Ap. finalización","Ap. circular"]}]}]}],"tipos":[{"id":"i1","grupo":"Ingreso","nombre":"Ingreso a Nivel 1","man":["n1cp","n1sp"],"base":40,"nota":"1ra parte: Corto Paralelo. 2da parte: nivel de esquí, iniciando con Corto o Super Paralelo."},{"id":"i3","grupo":"Ingreso","nombre":"Ingreso a Nivel 3","man":["n3cp","n3sp","n3bu","n3cib"],"base":55,"nota":""},{"id":"i4","grupo":"Ingreso","nombre":"Ingreso a Nivel 4","man":["n4sp","n4cp","n4bu","n4fp"],"base":50,"nota":""},{"id":"t1","grupo":"Examen técnico","nombre":"Técnico Nivel 1","man":["n1cu","n1el","n1cp","n1sp"],"base":40,"nota":""},{"id":"t2","grupo":"Examen técnico","nombre":"Técnico Nivel 2","man":["n2cp","n2sp","n2cib","n2fp","n2bu"],"base":40,"nota":""},{"id":"t3","grupo":"Examen técnico","nombre":"Técnico Nivel 3","man":["n3cu","n3el","n3cib","n3ci","n3cp","n3sp","n3bu","n3fp"],"base":{"bu":45,"fp":45,"def":40},"nota":""},{"id":"t4","grupo":"Examen técnico","nombre":"Técnico Nivel 4","man":["n4sp","n4cp","n4ci","n4bu","n4fp"],"base":40,"nota":""}],"MODS":["Básicos","Perfeccionamiento","Técnicos"]};
+D.man.forEach(m=>{const i=m.crit.findIndex(c=>c.id==='ritmo');if(i<0)return;const c=m.crit[i],k=c.gs.findIndex(g=>g.l==='Velocidad');if(k<0)return;m.crit.splice(i+1,0,{id:'vel',nm:'Velocidad',gs:c.gs.slice(k).map(g=>Object.assign({},g,{l:''}))});c.gs=c.gs.slice(0,k)});
+const SC={S5:['NO','R','B','MB','EXC'],RT:['OK','R','NO']};
+const SCN={S5:'Escala de 5',RT:'3 valores'};
+const CN={imagen:'Imagen gral.',interp:'Interpretación',ritmo:'Ritmo',vel:'Velocidad',curva:'Diseño de curva',apoyos:'Apoyos',ejes:'Ejes',carga:'Gestión de carga',encad:'Encadenamiento',visual:'Ant. visual',ade:'ADE',baston:'Uso bastón',reunion:'Reunión',adterr:'Adaptación al terreno',estrategia:'Estrategia'};
+const ORD=['encad'].concat(Object.keys(CN).filter(k=>k!=='encad'));
+const MAN=D.man,byK=Object.fromEntries(MAN.map(m=>[m.k,m]));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LV=[1,2,3,4];
+const BASE={1:{t:'40',i:'40'},2:{t:'40',i:null},3:{t:'40 (Bumps y Fuera de Pista: 45)',i:'55'},4:{t:'40',i:'50'}};
+const EJ={1:'NO, R o B',2:'NO o R',3:'NO',4:'NO'};
+const cOf=(m,id)=>m.crit.find(c=>c.id===id);
+function sig(c){return JSON.stringify(c.gs.map(g=>[g.l,g.m,g.sc,g.o]))}
+function cell(c,ref){ // celda de un criterio en una maniobra
+  if(!c)return '<span class="none">No se evalúa</span>';
+  return c.gs.map(g=>{
+    const d=ref&&JSON.stringify([g.l,g.m,g.sc,g.o])!==ref;
+    if(g.sc)return `<div class="grp"><b>${esc(g.l||'Calificación')}</b><span class="esc">${SCN[g.sc]}</span> ${SC[g.sc].map(x=>`<span class="chip" data-r="${x}">${x}</span>`).join('')}</div>`;
+    return `<div class="grp"><b>${esc(g.l||(g.m?'Varias':'Una'))}</b>${g.o.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`}).join('')}
+const TAB={};
+function vCrit(){
+  const id=TAB.crit||'encad';
+  const ms=MAN.filter(m=>cOf(m,id));
+  const sigs={};ms.forEach(m=>{const s=sig(cOf(m,id));sigs[s]=(sigs[s]||0)+1});
+  const n=Object.keys(sigs).length;
+  let h=`<div class="pills" role="group" aria-label="Criterio">${ORD.filter(k=>MAN.some(m=>cOf(m,k))).map(k=>`<button class="pill" data-c="${k}" aria-pressed="${k===id}">${CN[k]}</button>`).join('')}</div>`;
+  h+=`<div class="panel"><h2>${CN[id]}</h2><p>Se evalúa en ${ms.length} de ${MAN.length} maniobras y tiene ${n} variante${n>1?'s':''} de opciones.${id==='ejes'?' Si se marcan detalles de ejes, la calificación posible depende del nivel del examen: '+LV.map(l=>'Nivel '+l+': '+EJ[l]).join(' · ')+'.':''}</p></div>`;
+  h+=`<div class="tw"><table><thead><tr><th>Maniobra</th><th>Cómo se califica y qué se observa</th></tr></thead><tbody>`;
+  LV.forEach(l=>{const g=ms.filter(m=>m.lvl===l);h+=`<tr class="lv"><th colspan="2">Nivel ${l}<small>Base técnico ${BASE[l].t}${BASE[l].i?' · ingreso '+BASE[l].i:''}</small></th></tr>`;
+   if(!g.length)h+=`<tr><td colspan="2" class="none">Ninguna maniobra de este nivel evalúa este criterio.</td></tr>`;
+   g.forEach(m=>{h+=`<tr><td class="nm">${esc(m.name)}<small>${esc(m.mod)}</small></td><td>${cell(cOf(m,id))}</td></tr>`})});
+  return h+`</tbody></table></div><p class="note">Las observaciones bloquean otras opciones según lo marcado (por ejemplo, con Apoyos en MB o EXC no se marcan defectos de apoyo). El detalle de esas reglas está en el tutorial de maniobras.</p>`}
+function vCmp(){
+  const fams=[];MAN.forEach(m=>{if(!fams.includes(m.name))fams.push(m.name)});
+  const f=TAB.f||'Corto Paralelo';
+  const ms=MAN.filter(m=>m.name===f).sort((a,b)=>a.lvl-b.lvl);
+  let h=`<div class="sel"><label>Maniobra<select id="sf">${fams.map(x=>`<option${x===f?' selected':''}>${esc(x)}</option>`).join('')}</select></label></div>`;
+  h+=`<p class="leg"><span>${esc(f)} se evalúa en ${ms.length>1?'los niveles '+ms.map(m=>m.lvl).join(', '):'el nivel '+ms[0].lvl}.</span><span class="chip d">cambia</span><span>marca lo que cambia respecto del nivel anterior.</span></p>`;
+  h+=`<div class="tw"><table><thead><tr><th>Criterio</th>${ms.map(m=>`<th>Nivel ${m.lvl}</th>`).join('')}</tr></thead><tbody>`;
+  h+=`<tr class="lv"><th>Nota base</th>${ms.map(m=>{const b=D.tipos.filter(t=>t.man.includes(m.k)).map(t=>{const v=typeof t.base==='object'?(t.base[m.k.slice(2)]??t.base.def):t.base;return `${t.grupo==='Ingreso'?'Ingreso':'Técnico'} ${v}`});return `<th>${b.map(esc).join(' · ')||'—'}</th>`}).join('')}</tr>`;
+  const EJR=()=>{return ms.some(m=>cOf(m,'ejes'))?`<tr><td class="nm">Ejes con detalles marcados<small>calificación posible</small></td>${ms.map(m=>`<td>${cOf(m,'ejes')?EJ[m.lvl]:'—'}</td>`).join('')}</tr>`:'';};
+  ORD.filter(k=>ms.some(m=>cOf(m,k))).forEach(k=>{
+    h+=`<tr><td class="nm">${CN[k]}</td>`;
+    ms.forEach((m,i)=>{const c=cOf(m,k),pr=i?cOf(ms[i-1],k):null;const ch=i&&(c?!pr||sig(c)!==sig(pr):!!pr);
+      h+=`<td>${ch?'<span class="chip d">cambia</span>':''}${cell(c)}</td>`});
+    h+='</tr>';if(k==='ejes')h+=EJR()});
+  h+=`</tbody></table></div><p class="note">La nota base es la de cada examen que incluye la maniobra en ese nivel. Si un criterio no cambia entre niveles, la planilla evalúa lo mismo con las mismas opciones.</p>`;
+  return h}
+const ES={k:'n1cp',ex:null,skip:new Set(),vs:{},v:{},free:false,com:'',nota:'',busy:false,last:null};
+const MEAN={NO:'no logrado',R:'regular',B:'bueno',MB:'muy bueno',EXC:'excelente',OK:'correcto'};
+function baseOf(m,t){const b=t.base;return typeof b==='object'?(b[m.k.slice(2)]??b.def):b}
+const A=(id,i)=>ES.v[id+'.'+i]||[];
+function exSorted(){return D.tipos.slice().sort((a,b)=>(Number(a.id.slice(1))||0)-(Number(b.id.slice(1))||0)||(b.grupo==='Ingreso')-(a.grupo==='Ingreso'))}
+function goMan(k){if(!k||k===ES.k)return;ES.vs[ES.k]=ES.v;ES.k=k;ES.v=ES.vs[k]||{};ES.msg='';ES.com='';ES.nota=''}
+function exLvl(){const e=ES.ex||'';return Number(e.slice(1))||0}
+function ejA(){return ({1:['NO','R','B'],2:['NO','R']})[exLvl()]||['NO']}
+function ctx(){const m=byK[ES.k];return {m,CUL:m.name==='Cuña',ELL:m.name==='Elemental',N1S:m.k==='n1cp'||m.k==='n1sp'}}
+function nimOf(){const {N1S}=ctx();return A('interp',0).includes('No')||(N1S&&A('imagen',1).includes('No interpreta'))}
+function blocked(id,i,o){
+  if(ES.free)return false;
+  const {m,CUL,ELL,N1S}=ctx(),inv=nimOf(),a=(x,y)=>A(x,y),hi=l=>l.some(x=>x==='MB'||x==='EXC'),lowr=l=>l.some(x=>x==='R'||x==='NO');
+  const c=m.crit.find(z=>z.id==='curva'),cv3=!!c&&c.gs.length===3;
+  const dg=a('curva',2).concat(a('curva',1)).includes('Diagonal');
+  if(id==='apoyos'&&i>=1&&hi(a('apoyos',0)))return true;
+  if(id==='curva'&&ELL&&i===0&&['B','MB','EXC'].includes(o)&&a('curva',1).includes('Confunde fases'))return true;
+  if(id==='curva'&&ELL&&a('curva',1).includes('No prepara')&&((i===0&&['B','MB','EXC'].includes(o))||(i===1&&o!=='No prepara')))return true;
+  if(id==='curva'&&i===0&&dg&&(ELL?['B','MB','EXC'].includes(o):o!=='NO'))return true;
+  if(id==='curva'&&dg&&((i===2&&o!=='Diagonal')||(i===1&&(cv3||o!=='Diagonal'))))return true;
+  if(o==='Varía'&&!ELL&&id==='vel'&&i===1&&!lowr(a('vel',0)))return true;
+  if(id==='ejes'&&i>=1&&ELL&&!a('ejes',0).length)return true;
+  if(id==='ejes'&&i===2&&(CUL||ELL)&&hi(a('ejes',0)))return true;
+  if(id==='vel'&&CUL&&lowr(a('vel',0))&&((i===2&&o==='Exc. rozamiento'&&a('vel',1).includes('Alta'))||(i===1&&o==='Alta'&&a('vel',2).includes('Exc. rozamiento'))))return true;
+  if(id==='vel'&&i===2&&(CUL||ELL)&&a('vel',0).includes('OK'))return true;
+  if(id==='curva'&&i===1&&(CUL||ELL)&&hi(a('curva',0)))return true;
+  if(id==='imagen'&&i===1&&(CUL||ELL)&&hi(a('imagen',0)))return true;
+  if(id==='reunion'&&i===1&&ELL&&hi(a('reunion',0)))return true;
+  if(id==='baston'&&i===1&&ELL&&a('baston',0).includes('OK'))return true;
+  if(id==='carga'&&i===1&&N1S&&hi(a('carga',0)))return true;
+  if(id==='imagen'&&i===1&&N1S&&a('imagen',0).includes('NO'))return true;
+  if(inv&&o==='OK'&&(((id==='ritmo'||id==='vel')&&i===0)||(id==='curva'&&i===0)))return true;
+  if(lowr(a('apoyos',0))&&id==='carga'&&i===0&&o!=='R'&&o!=='NO')return true;
+  if(a('ejes',1).length>0&&id==='ejes'&&i===0&&!ejA().includes(o))return true;
+  if(id==='ejes'&&i===1&&exLvl()<3&&a('ejes',0).length>0&&!a('ejes',0).some(x=>ejA().includes(x)))return true;
+  if((id==='visual'||id==='ade'||id==='baston')&&i>0&&a(id,0).includes('OK'))return true;
+  return false}
+function prune(){if(ES.free)return;let ch=true,n=0;while(ch&&n++<10){ch=false;const {m}=ctx();m.crit.forEach(c=>c.gs.forEach((q,i)=>{const k=c.id+'.'+i,cur=ES.v[k];if(!cur||!cur.length)return;const keep=cur.filter(o=>!blocked(c.id,i,o));if(keep.length!==cur.length){ch=true;if(keep.length)ES.v[k]=keep;else delete ES.v[k]}}))}}
+function vEsc(){
+  const EXS=exSorted();
+  if(!EXS.find(x=>x.id===ES.ex)){ES.ex=EXS[0].id;ES.vs={};ES.v={};ES.skip=new Set()}
+  const ex=EXS.find(x=>x.id===ES.ex);
+  if(!ex.man.includes(ES.k))goMan(ex.man.find(k=>byK[k]));
+  const m=byK[ES.k],base=baseOf(m,ex),{ELL,N1S}=ctx();
+  prune();
+  const g=(id,i)=>A(id,i)[0];
+  const ratings=[];m.crit.forEach(c=>c.gs.forEach((q,i)=>{if(q.sc)ratings.push([c,q,i])}));
+  const nimOn=nimOf();
+  let rc=0;ratings.forEach(([c,q,i])=>{if(!nimOn&&g(c.id,i)==='R')rc++});
+  const rt=ratings.length,answered=ratings.filter(([c,q,i])=>g(c.id,i)).length;
+  const hasC=id=>m.crit.some(c=>c.id===id);
+  const TG=trigOf(m),labT=x=>x.r?`R en al menos ${x.need} de ${x.rt} casillas de calificación (hay ${rc})`:x.cells.map(cl=>{const c=m.crit.find(z=>z.id===cl.c),gg=c&&c.gs[cl.i];return CN[cl.c]+(gg&&gg.l&&cl.i?' · '+gg.l:'')+': '+cl.o.join(' o ')}).join(' + ')+(x.art?' (solo en esta herramienta)':'');
+  const okT=x=>x.r?(!nimOn&&rc>=x.need):x.cells.some(cl=>cl.c==='interp')?nimOn:(!nimOn&&x.cells.every(cl=>cl.o.some(o=>A(cl.c,cl.i).includes(o))));
+  const PD=TG.map(x=>[labT(x),okT(x),x.n]);
+  const hit=PD.some(x=>x[1]);
+  const nMarks=k=>{const v=k===ES.k?ES.v:(ES.vs[k]||{});return Object.keys(v).filter(x=>v[x]&&v[x].length).length};
+  const bsx=[...new Set(ex.man.map(k=>byK[k]).filter(Boolean).map(mm=>baseOf(mm,ex)))];
+  let h=`<div class="sel"><label>Examen<select id="sx">${[1,2,3,4].map(l=>{const o=EXS.filter(x=>Number(x.id.slice(1))===l);return o.length?`<optgroup label="Nivel ${l}">${o.map(x=>`<option value="${x.id}"${x.id===ES.ex?' selected':''}>${esc(x.nombre)}</option>`).join('')}</optgroup>`:''}).join('')}</select></label><span class="note" style="align-self:end;margin:0 0 6px">Escala del Nivel ${exLvl()} · Base ${bsx.length>1?bsx.join(' / ')+' según la maniobra':bsx[0]} · ${ex.man.length} maniobra${ex.man.length>1?'s':''}</span></div>`;
+  h+=`<div class="pills" role="group" aria-label="Maniobras del examen">${ex.man.map(k=>byK[k]).filter(Boolean).map(mm=>`<button class="pill" data-mk="${mm.k}" aria-pressed="${mm.k===ES.k}">${esc(mm.name)}${nMarks(mm.k)?` <small>· ${nMarks(mm.k)}</small>`:''}</button>`).join('')}</div>`;
+  h+=`<div class="acts" style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px"><button class="btn" data-p="clr">Limpiar</button>${['NO','R','B','OK'].map(x=>`<button class="btn" data-p="${x}">Todo en ${x}</button>`).join('')}<span class="rt">${ES.free&&DBX&&UX?`<button class="btn send" data-send="1"${ES.busy?' disabled':''}>Guardar y Enviar</button>`:''}</span>${ES.msg?`<span class="none" role="status" style="flex-basis:100%;font-size:13px">${esc(ES.msg)}</span>`:''}</div>`;
+  const nv=ES.nota===''?null:Number(ES.nota);
+  const warn=nv===null?'':nimOn?'La bajada está en NIM: queda sin nota, así que no corresponde una nota sugerida de '+nv+'.':(hit&&nv>=base)?'La nota sugerida ('+nv+') está por encima de lo que indican las reglas: se cumple algún parámetro de desaprobación, que sugiere una nota menor que la base ('+base+').':'';
+  if(ES.free&&DBX&&UX)h+=`<div class="com"><div class="cf"><div class="cc"><label for="com">Comentario (opcional)</label><textarea id="com" maxlength="1000" rows="2" placeholder="Algo que quieras aclarar sobre esta prueba">${esc(ES.com||'')}</textarea></div><div class="cn"><label for="nsug">Nota Sugerida</label><select id="nsug"><option value="">Sin elegir</option>${Array.from({length:21},(_,i)=>i*5).map(n=>`<option value="${n}"${ES.nota!==''&&Number(ES.nota)===n?' selected':''}>${n}</option>`).join('')}</select></div></div>${warn?`<div class="warn" role="alert"><b>Atención:</b> ${esc(warn)} Podés enviarla igual.</div>`:''}</div>`;
+  ES.last={PD,hit,nimOn,base,answered};
+  h+=`<div class="two"><div class="panel">`;
+  const cl=m.crit.slice();const done=c=>{const rg=c.gs.map((q,i)=>[q,i]).filter(([q])=>q.sc);if(c.id==='encad')return c.gs.every((q,i)=>A(c.id,i).length);const ob=c.gs.map((q,i)=>i).filter(i=>!c.gs[i].sc&&(rg.length||i>0));return (rg.length?rg.every(([q,i])=>A(c.id,i).length):A(c.id,0).length>0)&&(!ob.length||ob.some(i=>A(c.id,i).length))};
+  let vis=cl,pend=null;
+  if(ES.free){vis=[];for(const c of cl){vis.push(c);if(!done(c)&&!ES.skip.has(ES.k+':'+c.id)){pend=c;break}}}
+  h+=vis.map(c=>{
+    const nr=c.gs.filter(z=>z.sc).length;
+    const b=c.gs.map((q,i)=>{
+      const opts=q.sc?SC[q.sc]:q.o;
+      const lab=q.l||(q.sc?(nr>1||c.gs.length>1?'Calificación':''):(q.o.includes('IZQ')?'Lado':(c.id==='interp'&&i===0?'':c.id==='encad'&&i===0?'':'Observaciones')))+(q.m&&!q.sc&&!q.o.includes('IZQ')&&q.l!=='Forma'?' (varias)':'');
+      return `${lab?`<div class="lb">${esc(lab)}</div>`:''}<div class="seg" role="group" aria-label="${esc(CN[c.id]+' '+lab)}">${opts.map(x=>{const on=A(c.id,i).includes(x),bl=!on&&blocked(c.id,i,x);return `<button class="sv" data-k="${c.id}.${i}" data-x="${esc(x)}" data-m="${q.m?1:0}"${q.sc?` data-r="${x}"`:''} aria-pressed="${on}"${bl?' disabled title="No disponible según lo marcado en otros criterios"':q.sc?' title="'+MEAN[x]+'"':''}>${esc(x)}</button>`}).join('')}</div>`}).join('');
+    return `<div class="rowc"><h3>${CN[c.id]}</h3>${b}</div>`}).join('');
+  if(pend)h+=`<div class="nxt"><span>Criterio ${vis.length} de ${cl.length}. Completá todas sus calificaciones y marcá al menos una observación para ver el siguiente.</span></div>`;
+  else if(ES.free)h+=`<div class="nxt"><span>Se muestran los ${cl.length} criterios.</span></div>`;
+  h+=`</div>`;
+  h+=`<div class="panel sum"><h2>Resultado</h2><p>Nota base de aprobación: <b>${base}</b>. Criterios calificados: ${answered} de ${rt}.</p>`;
+  h+=nimOn?`<div class="verd bad">NIM: la bajada queda sin nota y los demás criterios no cuentan.</div>`:hit?`<div class="verd bad">Se sugiere una nota menor que ${base}.</div>`:`<div class="verd">Ningún parámetro de desaprobación se cumple.</div>`;
+  h+=`<ul class="pd">${PD.map(([x,a,n])=>`<li><span class="st ${a?'di':'ig'}">${a?'Se cumple':'No se cumple'}</span><span><b class="nb2">${n}</b>${esc(x)}</span></li>`).join('')}</ul>`;
+  h+=`<h3 style="margin-top:14px">Qué significa cada valor</h3><div class="legv">${['NO','R','B','MB','EXC','OK'].map(x=>`<b data-r="${x}">${x}</b><span>${MEAN[x]}</span>`).join('')}</div>`;
+  h+=`<p class="note">Es una sugerencia, igual que en la planilla: la nota la decide el examinador. ${ES.free?'Simulación activada: todos los botones están habilitados para probar cualquier combinación; las combinaciones de las bases de aprobación no cambian.':'Las opciones en gris no están disponibles según lo marcado en otros criterios, como en la planilla. En la pestaña Simular Examen se habilitan todas para hacer pruebas.'}</p></div></div>`;
+  return h}
+
+let DBX=null,UX=null,DLX=null,OWN=false;
+const RES={started:false,loaded:false,err:'',items:{},subs:{},names:{},f:{k:'',l:'',h:''},del:null,open:new Set(),timer:0,raf:0};
+try{if(window.claude&&claude.use){
+  claude.use('db').then(d=>{DBX=d;if(cur==='esc'||cur==='sim')render();if(cur==='res')render()}).catch(()=>{});
+  claude.use('user').then(async u=>{UX=u;try{OWN=!!(await u.isOwner())}catch(_){}const b=document.getElementById('t-res');if(b)b.hidden=!OWN;if(OWN&&(location.hash||'')==='#res'){cur='res'}if(OWN)render()}).catch(()=>{});
+  claude.use('downloads').then(d=>{DLX=d}).catch(()=>{})}}catch(_){}
+const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+async function sendRes(){
+  if(!DBX||ES.busy)return;const L=ES.last,m=byK[ES.k],ex=D.tipos.find(x=>x.id===ES.ex);
+  if(!L||!L.answered){ES.msg='Marcá al menos un criterio antes de enviar.';render();return}
+  ES.busy=true;ES.msg='Enviando…';render();
+  try{const uid=await UX.id();if(!uid)throw {code:'sin_id'};
+    const it={k:m.k,lvl:m.lvl,ex:ES.ex,exn:ex?ex.nombre:'',base:L.base,vj:JSON.stringify(ES.v),nim:!!L.nimOn,hit:!!L.hit,cumple:L.PD.filter(x=>x[1]).map(x=>({n:x[2],t:x[0]})),coment:String(ES.com||'').trim().slice(0,1000),nota:ES.nota===''?null:Number(ES.nota),ts:Date.now(),by:uid};
+    await DBX.collection('envios/'+uid+'/items').doc(rid()).set(it);
+    await DBX.doc('envios/'+uid).set({by:uid,ts:it.ts});
+    ES.msg='Enviado. Quedó guardado para su análisis.';ES.com='';ES.nota=''}
+  catch(e){ES.msg='No se pudo enviar'+(e&&e.code==='permission_denied'?': tu correo no está registrado como examinador en AppEXAM.':'. Probá de nuevo en un momento.')}
+  ES.busy=false;render()}
+function schedRes(){if(cur!=='res')return;cancelAnimationFrame(RES.raf);RES.raf=requestAnimationFrame(render)}
+function startRes(){
+  if(RES.started||!DBX)return;RES.started=true;
+  RES.timer=setTimeout(()=>{if(!RES.loaded){RES.err='Todavía no se pudo conectar; los datos pueden estar incompletos.';schedRes()}},10000);
+  DBX.collection('envios').onSnapshot(s=>{RES.loaded=true;clearTimeout(RES.timer);RES.err='';
+    s.docs.forEach(d=>{const u=d.id;if(RES.subs[u])return;
+      RES.subs[u]=DBX.collection('envios/'+u+'/items').onSnapshot(q=>{RES.items[u]=q.docs.map(x=>Object.assign({id:x.id},x.data()));
+        if(UX&&UX.profiles&&!RES.names[u]){RES.names[u]='…';UX.profiles([u]).then(ps=>{RES.names[u]=(ps&&ps[u]&&ps[u].name)||'';schedRes()}).catch(()=>{RES.names[u]=''})}
+        schedRes()},e=>{RES.err='No se pudo leer parte de los envíos ('+(e&&e.code)+').';schedRes()})});
+    schedRes()},e=>{RES.err='No se pudo leer los envíos ('+(e&&e.code)+').';schedRes()})}
+const allRes=()=>Object.values(RES.items).flat().sort((a,b)=>b.ts-a.ts);
+const who=u=>RES.names[u]&&RES.names[u]!=='…'?RES.names[u]:'Persona '+(Object.keys(RES.items).indexOf(u)+1);
+const resTxt=it=>it.nim?'NIM':it.hit?'Menor que la base':'Sin sugerencia';
+function resLines(it){const m=byK[it.k];if(!m)return [];let v={};try{v=JSON.parse(it.vj||'{}')}catch(_){}
+  if(!byK[it.k].crit.some(c=>c.id==='ritmo')||byK[it.k].crit.some(c=>c.id==='vel')){if(v['ritmo.2']||v['ritmo.3']){if(v['ritmo.2'])v['vel.0']=v['ritmo.2'];if(v['ritmo.3'])v['vel.1']=v['ritmo.3'];delete v['ritmo.2'];delete v['ritmo.3']}}
+  return m.crit.slice().flatMap(c=>c.gs.map((q,i)=>{const val=v[c.id+'.'+i];if(!val||!val.length)return null;return CN[c.id]+' · '+(q.l||(q.sc?'Calificación':'Observaciones'))+': '+val.join(', ')}).filter(Boolean))}
+const fdate=ts=>new Date(ts).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'});
+function vRes(){
+  if(!OWN)return `<div class="panel"><h2>Resultados enviados</h2><p>Solo el administrador de esta herramienta puede ver los resultados enviados.</p></div>`;
+  if(!DBX)return `<div class="panel"><h2>Resultados enviados</h2><p>La base de datos no está disponible.</p></div>`;
+  startRes();
+  const all=allRes(),f=RES.f,rows=all.filter(x=>(!f.k||x.k===f.k)&&(!f.l||String(x.lvl)===f.l)&&(!f.h||(f.h==='nim'?x.nim:f.h==='hit'?(x.hit&&!x.nim):(!x.hit&&!x.nim))));
+  const tot=rows.length,hit=rows.filter(x=>x.hit&&!x.nim).length,nim=rows.filter(x=>x.nim).length;
+  const byL=[1,2,3,4].map(l=>[l,rows.filter(x=>x.lvl===l).length]);
+  const cm={};rows.forEach(x=>(x.cumple||[]).forEach(c=>{const k=x.k+'|'+c.t;cm[k]=(cm[k]||0)+1}));
+  const top=Object.entries(cm).sort((a,b)=>b[1]-a[1]).slice(0,8),mx=top.length?top[0][1]:1;
+  const ks=[...new Set(all.map(x=>x.k))].filter(k=>byK[k]).sort((a,b)=>byK[a].lvl-byK[b].lvl);
+  let h=`<div class="panel"><h2>Resultados enviados</h2><p>Lo que enviaron los examinadores desde la pestaña Simular Examen. Solo lo ve el administrador.</p>${RES.err?`<p class="none" role="status">${esc(RES.err)}</p>`:''}${!RES.loaded&&!RES.err?'<p class="none" role="status">Cargando…</p>':''}</div>`;
+  h+=`<div class="sel"><label>Maniobra<select id="rf-k"><option value="">Todas</option>${ks.map(k=>`<option value="${k}"${f.k===k?' selected':''}>${esc(byK[k].name)} · Nivel ${byK[k].lvl}</option>`).join('')}</select></label><label>Nivel<select id="rf-l"><option value="">Todos</option>${[1,2,3,4].map(l=>`<option${f.l===String(l)?' selected':''}>${l}</option>`).join('')}</select></label><label>Resultado<select id="rf-h"><option value="">Todos</option><option value="hit"${f.h==='hit'?' selected':''}>Menor que la base</option><option value="ok"${f.h==='ok'?' selected':''}>Sin sugerencia</option><option value="nim"${f.h==='nim'?' selected':''}>NIM</option></select></label><button class="btn" data-csv="1"${DLX&&tot?'':' disabled'}>Descargar CSV</button></div>`;
+  h+=`<div class="stats"><div class="stat"><b>${tot}</b><span>envíos</span></div><div class="stat"><b>${tot?Math.round(hit*100/tot):0}%</b><span>sugieren nota menor que la base (${hit})</span></div><div class="stat"><b>${nim}</b><span>NIM</span></div>${(()=>{const ns=rows.filter(x=>x.nota!=null).map(x=>x.nota);return `<div class="stat"><b>${ns.length?Math.round(ns.reduce((a,b)=>a+b,0)/ns.length):'–'}</b><span>nota sugerida promedio (${ns.length} con nota)</span></div>`})()}${byL.map(([l,n])=>`<div class="stat"><b>${n}</b><span>nivel ${l}</span></div>`).join('')}</div>`;
+  h+=`<div class="panel"><h3>Combinaciones más cumplidas</h3>${top.length?top.map(([k,n])=>{const [mk,...tx]=k.split('|'),m=byK[mk];return `<div class="brow"><span>${esc((m?m.name+' · N'+m.lvl:mk)+' — '+tx.join('|'))}</span><div class="bar"><i style="width:${Math.round(n*100/mx)}%"></i></div><b>${n}</b></div>`}).join(''):'<p class="none">Todavía no hay combinaciones para mostrar.</p>'}</div>`;
+  {const gs=groupsOf(rows),wn=gs.filter(g=>g.nn>=2),dis=wn.filter(g=>g.mx-g.mn>=SPLIT).length;
+   h+=`<div class="panel"><h3>Resumen por combinación</h3><p>Cada nivel tiene su propia escala de valores, así que las combinaciones se agrupan siempre dentro de la misma maniobra y nivel; usá el filtro Nivel para analizarlos por separado. Se agrupan los envíos con exactamente las mismas marcas. Con la mediana, el rango de notas y si las personas coinciden: «Sin acuerdo» significa una diferencia de ${SPLIT} puntos o más entre la nota más baja y la más alta. ${gs.length} combinaciones distintas, ${wn.length} con 2 o más notas${wn.length?` (${dis} sin acuerdo)`:''}.</p><p><button class="btn" data-csvg="1"${DLX&&gs.length?'':' disabled'}>Descargar resumen CSV</button></p>`;
+   h+=gs.length?`<div class="tw"><table><thead><tr><th>Maniobra</th><th>Combinación</th><th>Notas</th><th>Mediana</th><th>Rango</th><th>Estado</th></tr></thead><tbody>${gs.map(g=>{const m=byK[g.k],st=gState(g),ls=resLines(g.ex);return `<tr><td class="nm">${esc(m?m.name:g.k)}<small>Nivel ${m?m.lvl:''} · base ${esc(g.bases.join(' / '))}</small></td><td><details data-rid="g:${esc(g.key)}"${RES.open.has('g:'+g.key)?' open':''}><summary>${ls.length} marcas${g.hit?` · ${g.hit} sugieren menor que la base`:''}${g.nim?` · ${g.nim} NIM`:''}</summary><ul>${ls.map(l=>`<li>${esc(l)}</li>`).join('')||'<li>Sin marcas.</li>'}</ul></details></td><td>${g.nn}<small> de ${g.n} envíos · ${g.ppl} ${g.ppl===1?'persona':'personas'}</small></td><td><b>${g.med==null?'–':esc(g.med)}</b></td><td>${g.mn==null?'–':g.mn===g.mx?esc(g.mn):esc(g.mn)+' – '+esc(g.mx)}</td><td><span class="st ${st[1]}">${st[0]}</span></td></tr>`}).join('')}</tbody></table></div>`:'<p class="none">Todavía no hay combinaciones para resumir.</p>';
+   h+=`</div>`}
+  h+=`<div class="tw"><table><thead><tr><th>Fecha</th><th>Maniobra</th><th>Resultado</th><th>Enviado por</th></tr></thead><tbody>`;
+  if(!rows.length)h+=`<tr><td colspan="4" class="none">No hay envíos con estos filtros.</td></tr>`;
+  rows.forEach(x=>{const m=byK[x.k],ls=resLines(x);
+    h+=`<tr><td>${fdate(x.ts)}</td><td class="nm">${esc(m?m.name:x.k)}<small>Nivel ${x.lvl} · ${esc(x.exn||'')} · base ${esc(x.base)}</small></td><td><span class="st ${x.hit||x.nim?'di':'ig'}">${resTxt(x)}</span>${x.nota!=null?`<span class="chip"><b>Nota sugerida ${esc(x.nota)}</b></span>`:''}${(x.cumple||[]).map(c=>`<span class="chip">${esc(c.n)}. ${esc(c.t)}</span>`).join('')}</td><td>${esc(who(x.by))}</td></tr>`;
+    h+=`<tr class="dt"><td colspan="4"><details data-rid="${esc(x.by+'/'+x.id)}"${RES.open.has(x.by+'/'+x.id)?' open':''}><summary>Ver marcas${x.coment?' y comentario':''}</summary>${x.coment?`<p class="cm">“${esc(x.coment)}”</p>`:''}<ul>${ls.map(l=>`<li>${esc(l)}</li>`).join('')||'<li>Sin marcas.</li>'}</ul>${RES.del===x.by+'/'+x.id?`<button class="btn" data-delok="${esc(x.by+'/'+x.id)}">Confirmar eliminación</button> <button class="btn" data-delno="1">Cancelar</button>`:`<button class="btn" data-del="${esc(x.by+'/'+x.id)}">Eliminar</button>`}</details></td></tr>`});
+  return h+`</tbody></table></div>`}
+function ckey(x){let v={};try{v=JSON.parse(x.vj||'{}')}catch(_){}
+  Object.keys(v).forEach(k=>{if(k==='ritmo.2'||k==='ritmo.3'){v[k==='ritmo.2'?'vel.0':'vel.1']=v[k];delete v[k]}});
+  return x.k+'#'+Object.keys(v).filter(k=>v[k]&&v[k].length).sort().map(k=>k+'='+v[k].slice().sort().join('+')).join(';')}
+const medOf=a=>{const s=a.slice().sort((x,y)=>x-y),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2};
+const SPLIT=15;
+function groupsOf(rows){const g={};rows.forEach(x=>{const k=ckey(x);(g[k]=g[k]||{k:x.k,items:[],key:k}).items.push(x)});
+  return Object.values(g).map(o=>{const ns=o.items.filter(x=>x.nota!=null).map(x=>Number(x.nota)),by=new Set(o.items.map(x=>x.by));
+    return Object.assign(o,{n:o.items.length,nn:ns.length,med:ns.length?medOf(ns):null,mn:ns.length?Math.min(...ns):null,mx:ns.length?Math.max(...ns):null,ppl:by.size,
+      bases:[...new Set(o.items.map(x=>x.base))],hit:o.items.filter(x=>x.hit&&!x.nim).length,nim:o.items.filter(x=>x.nim).length,ex:o.items[0]})})
+  .sort((a,b)=>b.nn-a.nn||b.n-a.n)}
+const gState=g=>g.nn<2?['Un solo dato','ig']:(g.mx-g.mn>=SPLIT?['Sin acuerdo','di']:['Acuerdo','so']);
+function csvGrp(gs){const q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';
+  const H=['Maniobra','Nivel','Envíos','Con nota','Evaluadores','Mediana','Mínimo','Máximo','Estado','Bases','Sugiere menor que la base','NIM','Combinación'];
+  return '\uFEFF'+[H.map(q).join(',')].concat(gs.map(g=>{const m=byK[g.k];return [m?m.name:g.k,m?m.lvl:'',g.n,g.nn,g.ppl,g.med==null?'':g.med,g.mn==null?'':g.mn,g.mx==null?'':g.mx,gState(g)[0],g.bases.join(' / '),g.hit,g.nim,resLines(g.ex).join(' | ')].map(q).join(',')})).join('\r\n')}
+function csvRes(rows){const q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';
+  const H=['Fecha','Maniobra','Nivel','Examen','Base','Resultado','Nota sugerida','Combinaciones cumplidas','Comentario','Enviado por','Marcas'];
+  return '﻿'+[H.map(q).join(',')].concat(rows.map(x=>{const m=byK[x.k];return [new Date(x.ts).toISOString(),m?m.name:x.k,x.lvl,x.exn,x.base,resTxt(x),x.nota==null?'':x.nota,(x.cumple||[]).map(c=>c.n+'. '+c.t).join(' | '),x.coment,who(x.by),resLines(x).join(' | ')].map(q).join(',')})).join('\r\n')}
+let cur='ini';
+const MY={started:false,items:[],err:'',loaded:false,raf:0};
+function startMy(){if(MY.started||!DBX||!UX)return;MY.started=true;
+  (async()=>{try{const uid=await UX.id();if(!uid)throw {code:'sin_id'};
+    DBX.collection('envios/'+uid+'/items').onSnapshot(q=>{MY.items=q.docs.map(x=>Object.assign({id:x.id},x.data()));MY.loaded=true;MY.err='';schedMy()},e=>{MY.err='No se pudieron leer tus simulaciones ('+(e&&e.code)+').';schedMy()})}
+  catch(e){MY.err='No se pudo identificar tu usuario.';MY.started=false;schedMy()}})()}
+function schedMy(){if(cur!=='ini')return;cancelAnimationFrame(MY.raf);MY.raf=requestAnimationFrame(render)}
+function vMy(){
+  startMy();
+  if(!DBX||!UX)return `<div class="panel"><h3>Mis Simulaciones</h3><p class="none">Cargando tus simulaciones…</p></div>`;
+  const it=MY.items,n=it.length,last=n?Math.max(...it.map(x=>x.ts||0)):0;
+  const byL=[1,2,3,4].map(l=>[l,it.filter(x=>x.lvl===l).length]);
+  return `<div class="panel"><h3>Mis Simulaciones</h3><p>Las pruebas que enviaste desde Simular Examen, por nivel.${last?' La última fue el '+esc(fdate(last)).replace(/\.$/,'')+'.':''}</p>${MY.err?`<p class="none" role="status">${esc(MY.err)}</p>`:''}${!MY.loaded&&!MY.err?'<p class="none" role="status">Cargando…</p>':''}<div class="stats"><div class="stat"><b>${n}</b><span>en total</span></div>${byL.map(([l,c])=>`<div class="stat"><b>${c}</b><span>Nivel ${l}</span></div>`).join('')}</div></div>`}
+function vIni(){
+  const go=(v,ti,tx)=>`<button class="go" data-go="${v}"><b>${ti}</b><span>${tx}</span></button>`;
+  return `<div class="dev" role="note"><span class="tag">En desarrollo</span><p>Esta herramienta está en desarrollo. Se utilizará para generar una base de datos que permita que todos los exámenes sean bien objetivos.</p></div>
+  <div class="panel"><h2>Para qué sirve esta herramienta</h2><p>Reúne las notas que proponen examinadores para distintas combinaciones de criterios de la planilla de AppEXAM. Con esos datos se podrá armar una escala de valores que relacione cada combinación con una nota.</p><p class="lvlnote"><b>Cada nivel tiene su propia escala de valores.</b> Las notas de un nivel no se mezclan con las de otro: se analizan y se arman por separado.</p></div>
+  <div class="panel"><h3>Cómo se usa Simular Examen</h3><ol class="steps"><li>Elegí el examen y la maniobra.</li><li>Completá cada criterio: todas sus calificaciones y al menos una observación. El siguiente criterio aparece cuando terminás el actual.</li><li>Elegí una Nota Sugerida de 0 a 100, de 5 en 5, y agregá un comentario si querés.</li><li>Tocá Guardar y Enviar. Si la nota supera lo que indican las reglas, se muestra un aviso, pero igual podés enviarla.</li></ol><p class="note">Lo que enviás lo ve solo el administrador de esta herramienta.</p></div>
+  <div class="gos">${go('bas','Bases de aprobación','La nota base de cada examen y las combinaciones que sugieren una nota menor que la base, maniobra por maniobra.')}${go('esc','Prueba de escala','La planilla de cada maniobra tal como funciona en AppEXAM, con opciones bloqueadas, para ver qué resultado da cada marca.')}${go('sim','Simular Examen','Elegís un examen y completás sus criterios de a uno. Podés sugerir una nota y enviarla con un comentario.')}${OWN?go('res','Resultados enviados','Lo que enviaron los examinadores, agrupado por combinación. Solo lo ve el administrador.'):''}</div>
+  `+vMy()}
+
+function trigOf(m){
+  const has=id=>m.crit.some(c=>c.id===id),CUL=m.name==='Cuña',ELL=m.name==='Elemental',N1S=m.k==='n1cp'||m.k==='n1sp',T=[];
+  const add=(cells,extra)=>T.push(Object.assign({cells},extra||{}));
+  if(CUL||ELL)add([{c:'imagen',i:0,o:['NO']}]);
+  else if(N1S&&has('imagen'))add([{c:'imagen',i:0,o:['NO']}],{art:true});
+  if(ELL)add([{c:'curva',i:1,o:['Confunde fases']}]);
+  if(has('interp'))add([{c:'interp',i:0,o:['No']}]);
+  const rt=m.crit.reduce((n,c)=>n+c.gs.filter(g=>g.sc).length,0);
+  add([],{r:true,need:Math.floor(rt/2)+1,rt});
+  if(has('encad'))add(N1S?[{c:'encad',i:0,o:['IND']},{c:'encad',i:1,o:['Casi siempre','Siempre']}]:[{c:'encad',i:0,o:['IND']}]);
+  if(has('ritmo')&&has('curva'))add([{c:'ritmo',i:0,o:['NO']},{c:'curva',i:0,o:['NO']}]);
+  if(has('apoyos'))add([{c:'apoyos',i:0,o:['NO']}]);
+  if(has('ejes'))add([{c:'ejes',i:0,o:['NO']}]);
+  T.forEach((x,i)=>x.n=i+1);return T}
+function sheet(m){
+  const T=trigOf(m),mark={},rmaj=T.find(x=>x.r);
+  T.forEach(x=>x.cells.forEach(cl=>cl.o.forEach(o=>{const k=cl.c+'.'+cl.i+'.'+o;(mark[k]=mark[k]||[]).push(x.n)})));
+  const gi={};T.forEach(x=>x.cells.forEach(cl=>{(gi[cl.c]=gi[cl.c]||new Set([0])).add(cl.i)}));
+  const crit=m.crit.slice();
+  const chip=(c,i,o,sc)=>{const k=c.id+'.'+i+'.'+o,ns=mark[k];const rm=rmaj&&sc&&o==='R';
+    return `<span class="sc${ns?' tg':''}${rm?' rm':''}"${ns?` title="Combinación ${ns.join(', ')}"`:rm?' title="Cuenta para «R en la mayoría»"':''}>${esc(o)}${ns?`<i>${ns.join(',')}</i>`:''}</span>`};
+  const rows=crit.map(c=>{const idx=[...(gi[c.id]||[0])].sort((a,b)=>a-b);
+    const gs=idx.map(i=>{const g=c.gs[i];if(!g)return '';const opts=g.sc?SC[g.sc]:g.o;
+      return `<span class="sg">${idx.length>1&&g.l?`<em>${esc(g.l)}</em>`:''}${opts.map(o=>chip(c,i,o,!!g.sc)).join('')}</span>`}).join('');
+    return `<div class="sr"><b>${esc(CN[c.id])}</b><div>${gs}</div></div>`}).join('');
+  const lab=cl=>{const c=m.crit.find(z=>z.id===cl.c),g=c&&c.gs[cl.i];return `<span class="sc tg">${esc(CN[cl.c])}${g&&g.l&&cl.i?' · '+esc(g.l):''}: ${cl.o.map(esc).join(' o ')}</span>`};
+  const leg=T.map(x=>`<div class="cb"><span class="nb">${x.n}</span>${x.r?`<span class="sc rm">R en al menos ${x.need} de ${x.rt} casillas de calificación</span>`:x.cells.map(lab).join('<span class="plus">+</span>')}${x.art?'<span class="art" title="Regla aplicada solo en esta herramienta; en AppEXAM todavía no rige para esta maniobra">solo en esta herramienta</span>':''}</div>`).join('');
+  return `<div class="sheet"><div class="sh">${rows}</div><div class="cbs"><h4>Se sugiere una nota menor que la base con cualquiera de estas combinaciones</h4>${leg}<p class="note">Los valores en rojo de la planilla forman parte de una combinación; el número indica cuál. «+» significa que deben darse a la vez; los valores con borde punteado cuentan para «R en la mayoría».</p></div></div>`}
+function rulesOf(m){
+  const has=id=>m.crit.some(c=>c.id===id),CUL=m.name==='Cuña',ELL=m.name==='Elemental',N1S=m.k==='n1cp'||m.k==='n1sp';
+  const opt=(id,i,o)=>{const c=m.crit.find(z=>z.id===id);return !!c&&!!c.gs[i]&&c.gs[i].o.includes(o)};
+  const pd=[],nim=[],bl=[];
+  if(CUL||ELL)pd.push('Imagen general en NO.');
+  if(N1S&&has('imagen'))pd.push('Imagen general en NO. (Regla aplicada solo en esta herramienta: en AppEXAM todavía no rige para esta maniobra.)');
+  if(ELL)pd.push('Diseño de curva con «Confunde fases».');
+  if(has('interp'))pd.push('Interpretación marcada en No.');
+  pd.push('R en la mayoría de las casillas de evaluación.');
+  if(has('encad'))pd.push(N1S?'Encadenamiento indirecto (IND) con frecuencia «Casi siempre» o «Siempre».':'Encadenamiento indirecto (IND).');
+  if(has('ritmo')&&has('curva'))pd.push('Ritmo y Diseño de curva, ambos en NO.');
+  if(has('apoyos')&&has('ejes'))pd.push('Apoyos o Ejes en NO.');else if(has('apoyos'))pd.push('Apoyos en NO.');else if(has('ejes'))pd.push('Ejes en NO.');
+  const tr=[N1S&&has('imagen')&&'«No interpreta» en Imagen gral.',has('interp')&&'No en Interpretación'].filter(Boolean);
+  if(tr.length)nim.push('Se activa con '+tr.join(' o con ')+': la bajada queda sin nota y los demás criterios no cuentan para la nota.');else nim.push('Esta maniobra no tiene criterio de interpretación, así que no se activa NIM.');
+  if(has('curva')&&!ELL)nim.push('Con Diagonal en Diseño de curva, la app sugiere «No interpreta la maniobra».');
+  const cn=[has('ritmo')&&'Ritmo',has('curva')&&'Diseño de curva'].filter(Boolean);
+  if(cn.length&&tr.length)nim.push('Con NIM, '+cn.join(' y ')+(cn.length>1?' no pueden':' no puede')+' quedar en OK.');
+  if(has('apoyos'))bl.push('Apoyos en MB o EXC: no se marcan observaciones de apoyos.');
+  if(has('apoyos')&&has('carga'))bl.push('Apoyos en R o NO: la calificación de Gestión de carga solo puede ser R o NO.');
+  if(has('curva')){
+    if(ELL){bl.push('Con «Confunde fases», Diseño de curva no puede calificarse B, MB ni EXC.');bl.push('Con «No prepara», Diseño de curva no puede calificarse B, MB ni EXC y no se marcan otras observaciones.')}
+    bl.push('Con Diagonal, el resto de las observaciones de curva queda bloqueado y la calificación solo puede ser '+(ELL?'NO o R.':'NO.'));
+    if(CUL||ELL)bl.push('Diseño de curva en MB o EXC: no se marcan observaciones de curva.')}
+  if(has('ejes')){
+    bl.push('Con detalles de ejes marcados, la calificación posible depende del nivel del examen (Nivel 1: NO, R o B · Nivel 2: NO o R · Niveles 3 y 4: NO).');
+    if(ELL)bl.push('En Elemental, primero se califica Ejes y después se marcan los detalles.');
+    if(CUL||ELL)bl.push('Ejes en MB o EXC: no se marca la tercera observación de ejes.')}
+  if(has('vel')&&!ELL&&opt('vel',1,'Varía'))bl.push('«Varía» en Velocidad solo se marca con calificación R o NO.');
+  if(CUL&&has('vel'))bl.push('Con Velocidad en R o NO no pueden marcarse a la vez «Alta» y «Exc. rozamiento».');
+  if((CUL||ELL)&&has('vel'))bl.push('Velocidad en OK: no se marcan observaciones adicionales de velocidad.');
+  if((CUL||ELL)&&has('imagen'))bl.push('Imagen gral. en MB o EXC: no se marcan observaciones de imagen.');
+  if(N1S&&has('imagen'))bl.push('Imagen gral. en NO: no se marcan observaciones de imagen.');
+  if(N1S&&has('carga'))bl.push('Gestión de carga en MB o EXC: no se marcan observaciones de carga.');
+  if(ELL&&has('reunion'))bl.push('Reunión en MB o EXC: no se marcan observaciones de reunión.');
+  if(ELL&&has('baston'))bl.push('Uso bastón en OK: no se marcan observaciones de bastón.');
+  const ok=[has('visual')&&'Ant. visual',has('ade')&&'ADE',has('baston')&&!ELL&&'Uso bastón'].filter(Boolean);
+  if(ok.length)bl.push('Con OK en '+ok.join(', ')+': no se marcan observaciones de ese criterio.');
+  return {pd,nim,bl}}
+function vBas(){
+  let h=`<div class="panel"><h2>Bases de aprobación por nivel</h2><p>Nota base de cada examen y de cada maniobra. Una nota por debajo de la base es una nota desaprobatoria.</p></div>`;
+  [1,2,3,4].forEach(l=>{
+    const ex=D.tipos.filter(x=>x.id.slice(1)===String(l)).sort((a,b)=>(a.grupo==='Ingreso')-(b.grupo==='Ingreso'));
+    h+=`<div class="tw"><table><thead><tr><th colspan="3">Nivel ${l}</th></tr><tr><th>Examen</th><th>Base</th><th>Maniobras</th></tr></thead><tbody>`;
+    if(!ex.length)h+=`<tr><td colspan="3" class="none">No hay exámenes cargados para este nivel.</td></tr>`;
+    ex.forEach(x=>{
+      const ms=x.man.map(k=>byK[k]).filter(Boolean),bs=[...new Set(ms.map(m=>baseOf(m,x)))];
+      const cell=ms.map(m=>`<span class="chip">${esc(m.name)}${bs.length>1?' · '+baseOf(m,x):''}</span>`).join('');
+      h+=`<tr><td class="nm">${esc(x.nombre)}<small>${esc(x.grupo)}</small></td><td><b class="bn">${bs.length>1?bs.join(' / '):bs[0]}</b></td><td>${cell}${x.nota?`<div class="note" style="margin-top:6px">${esc(x.nota)}</div>`:''}</td></tr>`});
+    h+=`</tbody></table></div>`;
+    const mm=[...new Set(ex.flatMap(x=>x.man))].map(k=>byK[k]).filter(Boolean);
+    h+=`<div class="rules"><h3>Reglas por maniobra · Nivel ${l}</h3>`+mm.map(m=>{const R=rulesOf(m),li=a=>`<ul>${a.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`;
+      return `<details class="rl"><summary>${esc(m.name)}<small>${trigOf(m).length} combinaciones que bajan la nota</small></summary><div class="rg">${sheet(m)}<details class="rl2"><summary>Otras reglas: NIM y opciones bloqueadas</summary><h4>NIM (no interpreta la maniobra)</h4>${li(R.nim)}<h4>Opciones que se bloquean</h4>${li(R.bl)}</details></div></details>`}).join('')+`</div>`});
+  return h+`<p class="note">Cuando un examen tiene bases distintas según la maniobra, cada maniobra muestra su propia base.</p>`}
+function render(){const v=document.getElementById('v');const fr=cur==='sim';if(ES.free!==fr){ES.free=fr;ES.msg='';ES.v={};ES.vs={};ES.skip=new Set();ES.com='';ES.nota=''}
+ v.innerHTML={ini:vIni,sim:vEsc,crit:vCrit,esc:vEsc,cmp:vCmp,bas:vBas,res:vRes}[cur]();
+ document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.v===cur));
+ [['rf-k','k'],['rf-l','l'],['rf-h','h']].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.onchange=()=>{RES.f[k]=el.value;render()}});
+ const se=document.getElementById('se'),sx=document.getElementById('sx');if(sx)sx.onchange=()=>{ES.ex=sx.value;ES.vs={};ES.v={};ES.skip=new Set();ES.msg='';ES.com='';ES.nota='';const e=D.tipos.find(x=>x.id===ES.ex);ES.k=e.man.find(k=>byK[k])||ES.k;render()};const sf=document.getElementById('sf');if(sf)sf.onchange=()=>{TAB.f=sf.value;render()}}
+document.addEventListener('click',e=>{const t=e.target.closest('.tab');if(t){cur=t.dataset.v;try{history.replaceState(null,'','#'+cur)}catch(_){}render();return}
+ const sv=e.target.closest('.sv');if(sv){if(sv.disabled)return;const k=sv.dataset.k,x=sv.dataset.x,cur=ES.v[k]||[];if(cur.includes(x)){const r=cur.filter(y=>y!==x);if(r.length)ES.v[k]=r;else delete ES.v[k]}else ES.v[k]=sv.dataset.m==='1'?cur.concat(x):[x];render();return}
+ if(e.target.closest('[data-send]')){sendRes();return}
+ if(e.target.closest('[data-csvg]')){if(DLX){const f=RES.f,rows=allRes().filter(x=>(!f.k||x.k===f.k)&&(!f.l||String(x.lvl)===f.l)&&(!f.h||(f.h==='nim'?x.nim:f.h==='hit'?(x.hit&&!x.nim):(!x.hit&&!x.nim))));DLX.save({filename:'resumen-combinaciones-'+new Date().toISOString().slice(0,10)+'.csv',data:csvGrp(groupsOf(rows))}).catch(()=>{})}return}
+ if(e.target.closest('[data-csv]')){if(DLX){const f=RES.f,rows=allRes().filter(x=>(!f.k||x.k===f.k)&&(!f.l||String(x.lvl)===f.l)&&(!f.h||(f.h==='nim'?x.nim:f.h==='hit'?(x.hit&&!x.nim):(!x.hit&&!x.nim))));DLX.save({filename:'envios-prueba-escala-'+new Date().toISOString().slice(0,10)+'.csv',data:csvRes(rows)}).catch(()=>{})}return}
+ {const d=e.target.closest('[data-del]');if(d){RES.del=d.dataset.del;render();return}
+  const dn=e.target.closest('[data-delno]');if(dn){RES.del=null;render();return}
+  const dk=e.target.closest('[data-delok]');if(dk){const [u,id]=dk.dataset.delok.split('/');RES.del=null;DBX.doc('envios/'+u+'/items/'+id).delete().catch(()=>{});return}}
+ const pb=e.target.closest('[data-p]');if(pb){const q=pb.dataset.p,m=byK[ES.k];ES.v={};[...ES.skip].forEach(s=>{if(s.startsWith(ES.k+':'))ES.skip.delete(s)});if(q!=='clr')m.crit.forEach(c=>ES.skip.add(ES.k+':'+c.id));if(q!=='clr')m.crit.forEach(c=>c.gs.forEach((z,i)=>{if(z.sc)ES.v[c.id+'.'+i]=[q==='OK'?(z.sc==='RT'?'OK':'B'):(q==='B'?(z.sc==='S5'?'B':'OK'):q)]}));render();return}
+ const gt=e.target.closest('[data-go]');if(gt){cur=gt.dataset.go;try{history.replaceState(null,'','#'+cur)}catch(_){}render();window.scrollTo(0,0);return}
+ const sk=e.target.closest('[data-skip]');if(sk){ES.skip.add(ES.k+':'+sk.dataset.skip);render();return}
+ const mk=e.target.closest('[data-mk]');if(mk){goMan(mk.dataset.mk);render();return}
+ const p=e.target.closest('.pill');if(p){if(p.dataset.c)TAB.crit=p.dataset.c;render()}});
+document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.dataset.rid){if(d.open)RES.open.add(d.dataset.rid);else RES.open.delete(d.dataset.rid)}},true);
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='com')ES.com=e.target.value});
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='nsug'){ES.nota=e.target.value;render()}});
+{const h=(location.hash||'').slice(1);if(['ini','esc','sim','bas'].includes(h))cur=h}
+render();
+</script>
+</body>
+</html>
