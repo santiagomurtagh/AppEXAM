@@ -464,7 +464,7 @@ function myPl(){
   DB.list.forEach(x=>{const h=x.st.h;if(!h.alumno)return;if(adm?h.prof:h.prof!==CL.name)return;out[fk(nz(h.alumno))]=JSON.stringify(x.st)});
   return Object.keys(out).length?out:null;
 }
-const metaVal=e=>({tipo:e.tipo||'t3',mod:e.mod||'',creado:!!e.creado,fin:!!e.fin,ini:e.ini||0,fim:e.fim||0,fecha:e.fecha||'',lugar:e.lugar||'',exam:e.exam.slice(),jefe:e.jefe>=0&&e.exam[e.jefe]?e.exam[e.jefe]:'',ks:e.exam.map(fk),jk:e.jefe>=0&&e.exam[e.jefe]?fk(e.exam[e.jefe]):''});
+const metaVal=e=>({tipo:e.tipo||'t3',mod:e.mod||'',creado:!!e.creado,fin:!!e.fin,ini:e.ini||0,fim:e.fim||0,fecha:e.fecha||'',lugar:e.lugar||'',exam:e.exam.slice(),jefe:e.jefe>=0&&e.exam[e.jefe]?e.exam[e.jefe]:'',bor:e.bor||{},ks:e.exam.map(fk),jk:e.jefe>=0&&e.exam[e.jefe]?fk(e.exam[e.jefe]):''});
 const aluVal=e=>{const r={};e.alu.forEach(a=>{r[fk(nz(a.n))]={n:a.n,d:a.d||''}});return Object.keys(r).length?r:null};
 function cVal(d){
   switch(d){
@@ -504,7 +504,7 @@ const aluFromRemote=alu=>Object.values(alu||{}).map(v=>({n:v.n,d:v.d||''})).sort
 function exFromRemote(meta,alu,e){
   e=e||exDef();
   e.tipo=meta.tipo||'t3';e.mod=meta.mod||'';e.creado=meta.creado===undefined?toArr(meta.exam).length>0:!!meta.creado;e.fin=!!meta.fin;e.ini=Number(meta.ini)||0;e.fim=Number(meta.fim)||0;
-  e.fecha=meta.fecha||'';e.lugar=meta.lugar||'';e.exam=toArr(meta.exam);e.jefe=e.exam.indexOf(meta.jefe||'');
+  e.fecha=meta.fecha||'';e.lugar=meta.lugar||'';e.bor=(meta.bor&&typeof meta.bor==='object')?meta.bor:{};e.exam=toArr(meta.exam);e.jefe=e.exam.indexOf(meta.jefe||'');
   e.alu=aluFromRemote(alu);return e;
 }
 function ctxFromRemote(meta,alu){const c=newCtx();exFromRemote(meta,alu,c.ex);return c}
@@ -1658,6 +1658,7 @@ async function openEx(id){
   save();updTabs();all();
 }
 let delAsk=false;
+const regIdsK=k=>regIds().filter(id=>!((DB.exams[id].ex.bor||{})[k]));
 const regIds=()=>{const n=DB.me||CL.name;return Object.keys(DB.exams).filter(id=>{const e=DB.exams[id].ex;return e.fin&&(isMgr()||e.exam.includes(n))}).sort((a,b)=>(DB.exams[b].ex.fecha||'').localeCompare(DB.exams[a].ex.fecha||''))};
 let SDQ=null,SDM='';
 const sdOk=()=>isMgr()&&(LOCAL||isSuper());
@@ -1665,7 +1666,8 @@ const SDN={of:'la planilla oficial',tm:'los tiempos de examinación',pl:'las pla
 function supDelHtml(){
   if(!sdOk())return '';
   const ids=regIds();
-  const row=id=>{const e=DB.exams[id].ex;return `<div class="nvm" style="margin-top:10px">${esc(exLabel(e))}</div><div class="gtabs rgb">`+['of','tm','pl'].map(k=>SDQ&&SDQ.id===id&&SDQ.k===k?`<button class="gtab" style="border-color:var(--no);color:var(--no)" data-sddo="1">¿Borrar ${SDN[k]}? Confirmar</button><button class="gtab" data-sdno="1">Cancelar</button>`:`<button class="gtab" data-sdq="${id}|${k}">Borrar ${SDN[k]}</button>`).join('')+'</div>'};
+  const row=id=>{const e=DB.exams[id].ex,bo=e.bor||{};const q=SDQ&&SDQ.id===id?SDQ.k:'';
+    return `<div class="nvm" style="margin-top:10px">${esc(exLabel(e))}</div>`+(q?`<div class="dvm" role="alertdialog" style="padding:8px 0">¿Borrar ${SDN[q]} de este examen? No se puede deshacer.</div><div class="gtabs rgb"><button class="gtab" style="border-color:var(--no);color:var(--no)" data-sddo="1">Confirmar</button><button class="gtab" data-sdno="1">Cancelar</button></div>`:`<div class="gtabs rgb">`+['of','tm','pl'].map(k=>bo[k]?`<button class="gtab" disabled>${SDN[k][0].toUpperCase()+SDN[k].slice(1)}: ya borrado</button>`:`<button class="gtab" data-sdq="${id}|${k}">Borrar ${SDN[k]}</button>`).join('')+'</div>')};
   return `<h3 class="gh">Borrar datos de exámenes</h3><div class="dgrid"><div class="gx"><p class="dvs">Solo para los administradores principales. El borrado es definitivo y no se puede deshacer.</p>${SDM?`<p class="dvm" role="status">${esc(SDM)}</p>`:''}${ids.length?ids.map(row).join(''):'<p class="dvs">Todavía no hay exámenes finalizados.</p>'}</div></div>`}
 async function supDel(id,k){
   if(!sdOk())return;const c=DB.exams[id];if(!c)return;
@@ -1688,21 +1690,23 @@ async function supDel(id,k){
       }
       if(k==='of'){c.of={man:{},base:null,hab:false,fir:{},pis:{}};c.conf={}}
     }
+    c.ex.bor=Object.assign({},c.ex.bor,{[k]:1});
+    if(LOCAL)saveLocal();else await cDb('PUT','xm/'+id+'/bor/'+k,true);
     TMP=null;ROP=null;SDM='Se borraron '+SDN[k]+'.';
   }catch(e){SDM=e&&e.denied?'Firebase rechazó el borrado: hay que publicar las reglas nuevas (firebase_rules.json).':'No se pudo borrar (sin conexión). Probá de nuevo.'}
   SDQ=null;renderGestion()}
 function regHtml(){
-  const ids=regIds(),mgr=isMgr();
+  const ids=regIdsK('of'),idsP=regIdsK('pl'),mgr=isMgr();
   const tl=id=>{const e=DB.exams[id].ex,ti=tipoById(e.tipo);return (ti?ti[1]:'Examen')+(e.fecha?' · '+e.fecha.split('-').reverse().slice(0,2).join('/'):'')};
   const btn=(id,at,on)=>`<button class="gtab${on?' on':''}" role="tab"${on?' aria-selected="true"':''} ${at} title="${esc(exLabel(DB.exams[id].ex))}"><span class="nvl">${esc(tl(id))}</span><small class="nvt">${esc(DB.exams[id].ex.exam.join(', '))}</small></button>`;
   const none='<p class="dvs" style="margin:2px 0 0">Todavía no hay exámenes finalizados.</p>';
-  const gr={};ids.forEach(id=>{const d=(DB.exams[id].ex.lugar||'').trim()||'Sin delegación';(gr[d]=gr[d]||[]).push(id)});
+  const groups=(fn,hs,after,L)=>{const gr={};(L||ids).forEach(id=>{const d=(DB.exams[id].ex.lugar||'').trim()||'Sin delegación';(gr[d]=gr[d]||[]).push(id)});
   const ds=Object.keys(gr).filter(d=>d!=='Sin delegación').sort((a,b)=>(gr[b].length-gr[a].length)||a.localeCompare(b,'es'));if(gr['Sin delegación'])ds.push('Sin delegación');
-  const groups=(fn,hs,after)=>ds.map(d=>`<div class="nvm">${esc(d)} (${gr[d].length})</div><div class="gtabs rgb${hs?' hs':''}" role="tablist" aria-label="${esc(d)}">${gr[d].map(fn).join('')}</div>${after?after(gr[d]):''}`).join('');
+  return ds.map(d=>`<div class="nvm">${esc(d)} (${gr[d].length})</div><div class="gtabs rgb${hs?' hs':''}" role="tablist" aria-label="${esc(d)}">${gr[d].map(fn).join('')}</div>${after?after(gr[d]):''}`).join('')};
   let h=`<h3 class="gh">Registro de Planillas</h3><div class="dgrid"><div class="gx"><h3>Planillas oficiales (${ids.length})</h3>${ids.length?`<p class="dvs">Solo lectura${mgr?'':': exámenes finalizados en los que participaste'}. Agrupadas por delegación.</p>`+groups(id=>btn(id,`data-regof="${id}"`)):none}</div>`;
   if(mgr){
-    const sel=ROP&&ids.includes(ROP.id)?ROP.id:'';
-    h+=`<div class="gx"><h3>Planillas de examen (${ids.length})</h3>${ids.length?`<p class="dvs">Solo lectura. Elegí un examen, después un examinador y por último un alumno para ver su planilla completa con los criterios evaluados.</p>`+groups(id=>btn(id,id===sel?'data-roback':`data-roopen="${id}"`,id===sel),!!sel,l=>l.includes(sel)?roPanel():''):none}</div>`
+    const sel=ROP&&idsP.includes(ROP.id)?ROP.id:'';
+    h+=`<div class="gx"><h3>Planillas de examen (${idsP.length})</h3>${idsP.length?`<p class="dvs">Solo lectura. Elegí un examen, después un examinador y por último un alumno para ver su planilla completa con los criterios evaluados.</p>`+groups(id=>btn(id,id===sel?'data-roback':`data-roopen="${id}"`,id===sel),!!sel,l=>l.includes(sel)?roPanel():'',idsP):none}</div>`
   }
   return h+'</div>'+(mgr?tiemHtml():'')+supDelHtml()}
 const TM_MAX=30*60000;
@@ -1756,7 +1760,7 @@ async function tmOpen(id){
   catch(e){if(!TMP||TMP.id!==id)return;TMP.err=e&&e.denied?'Firebase rechazó la lectura de las planillas de los examinadores. Hay que actualizar las reglas (nodo planillas).':'No se pudieron cargar las planillas. Revisá la conexión.'}
   TMP.loading=false;renderGestion()}
 function tiemHtml(){
-  const ids=regIds();
+  const ids=regIdsK('tm');
   const sel=TMP&&ids.includes(TMP.id)?TMP.id:'';
   const tl=id=>{const e=DB.exams[id].ex,ti=tipoById(e.tipo);return (ti?ti[1]:'Examen')+(e.fecha?' · '+e.fecha.split('-').reverse().slice(0,2).join('/'):'')};
   const gr={};ids.forEach(id=>{const d=(DB.exams[id].ex.lugar||'').trim()||'Sin delegación';(gr[d]=gr[d]||[]).push(id)});
