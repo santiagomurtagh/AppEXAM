@@ -634,28 +634,29 @@ function cKick(){if(!CL.uid)return;clearTimeout(cKT);cKT=setTimeout(cTick,700)}
 
 function aviso(msg){let d=document.getElementById('avisorol');if(d)d.remove();d=document.createElement('div');d.id='avisorol';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:120;max-width:min(520px,calc(100vw - 32px));background:var(--card);color:var(--ink);border:2px solid var(--blue);border-radius:12px;padding:12px 14px;box-shadow:0 6px 24px rgba(0,0,0,.25);display:flex;gap:12px;align-items:center';d.innerHTML='<span></span><button class="btn sec" type="button">Entendido</button>';d.firstChild.textContent=msg;d.lastChild.onclick=()=>d.remove();document.body.appendChild(d)}
 const CT=()=>LOCAL?!!(DB.ct&&DB.adm):!!(CL.ct&&CL.role==='admin');
-const PERMN={prof:'Examinador',dir:'Dirección',admin:'Administrador'};
+const PERMN={prof:'Examinador',dir:'Dirección',admin:'Administrador',ct:'Comité Técnico'};
 async function setPerm(k,np,sel){
   const v=(INV||{})[k];if(!v)return;
-  const prev=permOf(v),back=()=>{if(sel)sel.value=prev};
+  const prev=permVal(v),back=()=>{if(sel)sel.value=prev};
   if(!DB.adm||(!LOCAL&&(CL.role!=='admin'||!isSuper()))){back();return}
   if(np===prev)return;
   const em=k.replace(/,/g,'.');
   if(!LOCAL&&ek(CL.email)===k){usrMsg='No podés cambiar tus propios permisos.';back();renderGestion();return}
   const ex=Object.values(DB.exams).find(c=>!c.ex.fin&&c.ex.exam.some(n=>nz(n)===nz(v.name||'')));
   if(ex){usrMsg=`No se pueden cambiar los permisos de ${v.name}: participa en un examen sin finalizar (${exLabel(ex.ex)}). Sacalo del examen primero.`;back();renderGestion();return}
-  let extra='';
+  let extra='';const nct=np==='ct',nr=nct?'admin':np;
   try{
     if(!LOCAL){
-      if(np==='prof')await cDb('DELETE','invites/'+k+'/perm');else await cDb('PUT','invites/'+k+'/perm',np);
+      if(nr==='prof')await cDb('DELETE','invites/'+k+'/perm');else await cDb('PUT','invites/'+k+'/perm',nr);
+      if(nct)await cDb('PUT','invites/'+k+'/ct',true);else if(v.ct)await cDb('DELETE','invites/'+k+'/ct');
       let ms=null;try{ms=await cDb('GET','members')}catch(e){if(!(e&&e.denied))throw e}
       const ent=ms?Object.entries(ms).find(([u,m])=>m&&String(m.email||'').toLowerCase()===em.toLowerCase()):null;
-      if(ent){const [uid]=ent;await cDb('PUT','members/'+uid+'/role',np);if(np==='admin')await cDb('PUT','admins/'+uid,true);else await cDb('DELETE','admins/'+uid);extra=' El cambio se aplica en su próximo ingreso o en unos segundos si tiene la app abierta.'}
+      if(ent){const [uid]=ent;await cDb('PUT','members/'+uid+'/role',nr);if(nr==='admin')await cDb('PUT','admins/'+uid,true);else await cDb('DELETE','admins/'+uid);extra=' El cambio se aplica en su próximo ingreso o en unos segundos si tiene la app abierta.'}
       else extra=ms?' Todavía no creó su acceso: los permisos se aplican cuando lo cree.':' No pude verificar si ya tiene cuenta (sin permiso de lectura). Si ya ingresó, revisá las reglas de Firebase.'
     }
-    if(np==='prof')delete v.perm;else v.perm=np;
-    usrMsg=`${v.name} ahora tiene permisos de ${PERMN[np]}.`+(np!=='prof'?' Entra con ese rol y deja de ver la vista de examinador.':'')+extra;
-  }catch(er){back();usrMsg=er&&er.denied?'Sin permiso: solo el administrador principal puede dar o quitar permisos de Dirección y Administrador.':'Sin conexión: no se guardó el cambio.'}
+    if(nr==='prof')delete v.perm;else v.perm=nr;if(nct)v.ct=true;else delete v.ct;
+    usrMsg=`${v.name} ahora tiene permisos de ${PERMN[np]}.`+(nr!=='prof'?' Entra con ese rol y deja de ver la vista de examinador.':'')+extra;
+  }catch(er){back();usrMsg=er&&er.denied?'Sin permiso: solo el administrador principal puede dar o quitar permisos.':'Sin conexión: no se guardó el cambio.'}
   renderGestion();
 }
 let roleT=0;
@@ -1783,7 +1784,8 @@ let INV=null,invLoad=false,usrMsg='';
 const NIVS=[1,2,3,4,5];
 const nivOf=v=>{const n=Number(v&&v.niv);return n>=1&&n<=5?n:0};
 const permOf=v=>v&&(v.perm==='admin'||v.perm==='dir')?v.perm:'prof';
-const permSel=(k,v)=>(!LOCAL&&!isSuper())?`<span>${PERMN[permOf(v)]}</span>`:`<select data-uxperm="${esc(k)}" aria-label="Permisos"><option value="prof"${permOf(v)==='prof'?' selected':''}>Examinador</option><option value="dir"${permOf(v)==='dir'?' selected':''}>Dirección</option><option value="admin"${permOf(v)==='admin'?' selected':''}>Administrador</option></select>`;
+const permVal=v=>permOf(v)==='admin'&&v&&v.ct?'ct':permOf(v);
+const permSel=(k,v)=>(!LOCAL&&!isSuper())?`<span>${PERMN[permVal(v)]}</span>`:`<select data-uxperm="${esc(k)}" aria-label="Permisos"><option value="prof"${permOf(v)==='prof'?' selected':''}>Examinador</option><option value="dir"${permOf(v)==='dir'?' selected':''}>Dirección</option><option value="admin"${permVal(v)==='admin'?' selected':''}>Administrador</option><option value="ct"${permVal(v)==='ct'?' selected':''}>Comité Técnico</option></select>`;
 const nivSel=(k,v)=>isMgr()?`<select data-uxniv="${esc(k)}" aria-label="Validación"><option value="">—</option>${NIVS.map(n=>`<option value="${n}"${nivOf(v)===n?' selected':''}>Nivel ${n}</option>`).join('')}</select>`:(nivOf(v)?'Nivel '+nivOf(v):'<span class="dvs">Sin validar</span>');
 const dOpen={usr:false,reg:true};
 const xlsDet=(k,n,body)=>`<details class="xdet" data-dtg="${k}"${dOpen[k]?' open':''}><summary>Ver lista de examinadores (${n})</summary>${body}</details>`;
