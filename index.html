@@ -1381,6 +1381,9 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-login]')){doLogin();return}
   {const sg=e.target.closest('[data-ofsign]');if(sg&&isJefe()&&sg.dataset.armed!=='1'&&!DB.ex.fin){sg.dataset.armed='1';sg.textContent='¿Seguro? Tocá de nuevo: se cierra el examen y NO se puede deshacer';clearTimeout(sg._t);sg._t=setTimeout(()=>{sg.dataset.armed='';sg.textContent='Firmar y cerrar el examen'},8000);return}}
   {const rb=e.target.closest('[data-robaj]');if(rb&&PV&&PV.ro){PV.baj=Number(rb.dataset.robaj);PV.ks.forEach(k=>{tab[k]=PV.baj});all();roBar();return}}
+  {const q=e.target.closest('[data-sdq]');if(q){if(!sdOk())return;const[i,k]=q.dataset.sdq.split('|');SDQ={id:i,k};SDM='';renderGestion();return}}
+  if(e.target.closest('[data-sdno]')){SDQ=null;renderGestion();return}
+  if(e.target.closest('[data-sddo]')){if(SDQ)supDel(SDQ.id,SDQ.k);return}
   {const tm=e.target.closest('[data-tmopen]');if(tm){if(TMP&&TMP.id===tm.dataset.tmopen){TMP=null;renderGestion()}else tmOpen(tm.dataset.tmopen);return}}
   {const ro=e.target.closest('[data-roopen]');if(ro){roOpen(ro.dataset.roopen);return}}
   if(e.target.closest('[data-roback]')){ROP=null;renderGestion();return}
@@ -1656,6 +1659,38 @@ async function openEx(id){
 }
 let delAsk=false;
 const regIds=()=>{const n=DB.me||CL.name;return Object.keys(DB.exams).filter(id=>{const e=DB.exams[id].ex;return e.fin&&(isMgr()||e.exam.includes(n))}).sort((a,b)=>(DB.exams[b].ex.fecha||'').localeCompare(DB.exams[a].ex.fecha||''))};
+let SDQ=null,SDM='';
+const sdOk=()=>isMgr()&&(LOCAL||isSuper());
+const SDN={of:'la planilla oficial',tm:'los tiempos de examinación',pl:'las planillas de examen'};
+function supDelHtml(){
+  if(!sdOk())return '';
+  const ids=regIds();
+  const row=id=>{const e=DB.exams[id].ex;return `<div class="nvm" style="margin-top:10px">${esc(exLabel(e))}</div><div class="gtabs rgb">`+['of','tm','pl'].map(k=>SDQ&&SDQ.id===id&&SDQ.k===k?`<button class="gtab" style="border-color:var(--no);color:var(--no)" data-sddo="1">¿Borrar ${SDN[k]}? Confirmar</button><button class="gtab" data-sdno="1">Cancelar</button>`:`<button class="gtab" data-sdq="${id}|${k}">Borrar ${SDN[k]}</button>`).join('')+'</div>'};
+  return `<h3 class="gh">Borrar datos de exámenes</h3><div class="dgrid"><div class="gx"><p class="dvs">Solo para los administradores principales. El borrado es definitivo y no se puede deshacer.</p>${SDM?`<p class="dvm" role="status">${esc(SDM)}</p>`:''}${ids.length?ids.map(row).join(''):'<p class="dvs">Todavía no hay exámenes finalizados.</p>'}</div></div>`}
+async function supDel(id,k){
+  if(!sdOk())return;const c=DB.exams[id];if(!c)return;
+  try{
+    if(LOCAL){
+      if(k==='of'){c.of={man:{},base:null,hab:false,fir:{},pis:{}};c.conf={}}
+      else if(k==='tm'){c.ex.ini=0;c.ex.fim=0;(c.list||[]).forEach(x=>{if(x&&x.st)x.st.t={}})}
+      else c.list=[];
+      saveLocal();
+    }else{
+      if(k==='of'){await cDb('DELETE','xo/'+id);await cDb('DELETE','xc/'+id)}
+      else{
+        const us=Object.keys((await cShallow('planillas'))||{});
+        if(k==='pl'){for(const u of us)await cDb('DELETE','planillas/'+u+'/'+id)}
+        else{
+          await cDb('DELETE','xm/'+id+'/ini');await cDb('DELETE','xm/'+id+'/fim');c.ex.ini=0;c.ex.fim=0;
+          for(const u of us){const r=await cDb('GET','planillas/'+u+'/'+id);if(!r)continue;
+            for(const key of Object.keys(r)){let t;try{t=JSON.parse(r[key])}catch(e){continue}if(t&&t.t&&Object.keys(t.t).length){t.t={};await cDb('PUT','planillas/'+u+'/'+id+'/'+key,JSON.stringify(t))}}}
+        }
+      }
+      if(k==='of'){c.of={man:{},base:null,hab:false,fir:{},pis:{}};c.conf={}}
+    }
+    TMP=null;ROP=null;SDM='Se borraron '+SDN[k]+'.';
+  }catch(e){SDM=e&&e.denied?'Firebase rechazó el borrado: hay que publicar las reglas nuevas (firebase_rules.json).':'No se pudo borrar (sin conexión). Probá de nuevo.'}
+  SDQ=null;renderGestion()}
 function regHtml(){
   const ids=regIds(),mgr=isMgr();
   const tl=id=>{const e=DB.exams[id].ex,ti=tipoById(e.tipo);return (ti?ti[1]:'Examen')+(e.fecha?' · '+e.fecha.split('-').reverse().slice(0,2).join('/'):'')};
@@ -1669,7 +1704,7 @@ function regHtml(){
     const sel=ROP&&ids.includes(ROP.id)?ROP.id:'';
     h+=`<div class="gx"><h3>Planillas de examen (${ids.length})</h3>${ids.length?`<p class="dvs">Solo lectura. Elegí un examen, después un examinador y por último un alumno para ver su planilla completa con los criterios evaluados.</p>`+groups(id=>btn(id,id===sel?'data-roback':`data-roopen="${id}"`,id===sel),!!sel,l=>l.includes(sel)?roPanel():''):none}</div>`
   }
-  return h+'</div>'+(mgr?tiemHtml():'')}
+  return h+'</div>'+(mgr?tiemHtml():'')+supDelHtml()}
 const TM_MAX=30*60000;
 const tmAvg=a=>a.reduce((x,y)=>x+y,0)/a.length;
 function tmFmt(ms){const s=Math.round(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60;return h?h+' h '+String(m).padStart(2,'0')+' min':m?m+' min '+String(c).padStart(2,'0')+' s':c+' s'}
