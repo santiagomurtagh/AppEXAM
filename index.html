@@ -330,7 +330,7 @@ const FB={key:'AIzaSyAkLoPruGPwA4_1fXn2kHrgulm1LsCRhww',db:'https://appexam-1470
 const CKEY='planillas_n3_cloud';
 const BASE_LOCAL=false; /* true = modo local sin nube (versión solo para el artefacto) */
 const LOCAL=BASE_LOCAL||PRUEBA; /* el Modo Prueba usa el mismo camino que el modo local: sin nube */
-const CL={tok:'',rt:'',exp:0,uid:'',email:'',role:'',name:'',k:'',on:false,err:'',last:{},force:{},lx:{},ec:{},jApply:false,wipeIds:[],mpl:'',firClear:false,finPush:'',booted:false,ui:null};
+const CL={tok:'',rt:'',exp:0,uid:'',email:'',role:'',name:'',k:'',ct:false,on:false,err:'',last:{},force:{},lx:{},ec:{},jApply:false,wipeIds:[],mpl:'',firClear:false,finPush:'',booted:false,ui:null};
 let cTimer=null,cBusy=false,cKT=null,admMsg='',exMsg='';
 const fk=s=>String(s).replace(/[%.$#\[\]\/]/g,c=>'%'+c.charCodeAt(0).toString(16).toUpperCase().padStart(2,'0'));
 const dk=s=>String(s).replace(/%([0-9A-F]{2})/g,(_,h)=>String.fromCharCode(parseInt(h,16)));
@@ -339,8 +339,8 @@ const cj=v=>JSON.stringify(v===undefined?null:v,(k,x)=>x&&typeof x==='object'&&!
 const encMap=o=>{const r={};Object.keys(o||{}).forEach(k=>{r[fk(k)]=o[k]});return Object.keys(r).length?r:null};
 const decMap=o=>{const r={};Object.keys(o||{}).forEach(k=>{r[dk(k)]=o[k]});return r};
 const toArr=v=>Array.isArray(v)?v.filter(x=>x!=null):(v&&typeof v==='object'?Object.values(v):[]);
-function cSave(){try{localStorage.setItem(CKEY,JSON.stringify({rt:CL.rt,uid:CL.uid,email:CL.email,role:CL.role,name:CL.name,k:CL.k}))}catch(e){}}
-function cLoad(){try{const s=JSON.parse(localStorage.getItem(CKEY)||'null');if(s&&s.rt&&s.uid&&(s.role==='admin'||s.role==='prof'||s.role==='dir')){Object.assign(CL,{rt:s.rt,uid:s.uid,email:s.email||'',role:s.role,name:s.name||'',k:s.k||fk(s.name||'')});return true}}catch(e){}return false}
+function cSave(){try{localStorage.setItem(CKEY,JSON.stringify({rt:CL.rt,uid:CL.uid,email:CL.email,role:CL.role,name:CL.name,k:CL.k,ct:!!CL.ct}))}catch(e){}}
+function cLoad(){try{const s=JSON.parse(localStorage.getItem(CKEY)||'null');if(s&&s.rt&&s.uid&&(s.role==='admin'||s.role==='prof'||s.role==='dir')){Object.assign(CL,{ct:!!s.ct&&s.role==='admin',rt:s.rt,uid:s.uid,email:s.email||'',role:s.role,name:s.name||'',k:s.k||fk(s.name||'')});return true}}catch(e){}return false}
 const EMS={EMAIL_NOT_FOUND:'Correo o contraseña incorrectos.',INVALID_PASSWORD:'Correo o contraseña incorrectos.',INVALID_LOGIN_CREDENTIALS:'Correo o contraseña incorrectos.',EMAIL_EXISTS:'Ese correo ya tiene una cuenta. Ingresá o usá "Olvidé mi contraseña".',INVALID_EMAIL:'El correo no es válido.',MISSING_PASSWORD:'Escribe tu contraseña.',OPERATION_NOT_ALLOWED:'El acceso por correo no está activado en Firebase.',USER_DISABLED:'Esta cuenta está deshabilitada.',TOO_MANY_ATTEMPTS_TRY_LATER:'Demasiados intentos. Esperá un momento.'};
 function emsg(e){
   if(!e||e.code===undefined)return 'No hay conexión con el servidor. Revisá tu internet.';
@@ -367,7 +367,9 @@ async function cDb(method,path,body){
   try{return await r.json()}catch(e){return null}
 }
 function cSet(j,em){CL.tok=j.idToken;CL.rt=j.refreshToken;CL.exp=Date.now()+Number(j.expiresIn||3600)*1000;CL.uid=j.localId;CL.email=String(j.email||em||'').toLowerCase()}
-async function cProfile(){
+async function cCt(){try{const inv=await cDb('GET','invites/'+ek(CL.email));const v=CL.role==='admin'&&!!(inv&&inv.ct);if(v!==CL.ct){CL.ct=v;cSave();return true}}catch(e){}return false}
+async function cProfile(){await cProfile0();await cCt()}
+async function cProfile0(){
   const m=await cDb('GET','members/'+CL.uid);
   if(m&&m.name){CL.role=m.role==='admin'?'admin':(m.role==='dir'?'dir':'prof');CL.name=m.name;CL.k=m.k||fk(m.name);return}
   const inv=await cDb('GET','invites/'+ek(CL.email)).catch(()=>null);
@@ -628,6 +630,7 @@ async function cStart(){if(!roleT){roleT=setInterval(cRoleSync,30000);cRoleSync(
 function cKick(){if(!CL.uid)return;clearTimeout(cKT);cKT=setTimeout(cTick,700)}
 
 function aviso(msg){let d=document.getElementById('avisorol');if(d)d.remove();d=document.createElement('div');d.id='avisorol';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:120;max-width:min(520px,calc(100vw - 32px));background:var(--card);color:var(--ink);border:2px solid var(--blue);border-radius:12px;padding:12px 14px;box-shadow:0 6px 24px rgba(0,0,0,.25);display:flex;gap:12px;align-items:center';d.innerHTML='<span></span><button class="btn sec" type="button">Entendido</button>';d.firstChild.textContent=msg;d.lastChild.onclick=()=>d.remove();document.body.appendChild(d)}
+const CT=()=>LOCAL?!!(DB.ct&&DB.adm):!!(CL.ct&&CL.role==='admin');
 const PERMN={prof:'Examinador',dir:'Dirección',admin:'Administrador'};
 async function setPerm(k,np,sel){
   const v=(INV||{})[k];if(!v)return;
@@ -655,11 +658,11 @@ async function setPerm(k,np,sel){
 let roleT=0;
 async function cRoleSync(){
   if(LOCAL||!CL.uid||!CL.tok&&!CL.rt)return;
-  try{const m=await cDb('GET','members/'+CL.uid);if(!m||!m.role)return;const r=m.role==='admin'?'admin':(m.role==='dir'?'dir':'prof');if(r===CL.role)return;
+  try{const m=await cDb('GET','members/'+CL.uid);if(!m||!m.role)return;const r=m.role==='admin'?'admin':(m.role==='dir'?'dir':'prof');if(r===CL.role){if(await cCt()){try{updTabs();updMg()}catch(e){}}return}
     CL.role=r;cSave();cEnter();all();showView('gestion');try{updTabs();renderGestion()}catch(e){}
     aviso('Tus permisos cambiaron: ahora ingresás como '+PERMN[r]+'.')}catch(e){}
 }
-async function cInvite(name,email,role,niv){if(LOCAL)return;const o={name,role:role||'prof',k:fk(name)};if(niv>=1&&niv<=5)o.niv=niv;await cDb('PUT','invites/'+ek(email),o)}
+async function cInvite(name,email,role,niv,ct){if(LOCAL)return;const o={name,role:role||'prof',k:fk(name)};if(niv>=1&&niv<=5)o.niv=niv;if(ct)o.ct=true;await cDb('PUT','invites/'+ek(email),o)}
 const PR_EX=['Examinador Prueba 1','Examinador Prueba 2','Examinador Prueba 3'];
 const PR_INV=()=>{const o={};for(let i=1;i<=9;i++)o['prueba'+i+'@ejemplo,com']={name:'Examinador Prueba '+i,role:'prof',niv:i%5+1};return o};
 function pruebaCard(){
@@ -725,8 +728,8 @@ function pruebaLlenar(){
   const m=document.getElementById('pmsg');if(m)m.textContent='Notas al azar cargadas en las planillas de todos los examinadores. Las firmas se reiniciaron.'}
 function accBlock(){
   if(PRUEBA_EX)return `<div class="gx"><h3>Modo Prueba</h3><p class="dvm">Estás probando como examinador${DB.me&&DB.me!==SINASIG?': <b>'+esc(DB.me)+'</b>':''}. Los datos de prueba se guardan solo en este navegador: no se envía nada a Firebase y no se toca ningún examen real.</p></div>`;
-  if(LOCAL){const ops=['<option value="">Administrador</option>'].concat(Object.keys(DB.exams).filter(id=>!DB.exams[id].ex.fin).map(id=>{const e=DB.exams[id].ex;return e.exam.map(n=>`<option value="${esc(n)}"${DB.me===n?' selected':''}>${e.exam[e.jefe]===n?'Jefe de mesa':'Examinador'}: ${esc(n)} — ${esc(exLabel(e))}</option>`).join('')})).concat(`<option value="__dir"${DB.dir?' selected':''}>Dirección</option>`).concat(`<option value="${SINASIG}"${DB.me===SINASIG?' selected':''}>Examinador sin asignar (sin credenciales)</option>`).join('');return `<div class="gx"><h3>${PRUEBA?'Modo Prueba':'Modo local'}</h3><p class="dvm">${PRUEBA?'Los datos de prueba se guardan solo en este navegador. No se envía nada a Firebase y no se toca ningún examen real. Elegí con qué rol querés probar.':'Esta versión guarda todo solo en este navegador y no se sincroniza. Sirve para probar y ver cómo trabaja cada rol.'}</p><div class="id"><label>Ver como<select data-vc>${ops}</select></label></div></div>`}
-  if(DB.adm||DB.me||DB.dir)return `<div class="gx"><h3>Sesión</h3><p class="dvm">Sesión iniciada como <b>${DB.adm?'Administrador'+(DB.admName?' ('+esc(DB.admName)+')':''):DB.dir?'Dirección'+(DB.admName&&CL.uid?' ('+esc(DB.admName)+')':''):esc(DB.me)}</b>${CL.email?' · '+esc(CL.email):''}.${noAccess()?' <b>No tenés un examen asignado:</b> el acceso a las planillas se habilita cuando el administrador te incluye en un examen.':''}</p><button class="btn sec" data-logout>Cerrar sesión</button></div>`;
+  if(LOCAL){const ops=['<option value="">Administrador</option>'].concat(Object.keys(DB.exams).filter(id=>!DB.exams[id].ex.fin).map(id=>{const e=DB.exams[id].ex;return e.exam.map(n=>`<option value="${esc(n)}"${DB.me===n?' selected':''}>${e.exam[e.jefe]===n?'Jefe de mesa':'Examinador'}: ${esc(n)} — ${esc(exLabel(e))}</option>`).join('')})).concat(`<option value="__dir"${DB.dir?' selected':''}>Dirección</option>`).concat(`<option value="__ct"${DB.adm&&DB.ct?' selected':''}>Comité Técnico</option>`).concat(`<option value="${SINASIG}"${DB.me===SINASIG?' selected':''}>Examinador sin asignar (sin credenciales)</option>`).join('');return `<div class="gx"><h3>${PRUEBA?'Modo Prueba':'Modo local'}</h3><p class="dvm">${PRUEBA?'Los datos de prueba se guardan solo en este navegador. No se envía nada a Firebase y no se toca ningún examen real. Elegí con qué rol querés probar.':'Esta versión guarda todo solo en este navegador y no se sincroniza. Sirve para probar y ver cómo trabaja cada rol.'}</p><div class="id"><label>Ver como<select data-vc>${ops}</select></label></div></div>`}
+  if(DB.adm||DB.me||DB.dir)return `<div class="gx"><h3>Sesión</h3><p class="dvm">Sesión iniciada como <b>${DB.adm?(CT()?'Comité Técnico':'Administrador')+(DB.admName?' ('+esc(DB.admName)+')':''):DB.dir?'Dirección'+(DB.admName&&CL.uid?' ('+esc(DB.admName)+')':''):esc(DB.me)}</b>${CL.email?' · '+esc(CL.email):''}.${noAccess()?' <b>No tenés un examen asignado:</b> el acceso a las planillas se habilita cuando el administrador te incluye en un examen.':''}</p><button class="btn sec" data-logout>Cerrar sesión</button></div>`;
   if(CL.uid&&CL.role==='pending')return `<div class="gx"><h3>Configurar administrador</h3><p class="dvm">Todavía no hay un administrador. Si sos la persona a cargo, ingresá tu nombre para quedar como administrador con el correo <b>${esc(CL.email)}</b>.</p><div class="id"><label>Tu nombre<input id="an" autocomplete="name"></label></div><button class="btn" data-claim>Ser administrador</button> <button class="btn sec" data-logout>Cancelar</button><p class="dvm" id="lmsg" role="status"></p></div>`;
   return `<div class="gx"><h3>Ingresar</h3><div class="id"><label>Correo<input id="lu" type="email" autocomplete="username" autocapitalize="none"></label><label>Contraseña<input id="lp" type="password" autocomplete="current-password"></label></div><button class="btn" data-login>Ingresar</button> <button class="lnk" data-reset>Olvidé mi contraseña</button>
   <details class="crb" style="margin-top:12px"><summary>Primer ingreso: crear mi acceso</summary><p class="dvs">Usá el mismo correo con el que el administrador te agregó como examinador.</p><div class="id" style="margin-top:8px"><label>Correo<input id="ce" type="email" autocapitalize="none"></label><label>Contraseña<input id="cp" type="password" autocomplete="new-password"></label><label>Repetir contraseña<input id="cp2" type="password" autocomplete="new-password"></label></div><button class="btn" data-create>Crear acceso</button></details>
@@ -969,25 +972,79 @@ function apoyosTxtEl(l,obs,sides){const e=l&&l!=='MB'&&l!=='EXC'?sides||[]:[],or
 function apoyosTxtCu(l,obs,sides){const o=obs.length>1?'ambas':(obs[0]||'').toLowerCase(),e=l&&l!=='MB'&&l!=='EXC'?sides||[]:[];let t;
  if(l==='B'&&APC.B[o])t='Los apoyos son buenos, '+APC.B[o];else if(l==='R'&&APC.R[o])t='Apoyos regulares'+(o==='pierde cuña'?' ':', ')+APC.R[o];else if(l==='NO'&&APC.R[o])t='Los apoyos no son buenos, '+APC.R[o];else t=apoyosTxt(l,obs,[]);
  const q=[t];if(e.length)q.push(e.includes('IZQ')&&e.includes('DER')?'ambos lados':e[0]==='IZQ'?'lado izquierdo':'lado derecho');return q.filter(Boolean).join(', ')}
+/* Cuña Nivel 1: mismo estilo de redacción que Elemental Nivel 1 (prueba) */
+const APCU={B:{'Aplana interno':'hay un leve aplanamiento del esquí interno','Pierde cuña':'pierde un poco la cuña','Cuña resistida':'la cuña está algo resistida'},R:{'Aplana interno':'aplana el esquí interno','Pierde cuña':'pierde la cuña por momentos','Cuña resistida':'con una cuña resistida'},NO:{'Aplana interno':'con un aplanamiento muy marcado del esquí interno','Pierde cuña':'pierde completamente la cuña','Cuña resistida':'con una cuña muy resistida'}};
+function apoyosTxtCu1(l,obs,sides){const e=l&&l!=='MB'&&l!=='EXC'?sides||[]:[],ord=['Aplana interno','Pierde cuña','Cuña resistida'].filter(x=>obs.includes(x));let t=l&&APEP[l]?APEP[l]:(l?APL[l]||l:'');
+ if(ord.length&&APCU[l]){const body=lst(ord.map(x=>APCU[l][x]));t=t+', '+(l==='B'?'aunque '+body:body)}
+ else if(ord.length)t=(t?t+', ':'')+lst(ord.map(x=>x.toLowerCase()));
+ const q=[t];if(e.length)q.push(e.includes('IZQ')&&e.includes('DER')?'hacia ambos lados':e[0]==='IZQ'?'hacia la izquierda':'hacia la derecha');return q.filter(Boolean).join(', ')}
+const velCu1=(l,m,ob)=>{const mp2=(ob||[]).map(x=>x==='Exc. rozamiento'?'Frena cuña':x==='C. cortada'?'Fin. cortada':x);let s=velEl(l,m,mp2);
+ [['Frena demasiado con la cuña','Hay demasiado rozamiento'],['está frenando un poco de más con la cuña','hay un poco de rozamiento de más'],['frena mucho con la cuña','hay excesivo rozamiento'],['frena un poco con la cuña','hay algo de rozamiento'],['frena con la cuña','hay rozamiento'],['La finalización','La conducción'],['la finalización','la conducción']].forEach(([a,b])=>{s=s.split(a).join(b)});return s};
+/* Corto Paralelo Nivel 1: mismo estilo de redacción que Elemental Nivel 1 (prueba) */
+const APCP={B:{'A Frame(alt)':'hay un leve A Frame','Derrapa':'hay algún derrape','Pivoteos':'hay algún pivoteo','Inestable':'hay algo de inestabilidad'},R:{'A Frame(alt)':'con A Frame','Derrapa':'con derrapes','Pivoteos':'con pivoteos','Inestable':'con inestabilidad'},NO:{'A Frame(alt)':'con un A Frame muy marcado','Derrapa':'derrapa mucho','Pivoteos':'con pivoteos muy marcados','Inestable':'con mucha inestabilidad'}};
+function apoyosTxtCp(l,obs,sides){const e=l&&l!=='MB'&&l!=='EXC'?sides||[]:[],ord=['A Frame(alt)','Derrapa','Pivoteos','Inestable'].filter(x=>obs.includes(x));let t=l&&APEP[l]?APEP[l]:(l?APL[l]||l:'');
+ if(ord.length&&APCP[l]){const body=lst(ord.map(x=>APCP[l][x]));t=t+', '+(l==='B'?'aunque '+body:body)}
+ else if(ord.length)t=(t?t+', ':'')+lst(ord.map(x=>x.toLowerCase()));
+ const q=[t];if(e.length)q.push(e.includes('IZQ')&&e.includes('DER')?'hacia ambos lados':e[0]==='IZQ'?'hacia la izquierda':'hacia la derecha');return q.filter(Boolean).join(', ')}
+const NV5={NO:'no ha sido correcta',R:'ha sido regular',B:'ha sido buena',MB:'ha sido muy buena',EXC:'ha sido excelente'};
+const IMCP={B:{'En bloque':'aunque la esquiada se ve algo en bloque','Forzado':'aunque la esquiada se ve algo forzada','No natural':'aunque la esquiada se ve algo poco natural','Estático':'aunque baja un poco estático','Exagerado':'aunque la esquiada se ve algo exagerada','Errático':'aunque la esquiada es algo errática'},R:{'En bloque':'la esquiada se ve en bloque','Forzado':'la esquiada se ve forzada','No natural':'la esquiada se ve poco natural','Estático':'baja de forma estática','Exagerado':'la esquiada se ve exagerada','Errático':'la esquiada es errática'},NO:{'En bloque':'la esquiada se ve muy en bloque','Forzado':'la esquiada se ve muy forzada','No natural':'la esquiada no se ve natural','Estático':'baja de forma muy estática','Exagerado':'la esquiada se ve muy exagerada','Errático':'la esquiada es muy errática'}};
+function imagenCp(l,obs){if(obs.includes('No interpreta'))return 'No interpreta la maniobra';const ord=['No natural','En bloque','Forzado','Estático','Exagerado','Errático'].filter(x=>obs.includes(x));let t=l&&NV5[l]?'La imagen general '+NV5[l]:'';
+ if(ord.length){if(IMCP[l]){const it=ord.map((x,i)=>{let s=IMCP[l][x].replace(/^aunque /,'');return i?s.replace(/^la esquiada /,''):s});t=t+', '+(l==='B'?'aunque ':'')+lst(it)}else t=(t?t+', ':'La esquiada: ')+lst(ord.map(x=>x.toLowerCase()))}return t}
+const CGCP={B:{'Falta al inicio':'hay algo de falta de carga al inicio','Exceso final':'hay algo de exceso de carga al final','Retiene finales':'retiene un poco en los finales','No se adapta':'le cuesta un poco adaptarse','Flotado':'se ve algo flotado'},R:{'Falta al inicio':'con falta de carga al inicio','Exceso final':'con exceso de carga al final','Retiene finales':'retiene en los finales','No se adapta':'le cuesta adaptarse','Flotado':'queda flotado'},NO:{'Falta al inicio':'con una marcada falta de carga al inicio','Exceso final':'con un exceso de carga muy marcado al final','Retiene finales':'retiene mucho en los finales','No se adapta':'no logra adaptarse','Flotado':'queda muy flotado'}};
+function cargaCp(l,obs){const ord=['Falta al inicio','Exceso final','Retiene finales','No se adapta','Flotado'].filter(x=>obs.includes(x));let t=l&&NV5[l]?'La gestión de carga '+NV5[l]:'';
+ if(ord.length){if(CGCP[l]){const body=lst(ord.map(x=>CGCP[l][x]));t=t+', '+(l==='B'?'aunque '+body:body)}else t=(t?t+', ':'Gestión de carga: ')+lst(ord.map(x=>x.toLowerCase()))}return t}
+function visualCp(l,obs,sides){const ob=['Hacia adentro','A los pies'].filter(x=>obs.includes(x)).map(x=>x==='Hacia adentro'?'hacia adentro':'a los pies');let t=l?'La anticipación visual '+({OK:'ha sido correcta',R:'ha sido regular',NO:'no ha sido correcta'}[l]||'ha sido '+l.toLowerCase()):'';
+ if(ob.length)t=(t?t+', con la mirada ':'Anticipación visual con la mirada ')+lst(ob);
+ if(sides.length)t+=(t?', ':'Anticipación visual: ')+(sides.includes('IZQ')&&sides.includes('DER')?'hacia ambos lados':sides[0]==='IZQ'?'hacia la izquierda':'hacia la derecha');return t}
+const CGBU={B:{'Pierde contacto':'aunque pierde algo de contacto con la nieve','Rebota':'aunque rebota un poco','Retiene':'aunque retiene un poco la carga','No se adapta':'aunque le cuesta un poco adaptarse al terreno'},R:{'Pierde contacto':'pierde contacto con la nieve por momentos','Rebota':'rebota','Retiene':'retiene la carga','No se adapta':'le cuesta adaptarse al terreno'},NO:{'Pierde contacto':'pierde contacto con la nieve de forma muy marcada','Rebota':'rebota mucho','Retiene':'retiene mucho la carga','No se adapta':'no logra adaptarse al terreno'}};
+function cargaG(l,obs,bu){if(!bu)return cargaCp(l,obs);const ord=['Pierde contacto','Rebota','Retiene','No se adapta'].filter(x=>obs.includes(x));let t=l&&NV5[l]?'La gestión de carga '+NV5[l]:'';
+ if(ord.length){if(CGBU[l]){const body=lst(ord.map(x=>CGBU[l][x].replace(/^aunque /,'')));t=t+', '+(l==='B'?'aunque ':'')+body}else t=(t?t+', ':'Gestión de carga: ')+lst(ord.map(x=>x.toLowerCase()))}return t}
+const VLV={OK:'ha sido correcta',R:'ha sido regular',NO:'no ha sido correcta',B:'ha sido buena',MB:'ha sido muy buena',EXC:'ha sido excelente'};
+const VMAP={'Hacia adentro':['m','hacia adentro'],'Adentro':['m','hacia adentro'],'A los pies':['m','a los pies'],'Eje pista':['m','sobre el eje de pista'],'Eje avance':['m','sobre el eje de avance'],'No elige línea':['o','no elige línea']};
+function visualG(l,obs,sides){const ms=[],os=[];obs.forEach(x=>{const v=VMAP[x];if(v)(v[0]==='m'?ms:os).push(v[1]);else os.push(x.toLowerCase())});let t=l&&VLV[l]?'La anticipación visual '+VLV[l]:'';
+ if(ms.length)t=(t?t+', con la mirada ':'Anticipación visual con la mirada ')+lst(ms);
+ if(os.length)t=(t?t+', ':'Anticipación visual: ')+lst(os);
+ if(sides.length)t+=(t?', ':'Anticipación visual: ')+(sides.includes('IZQ')&&sides.includes('DER')?'hacia ambos lados':sides[0]==='IZQ'?'hacia la izquierda':'hacia la derecha');return t}
+const BQC={'Acompaña':'acompaña al avance','Ap. temprano':'se está dando temprano','Ap. tarde':'se está dando tarde','Ap. circular':'es de manera circular'},BQL={'Acompaña':'acompaña al avance','Ap. finalización':'está siendo en finalización','Ap. circular':'es de manera circular'},BQP={'Acompaña':'acompaña al avance','Rebota':'rebota','Ap. circular':'es de manera circular'},BQU={'Temprano':'se está dando temprano','Tarde':'se está dando tarde','Rebota':'rebota'};
+function bastonG(l,obs,cls){const BB={OK:'El uso del bastón ha sido correcto',R:'El uso del bastón ha sido regular',NO:'El uso del bastón no ha sido correcto'},bb=BB[l],M=cls==='cu'?BQC:cls==='el'?BQL:cls==='bu'?BQU:BQP,bo=Object.keys(M).filter(x=>obs.includes(x)).map(x=>M[x]);if(!bb)return bo.length?'Uso del bastón: el apronte '+(bo.length>1?bo.slice(0,-1).join(', ')+' y '+bo[bo.length-1]:bo[0]):undefined;return l==='OK'||!bo.length?bb:bb+', el apronte '+(bo.length>1?bo.slice(0,-1).join(', ')+' y '+bo[bo.length-1]:bo[0])}
+const ATMAP={B:{},R:{'No anticipa':'no anticipa el terreno','Reactivo':'es reactivo ante el terreno','Miedo':'se lo ve con miedo','Apoyo Alt.':'con apoyo alternado'},NO:{'No anticipa':'no anticipa el terreno','Reactivo':'es muy reactivo ante el terreno','Miedo':'se lo ve con mucho miedo','Apoyo Alt.':'con apoyo alternado muy marcado'},OK:{'No anticipa':'aunque a veces no anticipa el terreno','Reactivo':'aunque es algo reactivo ante el terreno','Miedo':'aunque se lo ve con algo de miedo','Apoyo Alt.':'aunque con algo de apoyo alternado'}};
+function adterrG(l,obs){const ord=['No anticipa','Reactivo','Miedo','Apoyo Alt.'].filter(x=>obs.includes(x));let t=l&&VLV[l]?'La adaptación al terreno '+VLV[l]:'';
+ if(ord.length){if(ATMAP[l]&&ATMAP[l][ord[0]]){const it=ord.map(x=>ATMAP[l][x].replace(/^aunque /,''));t=t+', '+(l==='OK'?'aunque ':'')+lst(it)}else t=(t?t+', ':'Adaptación al terreno: ')+lst(ord.map(x=>x.toLowerCase()))}return t}
+function estrG(l,obs){const M={'Pivot':'pivot','Derrapaje':'derrapaje','Freno':'freno','Diag.':'diagonal'},it=Object.keys(M).filter(x=>obs.includes(x)).map(x=>M[x]);let t=l&&VLV[l]?'La estrategia '+VLV[l]:'';if(it.length)t=(t?t+', con ':'Estrategia con ')+lst(it);return t}
+const APBU={OK:{'A Frame':'aunque hay algo de A Frame','Alternado':'aunque hay algún apoyo alternado','Pivoteos':'aunque hay algún pivoteo','Inestable':'aunque hay algo de inestabilidad'},R:{'A Frame':'con A Frame','Alternado':'con apoyos alternados','Pivoteos':'con pivoteos','Inestable':'con inestabilidad'},NO:{'A Frame':'con un A Frame muy marcado','Alternado':'con apoyos alternados muy marcados','Pivoteos':'con pivoteos muy marcados','Inestable':'con mucha inestabilidad'}};
+function apoyosBu(l,obs,sides){const e=l==='MB'||l==='EXC'?[]:sides||[],ord=['A Frame','Alternado','Pivoteos','Inestable'].filter(x=>obs.includes(x));let t={OK:'Apoyos correctos',R:'Apoyos regulares',NO:'Malos apoyos'}[l]||(l?APL[l]||l:'');
+ if(ord.length&&APBU[l]){const it=ord.map(x=>APBU[l][x].replace(/^aunque /,''));t=t+', '+(l==='OK'?'aunque ':'')+lst(it)}else if(ord.length)t=(t?t+', ':'Apoyos: ')+lst(ord.map(x=>x.toLowerCase()));
+ const q=[t];if(e.length)q.push((t?'':'Apoyos: ')+(e.includes('IZQ')&&e.includes('DER')?'hacia ambos lados':e[0]==='IZQ'?'hacia la izquierda':'hacia la derecha'));return q.filter(Boolean).join(', ')}
+function ejesFb(l,obs,lados){const EJI={'Rot.':'rotación','Inc.':'inclinación','C.Rot':'contra rotación'},it=['Rot.','Inc.','C.Rot'].filter(x=>obs.includes(x)).map(x=>EJI[x]),both=lados.includes('IZQ')&&lados.includes('DER');let t=l&&EJX[l]?EJX[l]:'';
+ if(it.length)t=(t?t+', con ':'Ejes con ')+lst(it);if(lados.length)t=(t?t+', ':'Ejes: ')+(both?'hacia ambos lados':lados[0]==='IZQ'?'hacia la izquierda':'hacia la derecha');return t}
+function comNew(id,sel,p){const s=p.split('.')[0],l=(sel[0]||[])[0],ob=sel[1]||[],sd=sel[2]||[],CU_=/^(?:n[13])?cu$/.test(s),EL_=/^(?:n[13])?el$/.test(s),BU_=/^n[2-4]bu$/.test(s);
+ switch(id){case 'imagen':return imagenCp(l,ob)||undefined;case 'visual':return visualG(l,ob,sd)||undefined;case 'ejes':return ejesEl(l,ob,sd)||ejesFb(l,ob,sd)||undefined;case 'reunion':return EL_&&!l&&ob.length?'Reunión: '+lst(ob.map(x=>x.toLowerCase())):undefined;case 'carga':return cargaG(l,ob,BU_)||undefined;case 'baston':return bastonG(l,ob,CU_?'cu':EL_?'el':BU_?'bu':'c');case 'adterr':return adterrG(l,ob)||undefined;case 'estrategia':return estrG(l,ob)||undefined;case 'apoyos':return BU_?apoyosBu(l,ob,sd)||undefined:undefined}}
+const rtxCp=(l,m)=>{const mm=m?m.toLowerCase():'';if(!l)return m?'El ritmo es '+mm:'';if(l==='OK')return m?'El ritmo es correcto, aunque algo '+mm:'El ritmo es correcto';if(l==='R')return 'Ritmo regular'+(m?', algo '+mm:'');return m?'Ritmo demasiado '+mm:'El ritmo no ha sido correcto'};
 function apoyosTxt(l,obs,sides){const q=[];if(l)q.push(APL[l]||l);if(obs.length&&l!=='MB'&&l!=='EXC')q.push((l?'atención ':'Atención ')+lst(obs.map(x=>APO[x.toLowerCase()]||'a '+x.toUpperCase())));if(sides&&sides.length&&l!=='MB'&&l!=='EXC')q.push(lst(sides.map(x=>/^iz/i.test(x)?'lado izquierdo':'lado derecho')));return q.join(', ')}
 function proseGen(p,cr){
   const o=[],side=x=>/^(izq\.?|der\.?)$/i.test(x)?(/^i/i.test(x)?'lado izquierdo':'lado derecho'):({'rot.':'rotación','inc.':'inclinación','c.rot':'contra rotación'})[x.toLowerCase()]||lc(x);
   cr.forEach(([id,,gs])=>{
     const sel=gs.map((g,i)=>st.v[`${p}.${id}.${i}`]||[]);
     if(!sel.some(a=>a.length))return;
+    {const t=comNew(id,sel,p);if(t!==undefined){o.push(t);return}}
     if(id==='encad'){const e=sel[0][0],f=sel[1]||[];o.push('El encadenamiento fue '+(e?(e==='DIR'?'directo':'indirecto'):'registrado')+(f.length?(e?', y esto ocurrió ':' ')+lst(lw(f)):''));return}
     if(id==='interp'){const ip=sel[0][0],io=(sel[1]||[]).map(x=>x.toLowerCase());if(ip)o.push(ip==='Sí'?'Ha interpretado la maniobra':'No interpreta la maniobra');if(io.length)o.push('La esquiada se observó '+lst(io));return}
-    if(id==='apoyos'&&!gs[0].o.includes('OK')){const t=/^n[13]cu\./.test(p)?apoyosTxtCu(sel[0][0],sel[1]||[],gs.length>2?sel[2]:[]):/^n[13]el\./.test(p)?apoyosTxtEl(sel[0][0],sel[1]||[],gs.length>2?sel[2]:[]):apoyosTxt(sel[0][0],sel[1]||[],gs.length>2?sel[2]:[]);if(t)o.push(t);return}
+    if(/^n1cp\./.test(p)){const f={imagen:()=>imagenCp(sel[0][0],sel[1]||[]),carga:()=>cargaCp(sel[0][0],sel[1]||[]),visual:()=>visualCp(sel[0][0],sel[1]||[],sel[2]||[])}[id];if(f){const t=f();if(t)o.push(t);return}}
+    if(id==='apoyos'&&!gs[0].o.includes('OK')){const t=/^n1cp\./.test(p)?apoyosTxtCp(sel[0][0],sel[1]||[],[]):/^n[13]cu\./.test(p)?apoyosTxtCu1(sel[0][0],sel[1]||[],gs.length>2?sel[2]:[]):/^n[13]cu\./.test(p)?apoyosTxtCu(sel[0][0],sel[1]||[],gs.length>2?sel[2]:[]):/^n[13]el\./.test(p)?apoyosTxtEl(sel[0][0],sel[1]||[],gs.length>2?sel[2]:[]):apoyosTxt(sel[0][0],sel[1]||[],gs.length>2?sel[2]:[]);if(t)o.push(t);return}
     if(id==='curva'){const fi=gs.length===3?2:1,t=curvaTxt(sel[0][0],sel[fi]||[],gs.length===3?sel[1]:[]);if(t)o.push(t);return}
+    if(id==='ritmo'&&/^n1cp\./.test(p)){const a=rtxCp(sel[0][0],sel[1]&&sel[1][0]),b=velEl(sel[2]&&sel[2][0],sel[3]&&sel[3][0],[]);if(a)o.push(a);if(b)o.push(b);return}
     if(id==='ritmo'){const t=rtx(sel[0][0],sel[1]&&sel[1][0]);if(t)o.push(t);return}
+    if(id==='vel'&&/^n[13]cu\./.test(p)){const t=velCu1(sel[0][0],sel[1]&&sel[1][0],sel[2]||[]);if(t)o.push(t);return}
     if(id==='vel'&&/^n[13]cu\./.test(p)){const t=velCu(sel[0][0],sel[1]&&sel[1][0],sel[2]&&sel[2][0]);if(t)o.push(t);return}
     if(id==='vel'&&/^n[13]el\./.test(p)){const t=velEl(sel[0][0],sel[1]&&sel[1][0],sel[2]||[]);if(t)o.push(t);return}
     if(id==='vel'){let t=vtx(sel[0][0],sel[1]&&sel[1][0]);if(sel[2]&&sel[2].length)t+=(t?' ':'')+'('+lst(lw(sel[2]))+')';if(t)o.push(t);return}
     if(id==='ade'){const r=sel[0][0],ob=sel[1]||[],pt=ob.includes('AD.')?'con postura adelantada':ob.includes('RETR.')?'con postura retrasada':'',bd=['TOB.','CAD.','ROD.'].filter(x=>ob.includes(x)).map(x=>({'TOB.':'tobillos','CAD.':'cadera','ROD.':'rodillas'})[x]),dt=[pt,bd.length?'en '+lst(bd):''].filter(Boolean).join(', ');if(r)o.push(`En ${NMB[id]} se observó un desempeño ${AJ[r]}${dt?', '+dt:''}`);else if(dt)o.push(`En ${NMB[id]} se observó: ${dt}`);return}
     if(id==='visual'&&/^n[13](?:cu|el)\./.test(p)){const r=sel[0][0],ob=sel[1]||[],it=ob.map(x=>({'Eje pista':'sobre el eje de pista','Eje avance':'sobre el eje de avance','Adentro':'hacia adentro'}[x]||lc(x))),dt=it.length?'con la mirada '+lst(it):'';if(r)o.push(`En ${NMB[id]} se observó un desempeño ${AJ[r]}${dt?', '+dt:''}`);else if(dt)o.push(`En ${NMB[id]} se observó: ${dt}`);return}
+    if(id==='baston'&&/^n1cp\./.test(p)){const BB={OK:'El uso del bastón ha sido correcto',R:'El uso del bastón ha sido regular',NO:'El uso del bastón no ha sido correcto'},bl0=sel[0][0],bb=BB[bl0];if(bb){const BQ={'Acompaña':'acompaña al avance','Rebota':'rebota','Ap. circular':'es de manera circular'},bo=['Acompaña','Rebota','Ap. circular'].filter(x=>(sel[1]||[]).includes(x)).map(x=>BQ[x]);o.push(bl0==='OK'||!bo.length?bb:bb+', el apronte '+(bo.length>1?bo.slice(0,-1).join(', ')+' y '+bo[bo.length-1]:bo[0]));return}}
+    if(id==='baston'&&/^n[13]cu\./.test(p)){const BB={OK:'El uso del bastón ha sido correcto',R:'El uso del bastón ha sido regular',NO:'El uso del bastón no ha sido correcto'},bl0=sel[0][0],bb=BB[bl0];if(bb){const BQ={'Acompaña':'acompaña al avance','Ap. temprano':'se está dando temprano','Ap. tarde':'se está dando tarde','Ap. circular':'es de manera circular'},bo=['Acompaña','Ap. temprano','Ap. tarde','Ap. circular'].filter(x=>(sel[1]||[]).includes(x)).map(x=>BQ[x]);o.push(bl0==='OK'||!bo.length?bb:bb+', el apronte '+(bo.length>1?bo.slice(0,-1).join(', ')+' y '+bo[bo.length-1]:bo[0]));return}}
     if(id==='baston'&&/^n[13]el\./.test(p)){const BB={OK:'El uso del bastón ha sido correcto',R:'El uso del bastón ha sido regular',NO:'El uso del bastón no ha sido correcto'},bl0=sel[0][0],bb=BB[bl0];if(bb){const BQ={'Acompaña':'acompaña al avance','Ap. finalización':'está siendo en finalización','Ap. circular':'es de manera circular'},bo=['Acompaña','Ap. finalización','Ap. circular'].filter(x=>(sel[1]||[]).includes(x)).map(x=>BQ[x]);o.push(bl0==='OK'||!bo.length?bb:bb+', el apronte '+(bo.length>1?bo.slice(0,-1).join(', ')+' y '+bo[bo.length-1]:bo[0]));return}}
-    if(id==='reunion'&&/^n[13]el\./.test(p)){const RB={NO:'La reunión no ha sido correcta',R:'La reunión ha sido regular',B:'La reunión ha sido buena',MB:'La reunión ha estado muy bien lograda',EXC:'La reunión ha sido excelente'},rl=sel[0][0],rb=RB[rl];if(rb){const ro=['Temprana','Tardía','Activa'].filter(x=>(sel[1]||[]).includes(x)).map(x=>x.toLowerCase());if(rl==='MB'||rl==='EXC'||!ro.length)o.push(rb);else o.push(rb+(rl==='B'?', aunque está siendo algo ':', está siendo ')+ro.join(' y '));return}}
-    if(id==='ejes'&&/^n[13]el\./.test(p)){const t=ejesEl(sel[0][0],sel[1]||[],sel[2]||[]);if(t){o.push(t);return}}
+    if(id==='reunion'&&/^(?:n[13])?el\./.test(p)){const RB={NO:'La reunión no ha sido correcta',R:'La reunión ha sido regular',B:'La reunión ha sido buena',MB:'La reunión ha estado muy bien lograda',EXC:'La reunión ha sido excelente'},rl=sel[0][0],rb=RB[rl];if(rb){const ro=['Temprana','Tardía','Activa'].filter(x=>(sel[1]||[]).includes(x)).map(x=>x.toLowerCase());if(rl==='MB'||rl==='EXC'||!ro.length)o.push(rb);else o.push(rb+(rl==='B'?', aunque está siendo algo ':', está siendo ')+ro.join(' y '));return}}
+    if(id==='ejes'&&/^(?:n[13](?:el|cu)|n1cp)\./.test(p)){const t=ejesEl(sel[0][0],sel[1]||[],sel[2]||[]);if(t){o.push(t);return}}
     const ri=gs.findIndex(g=>g.r),r=ri>=0?sel[ri][0]:null,det=[];
     const both=(id==='visual'||id==='ejes')&&gs.some((g,i)=>i!==ri&&sel[i].some(x=>/^izq/i.test(x))&&sel[i].some(x=>/^der/i.test(x)));
     gs.forEach((g,i)=>{if(i===ri)return;sel[i].forEach(x=>{if(!(both&&/^(izq\.?|der\.?)$/i.test(x)))det.push(id==='baston'&&/^n[13]cu\./.test(p)&&BAC[x]||id==='baston'&&/^n[13]el\./.test(p)&&BAE[x]||side(x))})});
@@ -1015,19 +1072,19 @@ function prose(p){
   const e1=g('ejes',1),e2=g('ejes',2),eo=[];
   if(e1.length)eo.push('con '+mp(e1,{'Rot.':'rotación','Inc.':'inclinación','C.Rot':'contra rotación'}));
   if(e2.length)eo.push(e2.includes('IZQ')&&e2.includes('DER')?'hacia ambos lados':'hacia '+lst(e2.map(x=>/^izq/i.test(x)?'la izquierda':'la derecha')));
-  R('ejes',0,'los ejes',eo.join(' '));
-  R('carga',0,'la gestión de carga',g('carga',1).length?'con '+mp(g('carga',1),{'Falta al inicio':'falta de carga al inicio','Exceso final':'exceso de carga al final','Retiene finales':'retención en los finales','No se adapta':'dificultad para adaptarse',Flotado:'flotado'}):'');
+  {const t=comNew('ejes',[g('ejes',0),g('ejes',1),g('ejes',2)],p);if(t!==undefined)o.push(t);else R('ejes',0,'los ejes',eo.join(' '));}
+  {const t=comNew('carga',[g('carga',0),g('carga',1)],p);if(t!==undefined)o.push(t);else R('carga',0,'la gestión de carga',g('carga',1).length?'con '+mp(g('carga',1),{'Falta al inicio':'falta de carga al inicio','Exceso final':'exceso de carga al final','Retiene finales':'retención en los finales','No se adapta':'dificultad para adaptarse',Flotado:'flotado'}):'');}
   const ec=g('encad',0)[0],ef=g('encad',1);
   if(ec)o.push('El encadenamiento fue '+(ec==='DIR'?'directo':'indirecto')+(ef.length?', y esto ocurrió '+lst(lw(ef)):''));
   const vm=g('visual',1),vl=g('visual',2),vo=[];
   if(vm.length)vo.push('con la mirada '+lst(lw(vm)));
   if(vl.includes('IZQ')&&vl.includes('DER'))vo.push('hacia ambos lados');else if(vl.length)vo.push('del lado '+lst(vl.map(x=>x==='IZQ'?'izquierdo':'derecho')));
-  R('visual',0,'la anticipación visual',vo.join(' '));
+  {const t=comNew('visual',[g('visual',0),g('visual',1),g('visual',2)],p);if(t!==undefined)o.push(t);else R('visual',0,'la anticipación visual',vo.join(' '));}
   const ad=g('ade',1),adM={'AD.':'adelantada','RETR.':'retrasada'},adC={'TOB.':'tobillos','CAD.':'cadera','ROD.':'rodillas'},adP=ad.filter(x=>adM[x]).map(x=>adM[x]),adB=['TOB.','CAD.','ROD.'].filter(x=>ad.includes(x)).map(x=>adC[x]),adO=[];
   if(adP.length)adO.push('con postura '+lst(adP));
   if(adB.length)adO.push('en '+lst(adB));
   R('ade',0,'la actitud dinámica de equilibrio',adO.join(', '));
-  R('baston',0,'el uso del bastón',g('baston',1).length?'donde el bastón '+mp(g('baston',1),{'Acompaña':'acompaña',Rebota:'rebota','Ap. circular':'se apoya en forma circular'}):'');
+  {const t=comNew('baston',[g('baston',0),g('baston',1)],p);if(t!==undefined)o.push(t);else R('baston',0,'el uso del bastón',g('baston',1).length?'donde el bastón '+mp(g('baston',1),{'Acompaña':'acompaña',Rebota:'rebota','Ap. circular':'se apoya en forma circular'}):'');}
   return o.join('. ');
 }
 function autoHtml(s){
@@ -1304,6 +1361,7 @@ document.addEventListener('click',e=>{
   {const ub=e.target.closest('[data-usrexdel]');if(ub){if(!isMgr())return;if(ub.dataset.armed!=='1'){ub.dataset.armed='1';ub.textContent='¿Seguro? Tocá de nuevo';clearTimeout(ub._t);ub._t=setTimeout(()=>{ub.dataset.armed='';ub.textContent='Quitar'},5000);return}delUsrEx(ub.dataset.usrexdel);return}}
   {const rb=e.target.closest('[data-exreg]');if(rb){if(isMgr()&&!dirLocked())addRegEx(rb.dataset.exreg);return}}
   if(e.target.closest('[data-admadd]')){if(DB.adm)addAdmin();return}
+  if(e.target.closest('[data-ctadd]')){if(DB.adm)addCt();return}
   if(e.target.closest('[data-diradd]')){if(DB.adm)addDir();return}
   if(e.target.closest('[data-xedit]')){if(!isMgr()||!dirLocked()||!DB.xid)return;if(propOf()){xMsg='Ya hay una solicitud pendiente.';renderGestion();return}DB.liveEx=DB.ex;DB.ex=JSON.parse(JSON.stringify(DB.ex));xMsg='';showView('crear');return}
   if(e.target.closest('[data-nivtoggle]')){nivOpen=!nivOpen;pdfArm='';renderGestion();return}
@@ -1384,7 +1442,7 @@ document.addEventListener('input',e=>{
   else if(d.of!==undefined){if(!canEditOf())return;if(e.target.value==='')delete DB.of.man[d.of];else DB.of.man[d.of]=e.target.value;save();updOficial();return}
   else if(d.ofbase!==undefined){if(!canEditOf())return;DB.of.base=Number(e.target.value)||null;save();updOficial();return}
   else if(d.me!==undefined){setMe(e.target.value);return}
-  else if(d.vc!==undefined){const v=e.target.value;DB.dir=false;if(v==='__dir'){DB.adm=false;DB.me='';DB.dir=true;DB.admName='Dirección (modo local)';save();updTabs();all();showView('gestion');renderGestion();return}if(v){DB.adm=false;setMe(v)}else{DB.me='';DB.adm=true;DB.admName='Administrador (modo local)';syncPl();save();all()}updTabs();showView('gestion');renderGestion();return}
+  else if(d.vc!==undefined){const v=e.target.value;DB.dir=false;DB.ct=false;if(v==='__ct'){DB.adm=true;DB.me='';DB.ct=true;DB.admName='Comité Técnico (modo local)';syncPl();save();updTabs();all();showView('gestion');renderGestion();return}if(v==='__dir'){DB.adm=false;DB.me='';DB.dir=true;DB.admName='Dirección (modo local)';save();updTabs();all();showView('gestion');renderGestion();return}if(v){DB.adm=false;setMe(v)}else{DB.me='';DB.adm=true;DB.admName='Administrador (modo local)';syncPl();save();all()}updTabs();showView('gestion');renderGestion();return}
   else return;
   save();
 });
@@ -1843,13 +1901,19 @@ async function addDir(){
   try{await cInvite(n,em,'dir');admMsg=`Se agregó a ${n} como usuario de Dirección. Debe crear su acceso con el correo ${em}.`}catch(e){admMsg=e&&e.denied?'Sin permiso. Revisá las reglas de Firebase.':'Sin conexión: reintentá con internet.'}
   renderGestion();
 }
+async function addCt(){
+  const n=gv('ctn').trim(),em=gv('cte').trim();
+  if(!n||!/^\S+@\S+\.\S+$/.test(em)){admMsg='Escribe el nombre y un correo válido.';renderGestion();return}
+  try{await cInvite(n,em,'admin',0,true);admMsg=`Se agregó a ${n} al Comité Técnico (mismos permisos que un administrador, más el acceso a Criterios). Debe crear su acceso con el correo ${em}; si ya tiene acceso, lo verá al volver a ingresar.`}catch(e){admMsg=e&&e.denied?'Sin permiso. Revisá las reglas de Firebase.':'Sin conexión: reintentá con internet.'}
+  renderGestion();
+}
 async function addAdmin(){
   const n=gv('adn').trim(),em=gv('ade').trim();
   if(!n||!/^\S+@\S+\.\S+$/.test(em)){admMsg='Escribe el nombre y un correo válido.';renderGestion();return}
   try{await cInvite(n,em,'admin');admMsg=`Se agregó a ${n} como administrador/a. Debe crear su acceso con el correo ${em}.`}catch(e){admMsg=e&&e.denied?'Sin permiso. Revisá las reglas de Firebase.':'Sin conexión: reintentá con internet.'}
   renderGestion();
 }
-function adminsBlock(){return `<div class="gx"><h3>Usuarios de Dirección</h3><p class="dvs">Pueden crear y modificar exámenes y ver las planillas oficiales. Si un examen está en curso, cada cambio necesita la confirmación del jefe de mesa. Deben crear su acceso con ese correo.</p><div class="bar"><label>Nombre<input id="dgn"></label><label>Correo<input id="dge" type="email" autocapitalize="none"></label><button class="btn" data-diradd>Agregar usuario de Dirección</button></div></div><div class="gx"><h3>Administradores</h3><p class="dvs">Agregá a otra persona como administradora. Debe crear su acceso con ese correo.</p><div class="bar"><label>Nombre<input id="adn"></label><label>Correo<input id="ade" type="email" autocapitalize="none"></label><button class="btn" data-admadd>Agregar administrador</button></div>${admMsg?`<p class="dvm" role="status">${esc(admMsg)}</p>`:''}</div>`}
+function adminsBlock(){return `<div class="gx"><h3>Usuarios de Dirección</h3><p class="dvs">Pueden crear y modificar exámenes y ver las planillas oficiales. Si un examen está en curso, cada cambio necesita la confirmación del jefe de mesa. Deben crear su acceso con ese correo.</p><div class="bar"><label>Nombre<input id="dgn"></label><label>Correo<input id="dge" type="email" autocapitalize="none"></label><button class="btn" data-diradd>Agregar usuario de Dirección</button></div></div><div class="gx"><h3>Administradores</h3><p class="dvs">Agregá a otra persona como administradora. Debe crear su acceso con ese correo.</p><div class="bar"><label>Nombre<input id="adn"></label><label>Correo<input id="ade" type="email" autocapitalize="none"></label><button class="btn" data-admadd>Agregar administrador</button></div></div><div class="gx"><h3>Comité Técnico</h3><p class="dvs">Tienen los mismos permisos que un administrador y además ven la pestaña Criterios. Si la persona ya tiene acceso, agregala acá con su mismo correo para darle ese rol.</p><div class="bar"><label>Nombre<input id="ctn"></label><label>Correo<input id="cte" type="email" autocapitalize="none"></label><button class="btn" data-ctadd>Agregar al Comité Técnico</button></div>${admMsg?`<p class="dvm" role="status">${esc(admMsg)}</p>`:''}</div>`}
 function refreshPl(){if(locked()||!hasEx())return;syncPl();save();bar();all()}
 function exFalta(){const x=DB.ex,f=[];if(!x.tipo)f.push('tipo de examen');if(!x.fecha)f.push('fecha');if(!x.lugar)f.push('delegación');if(!x.exam.length)f.push('examinadores');else if(x.jefe<0||!x.exam[x.jefe])f.push('jefe de mesa');if(!x.alu.length)f.push('alumnos inscriptos');return f}
 function crearBlock(){
@@ -2022,8 +2086,10 @@ function updMg(){
     if(miEx()&&!noAccess())items.push(['v','oficial','Planilla oficial']);
     items.push(['g','reg','Registro de Planillas'],['g','plan','Información']);
   }
+  if(CT())items.push(['l',LOCAL?'https://claude.ai/artifact/1yauN2BfRzue4i2GRpx7p3':'criterios.html','Criterios']);
   const gt=mgr?gTab:(gTab==='reg'||gTab==='plan'||gTab==='jefe'?gTab:'inicio');
   const h=items.map(([k,id,lb])=>{
+    if(k==='l')return `<a class="gtab" href="${id}" target="_blank" rel="noopener" title="Se abre en otra pestaña" style="text-decoration:none;display:inline-block">${lb} ↗</a>`;
     const on=mgr?(inG&&id===gTab):(k==='g'?((CURV==='gestion'||(REG&&CURV==='oficial'))&&(REG&&CURV==='oficial'?id==='reg':gt===id)):(CURV===id&&!REG));
     return `<button class="gtab${on?' on':''}" role="tab" aria-selected="${on}" ${k==='g'?'data-gtab':'data-view'}="${id}">${lb}</button>`}).join('');
   if(m.dataset.h!==h){m.dataset.h=h;m.innerHTML=h}
@@ -2071,7 +2137,7 @@ document.getElementById('del').onclick=()=>{
   if(!DB.list.some(vis))DB.list.push({id:'p'+Date.now(),st:mine()});
   switchTo(DB.list.find(vis).id);
 };
-if(LOCAL){if(DB.me&&DB.me!==SINASIG&&!mineIds().length)DB.me='';if(PRUEBA_EX&&!DB.me)DB.me=SINASIG;DB.adm=!DB.me;DB.admName=DB.adm?'Administrador (modo local)':'';if(DB.me)useEx(pickMine());else if(!DB.xid)useEx(pickNext())}else if(cLoad()){DB.dir=CL.role==='dir';DB.adm=CL.role==='admin';DB.me=(DB.adm||DB.dir)?'':CL.name;DB.admName=(DB.adm||DB.dir)?CL.name:'';if(DB.me)useEx(pickMine());else if(!DB.xid)useEx(pickNext());cStart()}else{DB.adm=false;DB.me='';DB.admName=''}
+if(LOCAL){if(DB.me&&DB.me!==SINASIG&&!mineIds().length)DB.me='';if(PRUEBA_EX&&!DB.me)DB.me=SINASIG;DB.adm=!DB.me;if(!DB.adm)DB.ct=false;DB.admName=DB.adm?(DB.ct?'Comité Técnico (modo local)':'Administrador (modo local)'):'';if(DB.me)useEx(pickMine());else if(!DB.xid)useEx(pickNext())}else if(cLoad()){DB.dir=CL.role==='dir';DB.adm=CL.role==='admin';DB.me=(DB.adm||DB.dir)?'':CL.name;DB.admName=(DB.adm||DB.dir)?CL.name:'';if(DB.me)useEx(pickMine());else if(!DB.xid)useEx(pickNext());cStart()}else{DB.adm=false;DB.me='';DB.admName=''}
 if(PRUEBA){if(INV===null)INV=PR_INV();const b=document.createElement('div');b.id='pbanner';b.setAttribute('role','status');b.innerHTML='<b>MODO PRUEBA</b><span>Nada se guarda en Firebase ni afecta exámenes reales.</span><button class="btn sec" data-pout>Salir del Modo Prueba</button>';document.body.prepend(b)}
 updTabs();if(!locked()&&!DB.dir&&hasEx()&&!noAccess()){syncPl();saveLocal();all();if(isJefe())gTab='jefe'}showView('gestion');
 (async()=>{
