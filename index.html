@@ -134,19 +134,51 @@ details[data-dtg=usr] .xls th:nth-child(3),details[data-dtg=usr] .xls td:nth-chi
 .opt{display:flex;margin:6px 0;align-items:flex-start}.opt input{margin-top:4px}.tg{margin-bottom:10px}.tg>b{display:block;color:var(--ink)}
 .com{padding:0 14px 14px}
 @media print{body{background:#fff}.btns,.tabs,.microw,.dv,.vtabs,.bar{display:none}.pane{display:block!important;break-inside:avoid}.sec-card{break-inside:avoid}.wrap{padding:0}}
-.sgf{display:flex;flex-direction:column;gap:12px;margin:12px 0 18px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
-.sgf .r2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.sgf label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600;color:var(--mute);min-width:0}
-.sgf select,.sgf textarea{font:400 15px Barlow,system-ui,sans-serif;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%;max-width:100%;box-sizing:border-box}
-.sgf select:disabled{opacity:.55}.sgf textarea{min-height:100px;resize:vertical;line-height:1.45}
-.sgf .sgbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}.sgf .sgcnt{font-size:13px;color:var(--mute)}
-.sgi{display:grid;grid-template-columns:36px minmax(0,1fr);gap:4px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:12px 14px;margin:0 0 10px}
-.sgi .av{width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;grid-row:1/3}
-.sgi .mt{display:flex;gap:4px 8px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--mute);min-width:0}.sgi .mt b{font-size:15px;color:var(--ink)}
-.sgi p{margin:0;grid-column:2;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
-.sgi .ac{grid-column:2;display:flex;gap:8px;margin-top:4px}.sgi .ac .btn{padding:4px 10px;font-size:13px}
-.sgi .tg2{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:12px}
-.sge{border:1px dashed var(--line);border-radius:10px;padding:20px;text-align:center;color:var(--mute)}
+.sgw{margin-bottom:14px}.sgw>.dvs{max-width:68ch;line-height:1.45;margin:0 0 12px}
+.sgf{display:flex;flex-direction:column;gap:14px;margin:0 0 24px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:0 1px 2px rgba(20,35,59,.06)}
+.sgf .r2{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.sgf label{display:flex;flex-direction:column;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);min-width:0}
+.sgf select,.sgf textarea{font:400 15px Barlow,system-ui,sans-serif;letter-spacing:0;text-transform:none;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%;max-width:100%;box-sizing:border-box;transition:border-color .15s,box-shadow .15s}
+.sgf select:focus,.sgf textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 25%,transparent)}
+.sgf select:disabled{opacity:.55;cursor:not-allowed}.sgf textarea{min-height:104px;resize:vertical;line-height:1.5}
+.sgf .sgbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
+.sgf .sgcnt{font-size:13px;color:var(--mute)}.sgf .btn{padding:10px 20px;border-radius:10px}
+.sgh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.sgh h3{margin:0;font:700 17px "Barlow Semi Condensed",sans-serif}.sgh span{font-size:13px;color:var(--mute)}
+.sgi{display:grid;grid-template-columns:40px minmax(0,1fr);gap:2px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px 16px;margin:0 0 10px;box-shadow:0 1px 2px rgba(20,35,59,.06)}
+.sgi .av{width:40px;height:40px;border-radius:50%;background:var(--ac,var(--blue));color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px "Barlow Semi Condensed",sans-serif;grid-row:1/4}
+.sgi.r-dir{--ac:#1c8fb5}.sgi.r-prof{--ac:#4f8a6b}
+.sgi .mt{display:flex;gap:2px 8px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--mute);min-width:0}
+.sgi .mt b{font-size:15px;color:var(--ink);font-weight:700}
+.sgi .mt .rl{font-weight:600;color:var(--ac,var(--blue))}
+.sgi .mt .dt{margin-left:auto;font-size:12px}
+.sgi .tgs{grid-column:2;display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 0}
+.sgi .tg2{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:1px 10px;font-size:12px;color:var(--mute)}
+.sgi p{margin:6px 0 0;grid-column:2;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55}
+.sgi .ac{grid-column:2;display:flex;gap:8px;margin-top:8px}
+.sgi .ac .btn{padding:3px 12px;font-size:13px;border-radius:8px}
+.sgi .ac .btn.sec{border-color:var(--line);color:var(--mute)}.sgi .ac .btn.sec:hover{border-color:#c0392b;color:#c0392b}
+.sge{border:1px dashed var(--line);border-radius:14px;padding:26px;text-align:center;color:var(--mute)}
+/* refinamiento general */
+:root{--sh:0 1px 2px rgba(20,35,59,.07),0 4px 14px rgba(20,35,59,.04);--rf:color-mix(in srgb,var(--blue) 26%,transparent)}
+:root[data-theme="dark"]{--sh:0 1px 2px rgba(0,0,0,.45),0 4px 14px rgba(0,0,0,.2)}
+.btn{border-radius:10px;padding:10px 16px;letter-spacing:.01em;transition:filter .15s,transform .05s,box-shadow .15s,background .15s}
+.btn:not(:disabled):hover{filter:brightness(1.07);box-shadow:0 2px 8px rgba(20,35,59,.18)}.btn:not(:disabled):active{transform:translateY(1px)}
+.btn.sec:not(:disabled):hover{background:color-mix(in srgb,var(--blue) 9%,transparent);filter:none;box-shadow:none}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+label{font-weight:600;font-size:12.5px;letter-spacing:.01em}
+input,textarea,select{border-radius:10px;transition:border-color .15s,box-shadow .15s}
+input,textarea{padding:9px 11px}
+select{border:1px solid var(--line);background-color:var(--bg);color:var(--ink);padding:8px 10px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--rf)}
+.gx,.id,.sec-card{border-radius:14px;box-shadow:var(--sh)}
+.gx{padding:16px}.id{padding:16px}
+.gh{font-size:18px;margin:6px 0 10px;letter-spacing:.005em}
+.crit{border-radius:12px;box-shadow:var(--sh)}
+.xdet{border-radius:12px}
+.gtab{transition:background .15s,color .15s,border-color .15s}
+.dvs{line-height:1.45}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
 </head>
@@ -1929,14 +1961,15 @@ async function sgLoad(force){
   }catch(e){SG.err=e&&e.denied?'Firebase rechazó la lectura. Hay que publicar las reglas nuevas (nodo appsug).':'No se pudieron cargar las sugerencias. Revisá la conexión.';SG.loaded=true}
   SG.t=Date.now();SG.fetching=false;
   if(gTab==='sug'&&CURV==='gestion'&&document.activeElement!==document.getElementById('sgtxt'))renderGestion()}
+const sgAgo=t=>{const m=Math.round((Date.now()-(t||0))/6e4);if(m<1)return 'ahora';if(m<60)return 'hace '+m+' min';const h=Math.round(m/60);if(h<24)return 'hace '+h+' h';const d=Math.round(h/24);return d<7?'hace '+d+(d===1?' día':' días'):new Date(t).toLocaleDateString('es-AR',{dateStyle:'medium'})};
 function sgHtml(){
   sgLoad();
   const ks=SG.lvl?Object.keys(MAN).filter(k=>new RegExp(' · Nivel '+SG.lvl+'$').test(MAN[k])):[];
   const its=SG.items;
   const form=`<div class="sgf"><div class="r2"><label>Nivel (si aplica)<select id="sgl"><option value="">General (toda la app)</option>${[1,2,3,4].map(l=>`<option value="${l}"${SG.lvl===String(l)?' selected':''}>Nivel ${l}</option>`).join('')}</select></label><label>Maniobra (si aplica)<select id="sgk"${SG.lvl?'':' disabled'}><option value="">${SG.lvl?'Ninguna en particular':'Elegí un nivel primero'}</option>${ks.map(k=>`<option value="${esc(k)}"${SG.k===k?' selected':''}>${esc(MAN[k].replace(/ · Nivel \d$/,''))}</option>`).join('')}</select></label></div><label>Tu sugerencia<textarea id="sgtxt" rows="4" maxlength="1500" placeholder="Una idea, una corrección, un error que viste o una duda sobre la app">${esc(SG.txt)}</textarea></label><div class="sgbar"><span class="sgcnt" role="status">${SG.msg?esc(SG.msg):'La ven todos los usuarios de la app.'}</span><button class="btn" data-sgsend="1"${SG.busy?' disabled':''}>Enviar sugerencia</button></div></div>`;
   const row=x=>{const mine=sgMine(x),can=mine||isSuper(),nm=x.n||'Usuario',k=x.k&&MAN[x.k],key=esc(x.by+'/'+x.id);
-    return `<div class="sgi"><div class="av" aria-hidden="true">${esc((nm.trim()[0]||'?').toUpperCase())}</div><div class="mt"><b>${esc(nm)}${mine&&!LOCAL?' (vos)':''}</b><span>${esc(sgRole(x.r))}</span><span>${esc(new Date(x.ts||0).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'}))}</span><span class="tg2">${x.lvl?'Nivel '+x.lvl:'General'}</span>${k?`<span class="tg2">${esc(k.replace(/ · Nivel \d$/,''))}</span>`:''}</div><p>${esc(x.txt)}</p>${can?(SG.del===x.by+'/'+x.id?`<div class="ac"><button class="btn" data-sgdok="${key}">Confirmar</button><button class="btn sec" data-sgdno="1">Cancelar</button></div>`:`<div class="ac"><button class="btn sec" data-sgdel="${key}">Eliminar</button></div>`):''}</div>`};
-  return `<h3 class="gh">Notas y Sugerencias</h3><div class="gx"><p class="dvs">Dejá acá notas y sugerencias sobre la app: planillas, criterios, funcionamiento, errores o ideas nuevas. Las ven todos los usuarios de la app.</p>${form}${SG.err?`<p class="dvm" role="alert">${esc(SG.err)}</p>`:''}<h3>Sugerencias (${its.length})</h3>${its.length?its.map(row).join(''):(SG.loaded?'<div class="sge">Todavía no hay sugerencias. Sé la primera persona en dejar una.</div>':'<p class="dvs" role="status">Cargando…</p>')}</div>`}
+    return `<div class="sgi r-${esc(x.r||'prof')}"><div class="av" aria-hidden="true">${esc((nm.trim()[0]||'?').toUpperCase())}</div><div class="mt"><b>${esc(nm)}${mine&&!LOCAL?' (vos)':''}</b><span class="rl">${esc(sgRole(x.r))}</span><span class="dt" title="${esc(new Date(x.ts||0).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'}))}">${esc(sgAgo(x.ts))}</span></div><div class="tgs"><span class="tg2">${x.lvl?'Nivel '+x.lvl:'General'}</span>${k?`<span class="tg2">${esc(k.replace(/ · Nivel \d$/,''))}</span>`:''}</div><p>${esc(x.txt)}</p>${can?(SG.del===x.by+'/'+x.id?`<div class="ac"><button class="btn" data-sgdok="${key}">Confirmar</button><button class="btn sec" data-sgdno="1">Cancelar</button></div>`:`<div class="ac"><button class="btn sec" data-sgdel="${key}">Eliminar</button></div>`):''}</div>`};
+  return `<h3 class="gh">Notas y Sugerencias</h3><div class="sgw"><p class="dvs">Dejá acá notas y sugerencias sobre la app: planillas, criterios, funcionamiento, errores o ideas nuevas. Las ven todos los usuarios de la app.</p>${form}${SG.err?`<p class="dvm" role="alert">${esc(SG.err)}</p>`:''}<div class="sgh"><h3>Sugerencias</h3><span>${its.length} en total</span></div>${its.length?its.map(row).join(''):(SG.loaded?'<div class="sge">Todavía no hay sugerencias. Sé la primera persona en dejar una.</div>':'<p class="dvs" role="status">Cargando…</p>')}</div>`}
 async function sgSend(){
   if(SG.busy)return;const txt=String(SG.txt||'').trim();
   if(!txt){SG.msg='Escribí la sugerencia antes de enviarla.';renderGestion();return}
