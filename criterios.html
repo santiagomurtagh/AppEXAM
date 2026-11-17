@@ -596,7 +596,7 @@ function vMy(){
   return `<div class="panel"><h3>Mis Simulaciones</h3><p>Las pruebas que enviaste desde Simular Examen, por nivel.${last?' La última fue el '+esc(fdate(last)).replace(/\.$/,'')+'.':''}</p>${MY.err?`<p class="none" role="status">${esc(MY.err)}</p>`:''}${!MY.loaded&&!MY.err?'<p class="none" role="status">Cargando…</p>':''}<div class="stats"><div class="stat"><b>${n}</b><span>en total</span></div>${byL.map(([l,c])=>`<div class="stat"><b>${c}</b><span>Nivel ${l}</span></div>`).join('')}</div></div>`}
 function vIni(){
   const go=(v,ti,tx)=>`<button class="go" data-go="${v}"><b>${ti}</b><span>${tx}</span></button>`;
-  return `<div class="tutlink" role="note"><div><b>¿Primera vez acá?</b><span>El tutorial explica cada pestaña paso a paso, con imágenes.</span></div><button class="btn send" type="button" data-tut="c">Abrir tutorial</button></div><div class="dev" role="note"><span class="tag">En desarrollo</span><p>Esta herramienta está en desarrollo. Se utilizará para generar una base de datos que permita que todos los exámenes sean bien objetivos.</p></div>
+  return (tutSeen()?'':`<div class="tutlink" role="note"><div><b>¿Primera vez acá?</b><span>El tutorial explica cada pestaña paso a paso, con imágenes.</span></div><button class="btn send" type="button" data-tut="c">Abrir tutorial</button></div>`)+`<div class="dev" role="note"><span class="tag">En desarrollo</span><p>Esta herramienta está en desarrollo. Se utilizará para generar una base de datos que permita que todos los exámenes sean bien objetivos.</p></div>
   <div class="panel"><h2>Para qué sirve esta herramienta</h2><p>Reúne las notas que proponen examinadores para distintas combinaciones de criterios de la planilla de AppEXAM. Con esos datos se podrá armar una escala de valores que relacione cada combinación con una nota.</p><p class="lvlnote"><b>Cada nivel tiene su propia escala de valores.</b> Las notas de un nivel no se mezclan con las de otro: se analizan y se arman por separado.</p></div>
   <div class="panel"><h3>Cómo se usa Simular Examen</h3><ol class="steps"><li>Elegí el examen y la maniobra.</li><li>Completá cada criterio: todas sus calificaciones y al menos una observación. El siguiente criterio aparece cuando terminás el actual.</li><li>Elegí una Nota Sugerida de 0 a 100, de 5 en 5, y agregá un comentario si querés.</li><li>Tocá Guardar y Enviar. Si la nota supera lo que indican las reglas, se muestra un aviso, pero igual podés enviarla.</li></ol><p class="note">Lo que enviás lo ve solo el administrador de esta herramienta.</p></div>
   <div class="gos">${go('bas','Bases de aprobación','La nota base de cada examen y las combinaciones que sugieren una nota menor que la base, maniobra por maniobra.')}${go('esc','Prueba de escala','La planilla de cada maniobra tal como funciona en AppEXAM, con opciones bloqueadas, para ver qué resultado da cada marca.')}${go('sim','Simular Examen','Elegís un examen y completás sus criterios de a uno. Podés sugerir una nota y enviarla con un comentario.')}${OWN?go('res','Resultados enviados','Lo que enviaron los integrantes del Comité Técnico, agrupado por combinación. Solo lo ve el administrador.'):''}</div>
@@ -769,11 +769,13 @@ function mdHtml(s){
   }
   fp();close(0);return o;
 }
+function tutSeen(){try{return localStorage.getItem('critTutVisto')==='1'}catch(e){return false}}
 function tutOpen(k){
-  closeTut();
+  closeTut();try{localStorage.setItem('critTutVisto','1')}catch(e){}
+  if(document.querySelector('.tutlink'))setTimeout(render,0);
   const d=document.createElement('div');d.id='tutov';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-label',TUT_NAME[k]);
   const tmp=document.createElement('div');tmp.innerHTML=mdHtml(TUT_MD[k]);
-  const nz=t=>String(t).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  const nz=t=>String(t).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
   const LS='tutleidas_'+k;let rd={};try{rd=JSON.parse(localStorage.getItem(LS)||'{}')||{}}catch(e){rd={}}
   const saveRd=()=>{try{localStorage.setItem(LS,JSON.stringify(rd))}catch(e){}};
   let head='',secs=[],cur=null;
