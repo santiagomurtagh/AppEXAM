@@ -300,6 +300,20 @@ label{font-weight:500}
 .lvb{padding:16px 14px 2px}
 .lvb .rules{border-top:1px dashed var(--line3);padding-top:14px}
 .lvb .rules h3{text-transform:uppercase;letter-spacing:.06em;font-size:13px;color:var(--ink2)}
+.vbn{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 16px;margin:0 0 14px;border-radius:12px;background:var(--r-exc);color:var(--r-ink);box-shadow:0 2px 10px rgba(0,0,0,.22)}
+.vbn.bad{background:var(--r-no)}.vbn.nim{background:#45525f;color:#fff}
+.vbn .vi{flex:none;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font:700 22px/1 var(--f-head)}
+:root[data-theme="dark"] .vbn .vi{background:rgba(0,0,0,.18)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .vbn .vi{background:rgba(0,0,0,.18)}}
+.vbn .vt{display:flex;flex-direction:column;min-width:0;flex:1 1 220px}
+.vbn .vk{font:600 12px var(--f-body);letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.vbn .vm{font:700 22px/1.15 var(--f-head);text-wrap:balance}
+.vbn .vd{font:500 13px var(--f-body);opacity:.95;margin-top:2px}
+.vbn .vb{flex:none;font:700 15px var(--f-head);background:rgba(255,255,255,.2);border-radius:8px;padding:6px 12px}
+:root[data-theme="dark"] .vbn .vb{background:rgba(0,0,0,.18)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .vbn .vb{background:rgba(0,0,0,.18)}}
+.sum .verd{display:none}
+@media (max-width:520px){.vbn .vm{font-size:19px}}
 
 .acct{margin:-4px 0 12px;font-size:12.5px;color:var(--ink2)}
 .acct button{font:inherit;color:var(--accent);background:none;border:0;padding:0 0 0 6px;cursor:pointer;text-decoration:underline}
@@ -555,6 +569,7 @@ function vEsc(){
   const warn=nv===null?'':nimOn?'La bajada está en NIM: queda sin nota, así que no corresponde una nota sugerida de '+nv+'.':(hit&&nv>=base)?'La nota sugerida ('+nv+') está por encima de lo que indican las reglas: se cumple algún parámetro de desaprobación, que sugiere una nota menor que la base ('+base+').':'';
   if(ES.free&&DBX&&UX)h+=`<div class="com"><div class="cf"><div class="cc"><label for="com">Comentario (opcional)</label><textarea id="com" maxlength="1000" rows="2" placeholder="Algo que quieras aclarar sobre esta prueba">${esc(ES.com||'')}</textarea></div><div class="cn"><label for="nsug">Nota Sugerida</label><select id="nsug"><option value="">Sin elegir</option>${Array.from({length:21},(_,i)=>i*5).map(n=>`<option value="${n}"${ES.nota!==''&&Number(ES.nota)===n?' selected':''}>${n}</option>`).join('')}</select></div></div>${warn?`<div class="warn" role="alert"><b>Atención:</b> ${esc(warn)} Podés enviarla igual.</div>`:''}</div>`;
   ES.last={PD,hit,nimOn,base,answered};
+  {const hits=PD.filter(x=>x[1]).map(x=>x[2]);h+=nimOn?`<div class="vbn nim" role="status" aria-live="polite"><span class="vi" aria-hidden="true">–</span><div class="vt"><span class="vk">Sugerencia de nota</span><span class="vm">NIM: sin nota</span><span class="vd">La bajada queda sin nota; los demás criterios no cuentan.</span></div></div>`:hit?`<div class="vbn bad" role="status" aria-live="polite"><span class="vi" aria-hidden="true">↓</span><div class="vt"><span class="vk">Sugerencia de nota</span><span class="vm">Menor que ${base}</span><span class="vd">Se cumple${hits.length>1?'n las combinaciones':' la combinación'} ${hits.join(', ')}.</span></div><span class="vb">Base ${base}</span></div>`:`<div class="vbn" role="status" aria-live="polite"><span class="vi" aria-hidden="true">✓</span><div class="vt"><span class="vk">Sugerencia de nota</span><span class="vm">Sin sugerencia de nota menor</span><span class="vd">Ningún parámetro de desaprobación se cumple.</span></div><span class="vb">Base ${base}</span></div>`}
   h+=`<div class="two"><div class="panel">`;
   const cl=m.crit.slice();const done=c=>{const rg=c.gs.map((q,i)=>[q,i]).filter(([q])=>q.sc);if(c.id==='encad')return A(c.id,0).length>0;return rg.length?rg.every(([q,i])=>A(c.id,i).length):A(c.id,0).length>0};
   let vis=cl,pend=null;
