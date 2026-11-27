@@ -676,7 +676,7 @@ function vIni(){
 function trigOf(m){
   const has=id=>m.crit.some(c=>c.id===id),CUL=m.name==='Cuña',ELL=m.name==='Elemental',N1S=/^(n1|i2)[cs]p$/.test(m.k),T=[];
   const add=(cells,extra)=>T.push(Object.assign({cells},extra||{}));
-  if(CUL||ELL)add([{c:'imagen',i:0,o:['NO']}]);
+  if(CUL||ELL||(m.lvl===3&&has('imagen')))add([{c:'imagen',i:0,o:m.lvl===3?['NO','R']:['NO']}]);
   else if(N1S&&has('imagen'))add([{c:'imagen',i:0,o:['NO']}],{art:true});
   if(ELL)add([{c:'curva',i:1,o:['Confunde fases']}]);
   if(has('interp'))add([{c:'interp',i:0,o:['No']}]);
@@ -684,8 +684,8 @@ function trigOf(m){
   add([],{r:true,need:m.lvl===4?1:Math.floor(rt/2)+1,rt});
   if(has('encad'))add(N1S?[{c:'encad',i:0,o:['IND']},{c:'encad',i:1,o:['Casi siempre','Siempre']}]:[{c:'encad',i:0,o:['IND']}]);
   if(has('ritmo')&&has('curva'))add([{c:'ritmo',i:0,o:['NO']},{c:'curva',i:0,o:['NO']}]);
-  if(has('apoyos'))add([{c:'apoyos',i:0,o:['NO']}]);
-  if(has('ejes'))add([{c:'ejes',i:0,o:['NO']}]);
+  if(has('apoyos'))add([{c:'apoyos',i:0,o:m.lvl===3?['NO','R']:['NO']}]);
+  if(has('ejes'))add([{c:'ejes',i:0,o:m.lvl===3?['NO','R']:['NO']}]);
   if(has('vel'))add([{c:'vel',i:0,o:['NO']}]);
   if(['n1sp','i2sp','n2sp','n4sp'].includes(m.k)&&has('curva'))add([{c:'curva',i:2,o:['Diagonal']}]);
   if(m.k==='n3el'&&has('curva'))add([{c:'curva',i:1,o:['Diagonal']}]);
