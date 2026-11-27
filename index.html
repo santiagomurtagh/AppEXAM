@@ -41,6 +41,7 @@ textarea{min-height:70px;resize:vertical}
 .top{display:flex;gap:14px;align-items:end;flex-wrap:wrap;margin-bottom:10px}
 .top .n{width:110px}
 .sug{background:var(--no);color:#fff;font:600 14px Barlow,sans-serif;padding:7px 12px;border-radius:8px}
+.sug.big{font-size:19px;font-weight:700;line-height:1.2;padding:10px 18px;border-radius:10px;box-shadow:0 2px 8px rgba(214,69,69,.35)}@media (max-width:520px){.sug.big{font-size:17px;padding:9px 14px}}
 .prog{font-size:13px;color:var(--mute);margin-left:auto}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
 .crit{border:1px solid var(--line);border-radius:8px;padding:10px}
@@ -1062,8 +1063,8 @@ function pane(s,b){
     <div class="top"><label class="n">Nota bajada ${b+1}<input type="${inv||kv!==undefined?'text':'number'}" inputmode="numeric" step="5" min="0" max="100" data-n="${p}" ${inv||kv!==undefined?'readonly':''} value="${kv!==undefined?esc(kv):inv?'NIM':esc(st.n[p]??'')}"></label>
     <button class="btn" data-conf="${p}" ${kv===undefined&&(inv||(st.n[p]??'')!=='')&&critOk(p)?'':'hidden'}>Confirmar</button>${kv===undefined&&(inv||(st.n[p]??'')!=='')&&!critOk(p)?`<span class="sug" role="status">Para confirmar, completá todos los criterios (faltan: ${esc(critMiss(p).join(', '))})</span>`:''}
     <span class="okc" ${kv!==undefined?'':'hidden'}>✓ Confirmada</span><button class="btn sec" data-unconf="${p}" ${kv!==undefined?'':'hidden'}>Editar</button>
-    ${nEst(s,kv,p,inv)}${hit?'<span class="sug" role="status">Sugerencia de nota &lt;'+baseFor(s)+'</span>':''}
-    ${PF&&dg&&!ELL(s)?'<span class="sug" role="status">Sugerencia: No interpreta la maniobra</span>':''}
+    ${nEst(s,kv,p,inv)}${hit?'<span class="sug big" role="status">Sugerencia de nota &lt;'+baseFor(s)+'</span>':''}
+    ${PF&&dg&&!ELL(s)?'<span class="sug big" role="status">Sugerencia: No interpreta la maniobra</span>':''}
     <span class="prog">${done} de ${CR.length} criterios evaluados</span></div>
     <div class="dv ${(dv[p]||{}).st&&dv[p].st!=='idle'?'on':''}" id="dv-${p}">${dvHtml(p)}</div>
     ${s==='n3fp'?'<p class="dvs" role="note"><b>Fuera de Pista · Nivel 3 (nuevo 2026):</b> una bajada de Corto Paralelo y una de Super Paralelo en nieve no tratada. Se promedian las dos notas y ninguna puede estar por debajo de 40 (5 puntos menos que la base de 45).</p>':''}${inv?'<p class="invmsg" role="status">Interp. maniobra en No: los demás criterios no se consideran para la nota, pero sí se incluyen en los comentarios.</p>':''}<div class="grid">${crits}</div>
